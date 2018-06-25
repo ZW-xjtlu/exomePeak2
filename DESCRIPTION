@@ -1,0 +1,14 @@
+Package: exomePeak2
+Type: Package
+Title: Peak calling and quantification for MeRIP-seq data sets.
+Version: 0.0.1
+Author: Zhen Wei
+Maintainer: Zhen Wei <zhen.wei10@icloud.com>
+Description: This package can conduct peak calling and quantification for MeRIP-seq data sets while considering the biological variabilities and the GC-content normalization. 
+License: GPL (>= 2)
+Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq,DESeq2,ggplot2,Guitar
+Depends: SummarizedExperiment,cqn
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+URL: http://github.com/ZhenWei10/exomePeak2
