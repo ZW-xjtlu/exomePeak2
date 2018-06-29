@@ -34,8 +34,4 @@ the significant bins will be the merged into peaks.
 \code{call_peaks_with_DESeq} will performe exome level peak calling using DESeq model,
 the significant bins in both directions (IP > input and input > IP) are merged separately.
 The final result will contains both the methylation peaks and control peaks.
-
-If the experimental design contains additional factor of treatment,
-the treated group will be tested independently of the control group.
-The final peak region will be the reduced union of the peaks from 2 groups.
 }

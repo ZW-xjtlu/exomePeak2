@@ -2,53 +2,54 @@
 % Please edit documentation in R/scan_merip_bams.R
 \name{scan_merip_bams}
 \alias{scan_merip_bams}
-\title{Scan the bam files of a MeRIP-seq experiment.}
+\title{Scan the BAM files of a MeRIP-seq experiment.}
 \usage{
 scan_merip_bams(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   bam_treated_input = NULL, paired_end = FALSE, strand_specific = FALSE,
-  bam_index = FALSE, bam_files = NULL, design_ip = NULL,
-  design_treatment = NULL, isSecondaryAlignment = FALSE,
+  index_bam = TRUE, bam_files = NULL, design_ip = NULL,
+  design_treatment = NULL, mapq = 30L, isSecondaryAlignment = FALSE,
   isNotPassingQualityControls = FALSE, isDuplicate = FALSE, isPaired = NA,
   isProperPair = NA, hasUnmappedMate = NA, ...)
 }
 \arguments{
-\item{bam_ip}{a character vector of the bam file directories for the IP samples.}
+\item{bam_ip}{a character vector of the BAM file directories for the IP samples.}
 
-\item{bam_input}{a character vector of the bam file directories for the input samples.}
+\item{bam_input}{a character vector of the BAM file directories for the input samples.}
 
-\item{bam_treated_ip}{a character vector of the bam file directories for the IP samples in treated group.}
+\item{bam_treated_ip}{a character vector of the BAM file directories for the IP samples in treated group.}
 
-\item{bam_treated_input}{a character vector of the bam file directories for the input samples in treated group.
+\item{bam_treated_input}{a character vector of the BAM file directories for the input samples in treated group.
 
-If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{bam_ip} and \code{bam_input} arguments.}
+If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{BAM_ip} and \code{BAM_input} arguments.}
 
 \item{paired_end}{a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.}
 
 \item{strand_specific}{a logical value indicating whether the library used is strand specific, default to be FALSE.}
 
-\item{bam_index}{a logical value indicating the existence of bam indexes, TRUE if the bam files are indexed.
+\item{index_bam}{a logical value indicating whether to create BAM indexes automatically.
 
-The bam index files should be named by adding ".bai" after the names of corresponding bam files.
-If the index files cannot be found in the provided directory, the bam files would be loaded as if they are not indexed.}
+The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.}
 
-\item{bam_files}{an optional character string of all the bam files to be analyzed, if it is provided, the first 4 arguments above will be ignored.}
+\item{bam_files}{an optional character string of all the BAM files to be analyzed, if it is provided, the first 4 arguments above will be ignored.}
 
 \item{design_ip}{an optional logical vector indicating the design of IP and input, with TRUE represents for IP.}
 
 \item{design_treatment}{an optional logical vector indicating the design of treatment and control, with TRUE represents for treated samples.}
 
-\item{isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments that determine the sam flag filtering, inherited from \code{\link{ScanBamParam}}.}
+\item{mapq}{A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded.}
+
+\item{isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments that determine the sam flag filtering, inherited from \code{\link{ScanBAMParam}}.}
 }
 \value{
-This function will return a list with 2 named elements: BamList and Parameter.
+This function will return a list with 2 named elements: BAMList and Parameter.
 }
 \description{
-\code{scan_merip_bams} is used to check and organize the bam files in MeRIP-seq data before peak calling,
+\code{scan_merip_bam} is used to check and organize the BAM files in MeRIP-seq data before peak calling,
 the flag parameters for the filtering can be defined at this step.
 }
 \details{
-The function takes the input of MeRIP-seq bam files directories.
-The provided bam files are checked, and the design information of IP over input and treated over untreated are stored in the output.
+The function takes the input of MeRIP-seq BAM files directories.
+The provided BAM files are checked, and the design information of IP over input and treated over untreated are stored in the output.
 }
 \examples{
 MeRIP_Seq_Alignment <- scan_merip_bams(

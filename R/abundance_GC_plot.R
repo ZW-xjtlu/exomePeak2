@@ -138,9 +138,9 @@ p1 <- ggplot(Plot_df,
 if (ncol(sep$SE) <= 11)  p1 = p1 + scale_color_brewer(palette = "Spectral")
 
 if(!is.null(sep$FS_sizeFactor)) {
-  p1 = p1 + facet_grid(group~norm)
+  p1 = p1 + facet_grid(group~norm,scales = "free_y")
 } else {
-  p1 = p1 + facet_grid(~group)
+  p1 = p1 + facet_grid(~group,scales = "free_y")
 }
 
 figheight = 6.55 + .2 * round(ncol( sep$SE )/4)

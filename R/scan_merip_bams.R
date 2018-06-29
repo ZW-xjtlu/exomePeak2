@@ -1,31 +1,31 @@
-#' @title Scan the bam files of a MeRIP-seq experiment.
+#' @title Scan the BAM files of a MeRIP-seq experiment.
 #'
-#' @description \code{scan_merip_bams} is used to check and organize the bam files in MeRIP-seq data before peak calling,
+#' @description \code{scan_merip_bam} is used to check and organize the BAM files in MeRIP-seq data before peak calling,
 #' the flag parameters for the filtering can be defined at this step.
 #'
-#' @details The function takes the input of MeRIP-seq bam files directories.
-#' The provided bam files are checked, and the design information of IP over input and treated over untreated are stored in the output.
+#' @details The function takes the input of MeRIP-seq BAM files directories.
+#' The provided BAM files are checked, and the design information of IP over input and treated over untreated are stored in the output.
 #'
-#' @param bam_ip a character vector of the bam file directories for the IP samples.
-#' @param bam_input a character vector of the bam file directories for the input samples.
-#' @param bam_treated_ip a character vector of the bam file directories for the IP samples in treated group.
-#' @param bam_treated_input a character vector of the bam file directories for the input samples in treated group.
+#' @param bam_ip a character vector of the BAM file directories for the IP samples.
+#' @param bam_input a character vector of the BAM file directories for the input samples.
+#' @param bam_treated_ip a character vector of the BAM file directories for the IP samples in treated group.
+#' @param bam_treated_input a character vector of the BAM file directories for the input samples in treated group.
 #'
-#' If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{bam_ip} and \code{bam_input} arguments.
+#' If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{BAM_ip} and \code{BAM_input} arguments.
 #'
 #' @param paired_end a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.
 #' @param strand_specific a logical value indicating whether the library used is strand specific, default to be FALSE.
-#' @param bam_index a logical value indicating the existence of bam indexes, TRUE if the bam files are indexed.
+#' @param index_bam a logical value indicating whether to create BAM indexes automatically.
 #'
-#' The bam index files should be named by adding ".bai" after the names of corresponding bam files.
-#' If the index files cannot be found in the provided directory, the bam files would be loaded as if they are not indexed.
+#' The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.
 #'
-#' @param bam_files an optional character string of all the bam files to be analyzed, if it is provided, the first 4 arguments above will be ignored.
+#' @param bam_files an optional character string of all the BAM files to be analyzed, if it is provided, the first 4 arguments above will be ignored.
 #' @param design_ip an optional logical vector indicating the design of IP and input, with TRUE represents for IP.
 #' @param design_treatment an optional logical vector indicating the design of treatment and control, with TRUE represents for treated samples.
-#' @param isSecondaryAlignment,isNotPassingQualityControls,isDuplicate,... arguments that determine the sam flag filtering, inherited from \code{\link{ScanBamParam}}.
+#' @param mapq A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded.
+#' @param isSecondaryAlignment,isNotPassingQualityControls,isDuplicate,... arguments that determine the sam flag filtering, inherited from \code{\link{ScanBAMParam}}.
 #'
-#' @return This function will return a list with 2 named elements: BamList and Parameter.
+#' @return This function will return a list with 2 named elements: BAMList and Parameter.
 #'
 #' @examples
 #' MeRIP_Seq_Alignment <- scan_merip_bams(
@@ -63,7 +63,7 @@
 #'identical(MeRIP_Seq_Alignment, MeRIP_Seq_Alignment2)
 #'
 #' @seealso \code{\link{merip_peak_calling}}
-#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path
+#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path indexBam
 #' @export
 
 scan_merip_bams <- function(bam_ip = NULL,
@@ -72,10 +72,11 @@ scan_merip_bams <- function(bam_ip = NULL,
                      bam_treated_input = NULL,
                      paired_end = FALSE,
                      strand_specific = FALSE,
-                     bam_index = FALSE,
+                     index_bam = TRUE,
                      bam_files = NULL,
                      design_ip = NULL,
                      design_treatment = NULL,
+                     mapq = 30L,
                      isSecondaryAlignment = FALSE,
                      isNotPassingQualityControls = FALSE,
                      isDuplicate = FALSE,
@@ -97,21 +98,31 @@ bam.list = BamFileList(
                        asMates=paired_end
           )
 
-if(bam_index) {
+
 bai_temp = paste0(bam_files,".bai")
 
 exist_indx <- file.exists( bai_temp )
 
 if(any(!exist_indx)){
-  warning(paste0("cannot find the bam index files under: ",
-              paste0( index(bam.list)[!exist_indx] ,collapse = ", "),
-              ", The bam files are treated as not indexed."),
-          call. = F,immediate. = T)
+
+  if(!index_bam) {
+    warning(paste0("cannot find the bam index files under: ",
+                   paste0( index(bam.list)[!exist_indx] ,collapse = ", "),
+                   ", The bam files are treated as not indexed."),
+            call. = F,immediate. = T)
+  } else {
+      message("indexing BAM files...")
+
+     indexBam(bam_files)
+
+    index(bam.list) = bai_temp
+  }
+
 } else {
 index(bam.list) = bai_temp
 }
 
-}
+
 
 #Check the existence of the bam files
 exist_indx <- file.exists( path(bam.list) )
@@ -167,7 +178,7 @@ isDuplicate = isDuplicate,
 ...)
 
 merip_bam_list <- list(BamList = bam.list,
-     Parameter = ScanBamParam(flag = bam_flag),
+     Parameter = ScanBamParam(what = "mapq", flag = bam_flag, mapqFilter = mapq),
      StrandSpecific = strand_specific)
 
 return(merip_bam_list)

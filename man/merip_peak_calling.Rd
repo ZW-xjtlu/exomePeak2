@@ -8,7 +8,7 @@ merip_peak_calling(merip_alignment = NULL, genome = "hg19",
   gff_dir = NULL, txdb = NULL, window_size = 100, step_size = 10,
   count_cutoff = 10, p_cutoff = NULL, p_adj_cutoff = 0.05,
   logFC_cutoff = 0, drop_overlapped_genes = TRUE, parallel = FALSE,
-  provided_annotation = NULL)
+  mod_annotation = NULL, background = NULL)
 }
 \arguments{
 \item{merip_alignment}{a \code{MeRIP_seq_alignment} object.}
@@ -19,11 +19,11 @@ merip_peak_calling(merip_alignment = NULL, genome = "hg19",
 
 \item{txdb}{a txdb object, if provided, it will cover the annotation files defined above.}
 
-\item{window_size}{an integer value of the window or bin width in bp.}
+\item{window_size}{a positive integer value of the window or bin width in bp.}
 
-\item{step_size}{an integer value of the step or shift width in bp.}
+\item{step_size}{a positive integer value of the step or shift width in bp.}
 
-\item{count_cutoff}{a value of the minimum total reads count per window used in peak calling, default to be 10.}
+\item{count_cutoff}{a non negative integer value of the minimum total reads count per window used in peak calling, default to be 10.}
 
 \item{p_cutoff}{a value of the p value cut-off used in peak calling, default to be 0.05.}
 
@@ -35,9 +35,12 @@ merip_peak_calling(merip_alignment = NULL, genome = "hg19",
 
 \item{parallel}{a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.}
 
-\item{provided_annotation}{a \code{GRanges} or \code{GRangesList} object for user provided RNA modification annotation. If provided, the peak calling will be skipped.
+\item{mod_annotation}{a \code{GRanges} or \code{GRangesList} object for user provided RNA modification annotation. If provided, the peak calling step will be skipped.
+Reads counting will be performed using the provided annotation, annotations with size less than \code{window_size} are resized to \code{window_size} fixed at the center.
 
-Reads counting will be performed using the provided annotation, while all the annotations are resized into the width defined by \code{window_size} fixing at the center.}
+The background regions used in this senario will be the exon ranges other than the provided annotation.}
+
+\item{background}{a \code{GRanges} or \code{GRangesList} object for user provided background control regions on the genome.}
 }
 \value{
 This function will return a \code{SummarizedExomePeak} object storing the ranges and reads counts information of the called peaks.

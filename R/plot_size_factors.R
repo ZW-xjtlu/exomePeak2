@@ -25,7 +25,13 @@ plot_size_factors <- function(sep){
    theme_classic() +
   scale_fill_brewer(palette = "Dark2") +
    theme(axis.text.x = element_text(angle = 310,hjust = 0,face = "bold",colour = "darkblue")) +
-   labs(x = "Samples", y = "Size factors", title = "Compare size factors estimated by different methods")
+   labs(x = "Samples", y = "Size factors", title = "Compare size factors estimated by different methods") +
+   theme( plot.margin = margin(t = 1,
+                               r = 0.5,
+                               b = 0.5,
+                               l = 1.5,
+                               unit = "cm") )
+
 #model_df <- as.data.frame( sapply(c("Control","Both","Methylation"),function(x)estimate_size_factors(sep,from = x)$sizeFactors))
 #model_df$Sum_reads <- colSums(assay(sep$SE))
 #round( cor(model_df) , 3)

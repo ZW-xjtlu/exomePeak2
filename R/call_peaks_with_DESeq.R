@@ -7,9 +7,6 @@
 #' the significant bins in both directions (IP > input and input > IP) are merged separately.
 #' The final result will contains both the methylation peaks and control peaks.
 #'
-#' If the experimental design contains additional factor of treatment,
-#' the treated group will be tested independently of the control group.
-#' The final peak region will be the reduced union of the peaks from 2 groups.
 #'
 #' @param SE_bins a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP & input and treated & control.
 #' @param count_cutoff an integer value indicating the cutoff of the sum of reads count in a window, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
@@ -32,49 +29,6 @@ call_peaks_with_DESeq <- function(SE_bins,
                                   txdb,
                                   drop_overlapped_genes = TRUE){
 
-if (any(SE_bins$design_Treatment)) {
-  #If it has the design of treatment
-  design_IP_treated <- rep("input", sum(SE_bins$design_Treatment))
-  design_IP_treated[colData(SE_bins)$design_IP[SE_bins$design_Treatment]] <- "IP"
-  result_indx_treated <- DESeq_inference( count_assay = assay(SE_bins)[,SE_bins$design_Treatment],
-                                         design_IP = design_IP_treated ,
-                                         p_cutoff = p_cutoff,
-                                         p_adj_cutoff = p_adj_cutoff,
-                                         count_cutoff = count_cutoff,
-                                         logFC_meth = logFC_cutoff)
-
-  design_IP_control <- rep("input", sum(!SE_bins$design_Treatment))
-  design_IP_control[colData(SE_bins)$design_IP[!SE_bins$design_Treatment]] <- "IP"
-  result_indx_control <- DESeq_inference( count_assay = assay(SE_bins)[,!SE_bins$design_Treatment],
-                                         design_IP = design_IP_control ,
-                                         p_cutoff = p_cutoff,
-                                         p_adj_cutoff = p_adj_cutoff,
-                                         count_cutoff = count_cutoff,
-                                         logFC_meth = logFC_cutoff)
-
-  result_indx_merge = list(index_meth = unique( c(result_indx_treated$index_meth,
-                                                 result_indx_treated$index_meth) ) )
-
-  result_indx_merge$index_control = setdiff(unique( c(result_indx_treated$index_control,result_indx_control$index_control) ),
-                                           result_indx_merge$index_meth)
-
-  gr_meth <- reduce_peaks(peaks_grl = rowRanges(SE_bins)[result_indx_merge$index_meth],
-                          txdb = txdb,
-                          drop_overlapped_genes = drop_overlapped_genes)
-
-  gr_control <- reduce_peaks(peaks_grl = rowRanges(SE_bins)[result_indx_merge$index_control],
-                          txdb = txdb,
-                          drop_overlapped_genes = drop_overlapped_genes)
-
-  names(gr_meth) = paste0("meth_",names(gr_meth))
-  names(gr_control) = paste0("control_",names(gr_control))
-  gr_total <- c(gr_meth,gr_control)
-
-  return(
-    split(gr_total, names(gr_total))
-  )
-
-} else {
   design_IP <- rep("input",ncol(SE_bins))
   design_IP[colData(SE_bins)$design_IP] <- "IP"
 
@@ -90,8 +44,8 @@ if (any(SE_bins$design_Treatment)) {
                           drop_overlapped_genes = drop_overlapped_genes)
 
   gr_control <- reduce_peaks(peaks_grl = rowRanges(SE_bins)[result_indx$index_control],
-                          txdb = txdb,
-                          drop_overlapped_genes = drop_overlapped_genes)
+                             txdb = txdb,
+                             drop_overlapped_genes = drop_overlapped_genes)
 
   names(gr_meth) = paste0("meth_",names(gr_meth))
   names(gr_control) = paste0("control_",names(gr_control))
@@ -100,7 +54,5 @@ if (any(SE_bins$design_Treatment)) {
   return(
     split(gr_total, names(gr_total))
     )
-
-}
 
 }

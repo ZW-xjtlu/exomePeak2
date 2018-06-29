@@ -6,7 +6,7 @@
 \usage{
 DESeq_inference(count_assay, design_IP, p_cutoff = NULL,
   p_adj_cutoff = 0.05, count_cutoff = 10, logFC_meth = 0,
-  logFC_control = 0, control_size = NULL)
+  min_meth_number = floor(nrow(count_assay) * 0.002))
 }
 \arguments{
 \item{count_assay}{a \code{matrix} of read count. Rows of the matrix represent the peaks, and collumns represent the samples.}
@@ -21,13 +21,13 @@ DESeq_inference(count_assay, design_IP, p_cutoff = NULL,
 
 \item{logFC_meth}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for methylated peaks (IP > input).}
 
-\item{logFC_control}{a non positive numeric value of the log2 fold change cutoff used in DESeq inferene for control peaks (IP < input).}
-
-\item{control_size}{an integer value indicating the number of randomly selected control peaks returned, by default, all the other peaks after the count cutoff are used as the control.}
+\item{min_meth_number}{a non negative numeric value of the he minimum number of the reported methylated bins.
+If the bins are filtered less than this number by the p values or effect sizes,
+more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(count_assay)*0.002 ) .}
 }
 \value{
 a list of the index for the significant methylated peaks (IP > input) and control peaks (peaks other than methylation peaks).
 }
 \description{
-\code{DESeq_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model intruduced in DESeq.
+\code{DESeq_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model in DESeq.
 }

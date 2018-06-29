@@ -5,7 +5,7 @@
 \title{Calculate the decision table for a DESeq2 result.}
 \usage{
 decision_deseq2(Inf_RES, log2FC_cut = 0, P_cut = 0.05, Padj_cut = NULL,
-  Min_mod = 1000, Exp_dir = NULL)
+  Min_mod = 1000, Exp_dir = c("hyper", "hypo", "both"))
 }
 \arguments{
 \item{Inf_RES}{A \code{DESeqResults} or similar object that contains the result statistics for either methylation or differential methylation.}
@@ -18,7 +18,7 @@ decision_deseq2(Inf_RES, log2FC_cut = 0, P_cut = 0.05, Padj_cut = NULL,
 
 \item{Min_mod}{Minimum number of features returned, when this is smaller than the cut-off results, additional features are called by the order of p values.}
 
-\item{Exp_dir}{This parameter is filled to make decisions on differential methylation, can be either "hyper" or "hypo".}
+\item{Exp_dir}{This parameter is filled when making decisions on differential methylation, it could be "hyper", "hypo", and "both".}
 }
 \value{
 A \code{data.frame} object indicating the column and cut-off value used for desicion, also it includes the number of positive sites in both directions based on the decision.

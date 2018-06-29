@@ -1,7 +1,7 @@
 #'@title Estimation of the GC content normalization factors.
 #'@param sep a \code{summarizedExomePeak} object.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence.
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of this reference genome specified in a way that is accepted by the getBSgenome function defined in the BSgenome software package
 #'
 #'@param feature the features used in the GC effect estimation, can be "background" and "all".
 #'If "all" is choosed, the GC effect function will be estimated using both the methylated and the background region,
@@ -38,15 +38,20 @@
 #'@return a \code{summarizedExomePeak} object containing the feature specific size factors.
 #'
 #'@import SummarizedExperiment
+#'@importFrom BSgenome getBSgenome
 #'@export
 GC_normalization <- function(sep,
-                             bsgenome = NULL,
+                             bsgenome = "hg19",
                              feature = c("background","all"),
                              qtnorm = FALSE,
                              fragment_length = 100,
                              glm_offset = TRUE) {
 
 stopifnot(!(is.null(bsgenome)))
+
+if(is.character(bsgenome)) {
+  bsgenome <- getBSgenome(bsgenome)
+}
 
 #check if the sep object is abscent of the collumn wised size factors.
 if(is.null(colData( sep$SE )$sizeFactor)){

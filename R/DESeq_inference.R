@@ -6,13 +6,12 @@
 #' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq inference; if provided, values in \code{p_cutoff} will be ignored.
 #' @param count_cutoff an integer value indicating the cutoff of the sum of reads count in a window, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
 #' @param logFC_meth a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for methylated peaks (IP > input).
-#' @param logFC_control a non positive numeric value of the log2 fold change cutoff used in DESeq inferene for control peaks (IP < input).
-#' @param control_size an integer value indicating the number of randomly selected control peaks returned, by default, all the other peaks after the count cutoff are used as the control.
+#' @param min_meth_number a non negative numeric value of the he minimum number of the reported methylated bins.
+#' If the bins are filtered less than this number by the p values or effect sizes,
+#' more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(count_assay)*0.002 ) .
 #'
-#' @description \code{DESeq_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model intruduced in DESeq.
+#' @description \code{DESeq_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model in DESeq.
 #' @return a list of the index for the significant methylated peaks (IP > input) and control peaks (peaks other than methylation peaks).
-#'
-#'
 #'
 #' @importFrom DESeq estimateSizeFactors estimateDispersions newCountDataSet nbinomTest
 #' @export
@@ -22,8 +21,7 @@ DESeq_inference <- function(count_assay,
                             p_adj_cutoff = 0.05,
                             count_cutoff = 10,
                             logFC_meth = 0,
-                            logFC_control = 0,
-                            control_size = NULL) {
+                            min_meth_number = floor( nrow(count_assay)*0.002 )) {
 
   stopifnot( !(is.null(p_cutoff) & is.null(p_adj_cutoff)) )
 
@@ -42,25 +40,24 @@ DESeq_inference <- function(count_assay,
   res <- as.data.frame(  na.omit(res) )
   }
 
+
+  decision_table <- decision_deseq(res = res,
+                                   log2FC_cut = logFC_meth,
+                                   p_cut =  p_cutoff,
+                                   padj_cut = p_adj_cutoff,
+                                   min_mod =  min_meth_number)
+
+  if(is.na(decision_table$Cut_Val_expected)) stop("The number of informative bins are too limited to conduct meaningful peak calling.")
+
   if(!is.null(p_adj_cutoff)) {
-  stat_sig_indx <- res$padj < p_adj_cutoff
+  stat_sig_indx <- res$padj < decision_table$Cut_Val_expected
   } else {
-  stat_sig_indx <- res$pval < p_cutoff
+  stat_sig_indx <- res$pval < decision_table$Cut_Val_expected
   }
 
   sig_peak_meth <- as.numeric( rownames(res)[stat_sig_indx & res$log2FoldChange > logFC_meth] )
 
-
   sig_peak_control <- setdiff( as.numeric( rownames(res) ), sig_peak_meth )
-
-  if(!is.null( control_size )) {
-
-  if( length(sig_peak_control) < control_size ) {
-    warning("The available number of control peaks is less than defined number.",.Call = FALSE)
-  } else {
-    sig_peak_control <- sample(sig_peak_control,control_size)
-  }
-  }
 
   return(
     list(index_meth = indx_count[as.numeric( sig_peak_meth )],

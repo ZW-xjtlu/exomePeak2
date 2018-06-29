@@ -4,13 +4,13 @@
 \alias{GC_normalization}
 \title{Estimation of the GC content normalization factors.}
 \usage{
-GC_normalization(sep, bsgenome = NULL, feature = c("background", "all"),
+GC_normalization(sep, bsgenome = "hg19", feature = c("background", "all"),
   qtnorm = FALSE, fragment_length = 100, glm_offset = TRUE)
 }
 \arguments{
 \item{sep}{a \code{summarizedExomePeak} object.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence.}
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of this reference genome specified in a way that is accepted by the getBSgenome function defined in the BSgenome software package}
 
 \item{feature}{the features used in the GC effect estimation, can be "background" and "all".
 If "all" is choosed, the GC effect function will be estimated using both the methylated and the background region,

@@ -19,9 +19,12 @@ test_that( "Visualization", {
     paired_end = TRUE
   )
 
-  SummarizedExomePeaks <- merip_peak_calling(MeRIP_Seq_Alignment,txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
-  SEP_dm <- readRDS("SEP_dm.rds")
-  SEP_meth <- readRDS("SEP_meth.rds")
+  SEP_dm <- readRDS("SEP_dm2.rds")
+  SEP_sb <- readRDS("SEP_sb.rds")
+
+  plot_size_factors(SEP_dm)
+  plot_size_factors(SEP_sb)
+
   SEP_dm <- estimate_size_factors(SEP_dm)
   SEP_meth <- estimate_size_factors(SEP_meth)
   SEP_dm <- GC_normalization(SEP_dm, bsgenome = Hsapiens)
@@ -86,5 +89,34 @@ test_that( "Visualization", {
     save_pdf_prefix = "DM_mcqn"
   )
 
+  SEP_dm2 <- readRDS( "SEP_dm2.rds" )
+
+  SEP_dm2 <- estimate_size_factors(SEP_dm2)
+
+  plot_size_factors(SEP_dm2)
+
+  SEP_dm2 <- GC_normalization(SEP_dm2, bsgenome = Hsapiens)
+
+  SEP_dm2 <- glm_dm(SEP_dm2)
+
+  beta_GC_plot(
+  SEP_dm2,
+  bsgenome = Hsapiens,
+  save_pdf_prefix = "DM_2"
+  )
+
+  exon_length_plot(
+    SEP_dm2,
+    txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+    save_pdf_prefix = "DM_2"
+  )
+
+  guitar_plot(SEP_dm2,
+              save_pdf_prefix = "DM2",
+              guitar_coordinate = readRDS("/Users/zhenwei/Datasets/Gtcoords/Gtcoord_hg19.rds"))
+
+  abundance_GC_plot(SEP_dm2,
+                    bsgenome = Hsapiens,
+                    save_pdf_prefix = "DM2")
 } )
 
