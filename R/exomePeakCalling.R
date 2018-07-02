@@ -1,10 +1,10 @@
 #' @title Exome peak calling on MeRIP-seq datasets while considering the biological variabilities.
 #'
-#' @description \code{merip_peak_calling} call RNA methylation peaks on exome regions with statistical tests that account for the biological variabilities between samples.
+#' @description \code{exomePeakCalling} call RNA methylation peaks on exome regions with statistical tests that account for the biological variabilities between samples.
 #'
 #' @details The function conduct exome level peak calling based on the read alignment results and the transcript annotations.
 #'
-#' @param merip_alignment a \code{MeRIP_seq_alignment} object.
+#' @param merip_bams a \code{MeripBamFileList} object.
 #' @param genome a single character string describing the genome assembly in UCSC, by default it is "hg19". (not implemented yet)
 #' @param gff_dir the path of the GFF or GTF file directory for transcript annotation.
 #' @param txdb a txdb object, if provided, it will cover the annotation files defined above.
@@ -28,28 +28,36 @@
 #' @examples
 #'
 #'
-#' @seealso \code{\link{merip_peak_calling}}
+#' @seealso \code{\link{exomePeakCalling}}
 #' @importFrom GenomicAlignments summarizeOverlaps
 #' @importFrom Rsamtools asMates
 #' @import BiocParallel
 #' @import SummarizedExperiment
+#' @docType methods
+#'
+#' @name exomePeakCalling
+#'
+#' @rdname exomePeakCalling
+#'
 #' @export
-
-merip_peak_calling <- function(merip_alignment = NULL,
-                               genome = "hg19",
-                               gff_dir = NULL,
-                               txdb = NULL,
-                               window_size = 100,
-                               step_size = 10,
-                               count_cutoff = 10,
-                               p_cutoff = NULL,
-                               p_adj_cutoff = 0.05,
-                               logFC_cutoff = 0,
-                               drop_overlapped_genes = TRUE,
-                               parallel = FALSE,
-                               mod_annotation = NULL,
-                               background = NULL
-                               ){
+#'
+setMethod("exomePeakCalling",
+          "MeripBamFileList",
+             function(merip_bams = NULL,
+                      genome = "hg19",
+                      gff_dir = NULL,
+                      txdb = NULL,
+                      window_size = 100,
+                      step_size = 10,
+                      count_cutoff = 10,
+                      p_cutoff = NULL,
+                      p_adj_cutoff = 0.05,
+                      logFC_cutoff = 0,
+                      drop_overlapped_genes = TRUE,
+                      parallel = FALSE,
+                      mod_annotation = NULL,
+                      background = NULL
+                      ){
 
   stopifnot(window_size > 0)
 
@@ -71,9 +79,11 @@ merip_peak_calling <- function(merip_alignment = NULL,
   }
   }
 
-  paired <- any( asMates(merip_alignment$BamList) )
+  paired <- any( asMates(merip_bams) )
 
   if(is.null(mod_annotation)) {
+
+  message("Extract bins on exons.")
 
   exome_bins_gr <- exome_bins_from_txdb(txdb = txdb,
                                    window_size = window_size,
@@ -89,20 +99,24 @@ merip_peak_calling <- function(merip_alignment = NULL,
   return( ex_bins_grl[ order( as.numeric( names(ex_bins_grl) ) ) ] )
   }
 
+  message("Count reads on bins.")
+
   SE_Peak_counts <- summarizeOverlaps(
                     features = split_with_sorting(exome_bins_gr),
-                    reads = merip_alignment$BamList,
-                    param = merip_alignment$Parameter,
+                    reads = merip_bams,
+                    param = Parameter(merip_bams),
                     mode = "Union",
                     inter.feature = FALSE,
                     singleEnd = !paired,
-                    ignore.strand = !merip_alignment$StrandSpecific,
+                    ignore.strand = RandomPrimer(merip_bams),
                     fragments = paired
   )
 
   rm(exome_bins_gr) #release ~500MB RAM
 
-  colData(SE_Peak_counts) = DataFrame(metadata(merip_alignment$BamList))
+  colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
+
+  message("Peak calling with NB test.")
 
   merged_peaks_grl <- call_peaks_with_DESeq(SE_bins = SE_Peak_counts,
                                                 count_cutoff = count_cutoff,
@@ -140,7 +154,7 @@ merip_peak_calling <- function(merip_alignment = NULL,
 
   }
 
-  if(background) {
+  if(!is.null(background)) {
     merged_peaks_grl <- replace_bg(grl = merged_peaks_grl,
                                    bg = background,
                                    txdb = txdb,
@@ -151,26 +165,33 @@ merip_peak_calling <- function(merip_alignment = NULL,
   register(SerialParam())
   }
 
+  message("Count reads with merged bins.")
 
   SummarizedExomePeaks <- summarizeOverlaps(
     features = merged_peaks_grl,
-    reads = merip_alignment$BamList,
-    param = merip_alignment$Parameter,
+    reads = merip_bams,
+    param = Parameter(merip_bams),
     mode = "Union",
     inter.feature = FALSE,
     singleEnd = !paired,
-    ignore.strand = !merip_alignment$StrandSpecific,
+    ignore.strand = RandomPrimer(merip_bams),
     fragments = paired
   )
 
-  colData(SummarizedExomePeaks) = DataFrame(metadata(merip_alignment$BamList))
+  colData(SummarizedExomePeaks) = DataFrame(metadata(merip_bams))
 
-  SummarizedExomePeaks <- list(
-                               SE = SummarizedExomePeaks,
-                               FS_sizeFactor = NULL,
-                               DESeq2Result = NULL
-                               )
+  return(
 
-  return(SummarizedExomePeaks)
+    new("SummarizedExomePeak",
+        rowRanges = SummarizedExomePeaks@rowRanges,
+        colData = SummarizedExomePeaks@colData,
+        assays = SummarizedExomePeaks@assays,
+        NAMES = SummarizedExomePeaks@NAMES,
+        elementMetadata = SummarizedExomePeaks@elementMetadata,
+        metadata = SummarizedExomePeaks@metadata,
+        GCsizeFactors = matrix(nrow = 0, ncol = ncol(SummarizedExomePeaks)),
+        DESeq2Results = data.frame())
+
+  )
 }
-
+)

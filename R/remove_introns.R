@@ -4,7 +4,6 @@
 #' @return A \code{GRangesList} object with the same length of \code{gr_bins}, each list element corresponds to the original GRanges after the removal of introns.
 #'
 #' @import GenomicRanges
-#' @export
 
 remove_introns <- function(gr_bins, grl_exbg){
   #Calculate intronic regions

@@ -14,7 +14,6 @@
 #' The second portion is the restructed user provided annotation with gene id annotated.
 #'
 #' @import GenomicRanges
-#' @export
 
 annot_bg <- function(annot,
                      txdb,

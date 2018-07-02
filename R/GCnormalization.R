@@ -16,8 +16,6 @@
 #'@param fragment_length the expected fragment length of the sequencing library.
 #'The widths of the row features for quantifying GC content will be re-sized into the fragment length if it falls bellow it.
 #'
-#'@param glm_offset wheather return the generalized linear model normalization off-set; default TRUE.
-#'The standard offset is useful when visualizing the corrected feature abundency.
 #'
 #'@description This function estimates the feature specific size factors in order to correct the GC content artifacts,
 #'the GC content biases can contributed to the following sources of variabilities in MeRIP-seq data:
@@ -39,13 +37,22 @@
 #'
 #'@import SummarizedExperiment
 #'@importFrom BSgenome getBSgenome
+#'@docType methods
+#'
+#'@name GCnormalization
+#'
+#'@rdname GCnormalization
+#'
 #'@export
-GC_normalization <- function(sep,
-                             bsgenome = "hg19",
-                             feature = c("background","all"),
-                             qtnorm = FALSE,
-                             fragment_length = 100,
-                             glm_offset = TRUE) {
+
+setMethod("GCnormalization",
+          "SummarizedExomePeak",
+                        function(sep,
+                                 bsgenome = "hg19",
+                                 feature = c("background","all"),
+                                 qtnorm = FALSE,
+                                 fragment_length = 100
+                                 ) {
 
 stopifnot(!(is.null(bsgenome)))
 
@@ -54,8 +61,8 @@ if(is.character(bsgenome)) {
 }
 
 #check if the sep object is abscent of the collumn wised size factors.
-if(is.null(colData( sep$SE )$sizeFactor)){
-sep <- estimate_size_factors(sep)
+if(is.null(colData( sep )$sizeFactor)){
+sep <- estimateSeqDepth(sep)
 }
 
 #CQN normalization with everything pooled
@@ -63,41 +70,38 @@ feature <- match.arg(feature)
 
 #retrieve the vector of GC content from Genome.
 CQN_parameter <- GC_content_over_grl(bsgenome = bsgenome,
-                                  grl = rowRanges( sep$SE ),
+                                  grl = rowRanges( sep ),
                                   fragment_length = fragment_length)
 
 #Reserve any potential NA in the GC_content vector
-GC_size_factors <- matrix(NA,nrow = nrow(sep$SE),ncol = ncol(sep$SE))
-rownames(GC_size_factors) = rownames(sep$SE)
+GC_size_factors <- matrix(NA,nrow = nrow(sep),ncol = ncol(sep))
+rownames(GC_size_factors) = rownames(sep)
 GC_na_index <- is.na(CQN_parameter$GC_content)
 
 
 if(feature == "all"){
-  Subindex = which( rowMeans(assay(sep$SE)) > 50 )
+  Subindex = which( rowMeans(assay(sep)) > 50 )
 } else {
-  Subindex = which( rowMeans(assay(sep$SE)) > 50 & grepl("control",rownames(sep$SE)) )
+  Subindex = which( rowMeans(assay(sep)) > 50 & grepl("control",rownames(sep)) )
 }
 
-cqnObject <- suppressMessages( cqn(assay(sep$SE)[!GC_na_index,],
+cqnObject <- suppressMessages( cqn(assay(sep)[!GC_na_index,],
                                    lengths = CQN_parameter$Indx_length[!GC_na_index],
                                    lengthMethod = "smooth",
                                    x = CQN_parameter$GC_content[!GC_na_index],
                                    subindex = Subindex,
-                                   sizeFactors = sep$SE$sizeFactor,
+                                   sizeFactors = sep$sizeFactor,
                                    sqn = qtnorm,
                                    verbose = FALSE) )
 
-if(glm_offset) {
 cqnOffset <- cqnObject$glm.offset
 normFactors <- exp(cqnOffset)
 normFactors <- normFactors / exp(rowMeans(log(normFactors)))
-} else {
-normFactors <- cqnObject$offset
-}
 
 GC_size_factors[!GC_na_index,] <- normFactors
 
-sep$FS_sizeFactor <- GC_size_factors
+GCsizeFactors( sep )<- GC_size_factors
 
 return(sep)
-}
+
+})

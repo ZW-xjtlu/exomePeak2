@@ -4,7 +4,7 @@ test_that( "Peak Calling", {
   library(TxDb.Hsapiens.UCSC.hg19.knownGene)
   library(exomePeak2)
 
-  MeRIP_Seq_Alignment <- scan_merip_bams(
+  MeRIP_Seq_Alignment <- scanMeripBAM(
     bam_ip = c("./bam/SRR1182619.bam",
                "./bam/SRR1182621.bam",
                "./bam/SRR1182623.bam"),
@@ -18,8 +18,17 @@ test_that( "Peak Calling", {
     paired_end = TRUE
   )
 
-  SummarizedExomePeaks <- merip_peak_calling(MeRIP_Seq_Alignment,
-                                             txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
+  SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment,
+                                           txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
+
+  expect_is(SummarizedExomePeaks,"SummarizedExomePeak")
+  saveRDS(SummarizedExomePeaks,"SEP_meth.rds")
+
+  #Test the accessors
+  #SummarizedExomePeaks <- readRDS("SEP_meth.rds")
+  GCsizeFactors(SummarizedExomePeaks) <- matrix(1:10)
+  expect_equal(GCsizeFactors(SummarizedExomePeaks),matrix(1:10))
+
 
   MeRIP_Seq_Alignment_meth <- scan_merip_bams(
     bam_ip = c("./bam/SRR1182619.bam",

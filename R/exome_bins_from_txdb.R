@@ -11,7 +11,6 @@
 #'
 #' @import GenomicRanges
 #'
-#' @export
 exome_bins_from_txdb <- function(txdb,
                                  window_size = 100,
                                  step_size = 10,

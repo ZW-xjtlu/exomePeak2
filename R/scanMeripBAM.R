@@ -1,6 +1,6 @@
 #' @title Scan the BAM files of a MeRIP-seq experiment.
 #'
-#' @description \code{scan_merip_bam} is used to check and organize the BAM files in MeRIP-seq data before peak calling,
+#' @description \code{scanMeripBAM} is used to check and organize the BAM files in MeRIP-seq data before peak calling,
 #' the flag parameters for the filtering can be defined at this step.
 #'
 #' @details The function takes the input of MeRIP-seq BAM files directories.
@@ -14,7 +14,7 @@
 #' If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{BAM_ip} and \code{BAM_input} arguments.
 #'
 #' @param paired_end a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.
-#' @param strand_specific a logical value indicating whether the library used is strand specific, default to be FALSE.
+#' @param random_primer a logical value indicating whether the library used is strand specific, default to be FALSE.
 #' @param index_bam a logical value indicating whether to create BAM indexes automatically.
 #'
 #' The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.
@@ -28,7 +28,7 @@
 #' @return This function will return a list with 2 named elements: BAMList and Parameter.
 #'
 #' @examples
-#' MeRIP_Seq_Alignment <- scan_merip_bams(
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
 #'                             bam_ip = c("./bam/SRR1182619.bam",
 #'                                      "./bam/SRR1182621.bam",
 #'                                      "./bam/SRR1182623.bam"),
@@ -44,7 +44,7 @@
 #'
 #' ###It will provide identical result with the following arguments:
 #'
-#' MeRIP_Seq_Alignment2 <- scan_merip_bams(
+#' MeRIP_Seq_Alignment2 <- scanMeripBAM(
 #'                              bam_files = c("./bam/SRR1182619.bam",
 #'                                            "./bam/SRR1182621.bam",
 #'                                            "./bam/SRR1182623.bam",
@@ -63,15 +63,15 @@
 #'identical(MeRIP_Seq_Alignment, MeRIP_Seq_Alignment2)
 #'
 #' @seealso \code{\link{merip_peak_calling}}
-#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path indexBam
+#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path indexBam index<-
 #' @export
 
-scan_merip_bams <- function(bam_ip = NULL,
+scanMeripBAM <- function(bam_ip = NULL,
                      bam_input = NULL,
                      bam_treated_ip = NULL,
                      bam_treated_input = NULL,
                      paired_end = FALSE,
-                     strand_specific = FALSE,
+                     random_primer = TRUE,
                      index_bam = TRUE,
                      bam_files = NULL,
                      design_ip = NULL,
@@ -177,10 +177,16 @@ isNotPassingQualityControls = isNotPassingQualityControls,
 isDuplicate = isDuplicate,
 ...)
 
-merip_bam_list <- list(BamList = bam.list,
-     Parameter = ScanBamParam(what = "mapq", flag = bam_flag, mapqFilter = mapq),
-     StrandSpecific = strand_specific)
+return(
 
-return(merip_bam_list)
+new("MeripBamFileList",
+    listData = bam.list@listData,
+    elementType = bam.list@elementType,
+    elementMetadata = bam.list@elementMetadata,
+    metadata = bam.list@metadata,
+    Parameter =  ScanBamParam(what = "mapq", flag = bam_flag, mapqFilter = mapq),
+    RandomPrimer = random_primer)
+
+)
 }
 

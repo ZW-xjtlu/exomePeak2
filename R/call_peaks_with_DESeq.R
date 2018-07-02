@@ -20,7 +20,6 @@
 #'
 #' @import SummarizedExperiment
 #'
-#' @export
 call_peaks_with_DESeq <- function(SE_bins,
                                   count_cutoff = 10,
                                   p_cutoff = NULL,

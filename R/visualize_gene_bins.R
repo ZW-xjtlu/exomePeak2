@@ -4,8 +4,6 @@
 #' @param grl_exbg A \code{GRangesList} object that define the exon regions of each genes.
 #' @return A Gvis diagram.
 #'
-#' @export
-#'
 visualize_gene_bins <- function(gene_id,gr_bins,grl_gene){
 require(Gviz)
 gr_b <- gr_bins[gr_bins$gene_id == gene_id]

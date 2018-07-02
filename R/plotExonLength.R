@@ -18,14 +18,21 @@
 #' @import Guitar
 #' @import SummarizedExperiment
 #'
+#' @docType methods
+#'
+#' @name plotExonLength
+#'
+#' @rdname plotExonLength
+#'
 #' @export
+setMethod("plotExonLength",
+          "SummarizedExomePeak",
+                  function(sep,
+                           txdb = NULL,
+                           save_pdf_prefix = NULL,
+                           include_control_regions = TRUE) {
 
-exon_length_plot <- function(sep,
-                             txdb = NULL,
-                             save_pdf_prefix = NULL,
-                             include_control_regions = TRUE) {
-
-if(sum(grepl("meth",rownames(sep$SE))) < 10 ) {
+if(sum(grepl("meth",rownames(sep))) < 10 ) {
     stop("exon length plot cannot be performed for total peaks number < 10.")
 }
 
@@ -35,8 +42,8 @@ if(sum(grepl("meth",rownames(sep$SE))) < 10 ) {
 
   #if so, we need only plot the meth peaks and control peaks.
 
-  if(is.null(sep$DESeq2Result)){
-    row_grl <- rowRanges( sep$SE )
+  if(is.null(DESeq2Results(sep))){
+    row_grl <- rowRanges( sep )
 
     gr_list <- list(
       peaks = row_grl[grepl("meth",names(row_grl) )],
@@ -59,18 +66,18 @@ if(sum(grepl("meth",rownames(sep$SE))) < 10 ) {
 
   } else {
     #In case of the collumn design contains only methylation
-    if(!any(sep$SE$design_Treatment)){
+    if(!any(sep$design_Treatment)){
 
-      final_alpha  <- decision_deseq2(Inf_RES = sep$DESeq2Result,
+      final_alpha  <- decision_deseq2(Inf_RES = DESeq2Results(sep),
                                       Padj_cut = 0.05,
                                       log2FC_cut = 0,
                                       Min_mod = 1000)$Cut_Val_expected
 
       if(is.na(final_alpha)) {final_alpha = 1}
 
-      row_grl <- rowRanges( sep$SE )
+      row_grl <- rowRanges( sep )
 
-      gr_list <- list(meth_peaks = row_grl[grepl("meth",rownames(sep$SE))][sep$DESeq2Result$padj < final_alpha],
+      gr_list <- list(meth_peaks = row_grl[grepl("meth",rownames(sep))][DESeq2Results(sep)$padj < final_alpha],
                       control = row_grl[grepl("control",names(row_grl) )]
       )
 
@@ -92,7 +99,7 @@ if(sum(grepl("meth",rownames(sep$SE))) < 10 ) {
     } else {
       #Finally, the guitar plot will be generated for differential methylation results.
 
-      decision_table  <- decision_deseq2(Inf_RES = sep$DESeq2Result,
+      decision_table  <- decision_deseq2(Inf_RES = DESeq2Results(sep),
                                          P_cut = 0.05,
                                          log2FC_cut = 0,
                                          Min_mod = 1000,
@@ -102,16 +109,16 @@ if(sum(grepl("meth",rownames(sep$SE))) < 10 ) {
 
       if(is.na(decision_table$Cut_Val_expected)) decision_table$Cut_Val_expected = 1
 
-      row_grl <- rowRanges( sep$SE )
+      row_grl <- rowRanges( sep )
 
-      indx_hyper <- which( sep$DESeq2Result$pvalue < decision_table$Cut_Val_expected &
-                             sep$DESeq2Result$log2FoldChange > 0)
+      indx_hyper <- which( DESeq2Results(sep)$pvalue < decision_table$Cut_Val_expected &
+                             DESeq2Results(sep)$log2FoldChange > 0)
 
-      indx_hypo <- which( sep$DESeq2Result$pvalue < decision_table$Cut_Val_ctrl &
-                            sep$DESeq2Result$log2FoldChange < 0)
+      indx_hypo <- which( DESeq2Results(sep)$pvalue < decision_table$Cut_Val_ctrl &
+                            DESeq2Results(sep)$log2FoldChange < 0)
 
-      gr_list <- list(hyperMeth = row_grl[grepl("meth",rownames(sep$SE))][indx_hyper],
-                      hypoMeth = row_grl[grepl("meth",rownames(sep$SE))][indx_hypo]
+      gr_list <- list(hyperMeth = row_grl[grepl("meth",rownames(sep))][indx_hyper],
+                      hypoMeth = row_grl[grepl("meth",rownames(sep))][indx_hypo]
       )
 
       suppressWarnings(
@@ -127,4 +134,4 @@ if(sum(grepl("meth",rownames(sep$SE))) < 10 ) {
   }
 
 }
-}
+})

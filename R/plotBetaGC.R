@@ -15,54 +15,66 @@
 #'
 #'@import ggplot2
 #'@import BSgenome
+#'
+#'@docType methods
+#'
+#'@name plotBetaGC
+#'
+#'@rdname plotBetaGC
+#'
 #'@export
-
-beta_GC_plot <- function(sep,
+setMethod("plotBetaGC",
+          "SummarizedExomePeak",
+                function(sep,
                          bsgenome,
                          save_pdf_prefix = NULL,
                          fragment_length = 100) {
 
-if(is.null(colData( sep$SE )$sizeFactor)){
-    sep <- estimate_size_factors(sep)
+if(is.null(colData( sep )$sizeFactor)){
+    sep <- estimateSeqDepth(sep)
 }
 
-if(is.null(sep$DESeq2Result)){
-  if(any(sep$SE$design_Treatment)){
-    sep <- glm_dm(sep)
+if(is.null(DESeq2Results(sep))){
+  if(any(sep$design_Treatment)){
+    sep <- glmDM(sep)
   }else{
-    sep <- glm_meth(sep)
+    sep <- glmMeth(sep)
   }
 }
 
 GC_contents <- GC_content_over_grl(
-    grl = rowRanges(sep$SE)[grepl("meth",rownames(sep$SE))],
+    grl = rowRanges(sep)[grepl("meth",rownames(sep))],
     bsgenome = bsgenome,
     fragment_length = fragment_length
 )
 
-Decision <- rep("Insignificant",nrow(sep$DESeq2Result))
+Decision <- rep("Insignificant",nrow(DESeq2Results(sep)))
 
-if(!any(sep$SE$design_Treatment)) {
-Decision[sep$DESeq2Result$padj < 0.05] <- "padj < 0.05"
+if(!any(sep$design_Treatment)) {
+Decision[DESeq2Results(sep)$padj < 0.05] <- "padj < 0.05"
 } else {
-Decision[sep$DESeq2Result$pvalue < 0.05] <- "p < 0.05"
+Decision[DESeq2Results(sep)$pvalue < 0.05] <- "p < 0.05"
 }
 
-na_idx <- is.na( sep$DESeq2Result$log2FoldChange ) | is.na(GC_contents$GC_content)
+na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_contents$GC_content)
 
 plot_df = data.frame(
-  Log2FC = sep$DESeq2Result$log2FoldChange[!na_idx],
+  Log2FC = DESeq2Results(sep)$log2FoldChange[!na_idx],
   GC_idx = GC_contents$GC_content[!na_idx],
   Label = Decision[!na_idx]
 )
 
-if(!any(sep$SE$design_Treatment)) {
+if(!any(sep$design_Treatment)) {
   ylabel <- "log2 beta values"
   mtitle <- "GC content against beta estimates"
 } else {
   ylabel <- "log2 odds ratios"
   mtitle <- "GC content against log2 odds ratios"
 }
+
+plot_df$GC_idx <- as.numeric(plot_df$GC_idx)
+
+plot_df <- plot_df[plot_df$GC_idx < 0.88 & plot_df$GC_idx > 0.2,]
 
 
 p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
@@ -76,7 +88,7 @@ p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
                  y = ylabel,
                  title = mtitle,
                  subtitle = save_pdf_prefix) +
-            xlim(c(0.2,0.85))
+            xlim(c(0.2,0.9))
 
 #p2 <- ggplot(plot_df, aes(x = GC_idx, fill = Label)) + geom_density(linetype = 0, alpha = .4) + theme_classic() + xlim(c(0.25,0.75)) + scale_fill_brewer(palette = "Dark2") + labs(x = "GC contents", title = "GC content distribution", subtitle = save_pdf_prefix)
 
@@ -96,4 +108,4 @@ suppressMessages( ggsave(
 
 return(p1)
 
-}
+})

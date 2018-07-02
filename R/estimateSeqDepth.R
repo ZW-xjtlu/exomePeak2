@@ -1,11 +1,11 @@
 #' @title Estimation of the size factors used in peaks quantification.
 #'
-#' @description \code{estimate_size_factors} estimate the sample wised size factors on exomic peaks,
+#' @description \code{estimateSeqDepth} estimate the sample wised size factors on exomic peaks,
 #' by default, it will use the median of the ratios to the row geometric means defined in package DESeq2.
 #'
 #' @details The function takes the input of a summarizedExomePeak object, and it estimates the size factors based on the count information contained within it.
 #'
-#' @param design_ip an optional logical vector indicating the design of IP and input, with TRUE represents for IP.
+#' @param sep a summarizedExomePeak object.
 #' @param from Determine which group the size factor is estimated from, can be one of the "Control", "Methylation", and "Both".
 #'
 #' By default, the size factors are estimated from the merged control peaks, that correspond to the exonic regions other than the methylated peaks.
@@ -15,30 +15,40 @@
 #' @return This function will return a summarizedExomePeak object containing newly estimated sample wised size factors.
 #'
 #' @importFrom DESeq2 estimateSizeFactorsForMatrix
+#'
+#' @docType methods
+#'
+#' @name estimateSeqDepth
+#'
+#' @rdname estimateSeqDepth
+#'
 #' @export
-estimate_size_factors <- function(sep,
-                                  from = c("Control","Methylation","Both"),
-                                  ...){
+#'
+setMethod("estimateSeqDepth",
+          "SummarizedExomePeak",
+                       function(sep,
+                                from = c("Control","Methylation","Both"),
+                                ...){
   from <- match.arg(from)
 
   if(from == "Control") {
-    control_peaks_indx <- grepl("control", rownames(sep$SE))
+    control_peaks_indx <- grepl("control", rownames(sep))
     if(sum(control_peaks_indx) == 0) {
     warning("cannot find control peaks, the size factors are estimated using the methylation peaks.", call. = F,immediate. = T)
-    sep$SE$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep$SE ) )
+    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep ) )
     } else {
-    sep$SE$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep$SE[control_peaks_indx,] ))
+    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[control_peaks_indx,] ))
     }
 
   }
   if(from == "Methylation"){
-    meth_peaks_indx <- grepl("meth", rownames(sep$SE))
-    sep$SE$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep$SE[meth_peaks_indx,] ) )
+    meth_peaks_indx <- grepl("meth", rownames(sep))
+    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[meth_peaks_indx,] ) )
   }
 
   if(from == "Both"){
-    sep$SE$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep$SE ) )
+    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep ) )
   }
   return(sep)
- }
+})
 

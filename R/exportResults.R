@@ -1,5 +1,5 @@
 #' @title Export the methylation / differential methylation sites
-#' @param SEP A SummarizedExomePeak object.
+#' @param sep A SummarizedExomePeak object.
 #' @param format A character string of one of the c("txt", "BED", "RDS"), indicating the exported format.
 #'
 #' - The choice txt will save a tab separated values (tsv) file with the ranges and test information.
@@ -31,27 +31,37 @@
 #'
 #' @importFrom rtracklayer export
 #' @import GenomicRanges
+#'
+#'@docType methods
+#'
+#'@name exportResults
+#'
+#'@rdname exportResults
+#'
 #' @export
 #'
-save_results <- function(
-  SEP,
-  format = c("txt","BED","RDS"),
-  file_name = "exomepeaks_result",
-  cut_off_pvalue = NULL,
-  cut_off_padj = 0.05,
-  cut_off_log2FC = 0,
-  min_num_of_positive = 2000,
-  expected_direction = "both",
-  inhibit_filter = FALSE,
-  table_style = c("bed","granges")
+
+setMethod("exportResults",
+          "SummarizedExomePeak",
+          function(
+                  sep,
+                  format = c("txt","BED","RDS"),
+                  file_name = "exomepeaks_result",
+                  cut_off_pvalue = NULL,
+                  cut_off_padj = 0.05,
+                  cut_off_log2FC = 0,
+                  min_num_of_positive = 2000,
+                  expected_direction = "both",
+                  inhibit_filter = FALSE,
+                  table_style = c("bed","granges")
 ){
 
-#In case of users have not run inference on the SEP.
-if(is.null(SEP$DESeq2Result)) {
-if(any(SEP$SE$design_Treatment)){
-SEP <- glm_dm(SEP)
+#In case of users have not run inference on the sep.
+if(is.null(DESeq2Results(sep))) {
+if(any(sep$design_Treatment)){
+sep <- glm_dm(sep)
 }else{
-SEP <- glm_meth(SEP)
+sep <- glm_meth(sep)
 }
 }
 
@@ -63,10 +73,10 @@ table_style <- match.arg( table_style )
 
 #Decision for methylation
 
-if(!any(SEP$SE$design_Treatment)){
+if(!any(sep$design_Treatment)){
 
 decision_meth <- decision_deseq2(
-  Inf_RES = SEP$DESeq2Result,
+  Inf_RES = DESeq2Results(sep),
   log2FC_cut = cut_off_log2FC,
   P_cut = cut_off_pvalue,
   Padj_cut = cut_off_padj,
@@ -75,13 +85,13 @@ decision_meth <- decision_deseq2(
 
 #In case of no sites are reported, export all the p values that are not NA
 
-  index_keep <- which( ( SEP$DESeq2Result[[decision_meth$Cut_By_expected]] < decision_meth$Cut_Val_expected ) &
-                       ( SEP$DESeq2Result$log2FoldChange > cut_off_log2FC ) )
+  index_keep <- which( ( DESeq2Results(sep)[[decision_meth$Cut_By_expected]] < decision_meth$Cut_Val_expected ) &
+                       ( DESeq2Results(sep)$log2FoldChange > cut_off_log2FC ) )
 
 } else {
 
   decision_dm <- decision_deseq2(
-    Inf_RES = SEP$DESeq2Result,
+    Inf_RES = DESeq2Results(sep),
     log2FC_cut = cut_off_log2FC,
     P_cut = cut_off_pvalue,
     Padj_cut = cut_off_padj,
@@ -90,28 +100,28 @@ decision_meth <- decision_deseq2(
   )
 
   if( expected_direction == "both" ){
-    indx_es <- ( abs(SEP$DESeq2Result$log2FoldChange) > cut_off_log2FC )
+    indx_es <- ( abs(DESeq2Results(sep)$log2FoldChange) > cut_off_log2FC )
   } else {
     if( expected_direction == "hyper" ) {
-      indx_es <- ( SEP$DESeq2Result$log2FoldChange > cut_off_log2FC )
+      indx_es <- ( DESeq2Results(sep)$log2FoldChange > cut_off_log2FC )
     } else {
-      indx_es <- ( SEP$DESeq2Result$log2FoldChange < -1*cut_off_log2FC )
+      indx_es <- ( DESeq2Results(sep)$log2FoldChange < -1*cut_off_log2FC )
     }
   }
 
-  index_keep <- which( SEP$DESeq2Result[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected &
+  index_keep <- which( DESeq2Results(sep)[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected &
                        indx_es )
 
   if(length(index_keep) == 0){
     stop("No sites could be left using the current filter, please change into a less rigorous one.")
   }
 
-  if(inhibit_filter) index_keep <- rep(T, sum(grepl("meth_",rownames(SEP$SE))))
+  if(inhibit_filter) index_keep <- rep(T, sum(grepl("meth_",rownames(sep))))
 
 }
 #now, create the final result summary that contain GRangesList with metadata collumns.
-result_grl <- rowRanges( SEP$SE )[grepl("meth_",rownames(SEP$SE))][index_keep]
-result_stat <- SEP$DESeq2Result[index_keep,]
+result_grl <- rowRanges( sep )[grepl("meth_",rownames(sep))][index_keep]
+result_stat <- DESeq2Results(sep)[index_keep,]
 
 
 #Make some clarifications on the final output results:
@@ -123,7 +133,7 @@ result_gr$gene_id <- gsub( "\\.[0-9]*$", "", result_gr$gene_id )
 names(result_gr) <- gsub( "\\..*$", "", names(result_gr) )
 names(result_gr) <- gsub( "meth", "mod", names(result_gr) )
 
-if(!any(SEP$SE$design_Treatment)){
+if(!any(sep$design_Treatment)){
 
   colnames( result_stat )[colnames( result_stat ) == "log2FoldChange"] = "log2BetaValue"
   colnames( result_stat )[colnames( result_stat ) == "lfcSE"] = "lbvSE"
@@ -144,7 +154,7 @@ if(
   format == "RDS"
 ){
 
-result_se <- SEP$SE[grepl("meth_",rownames(SEP$SE))][index_keep]
+result_se <- sep[grepl("meth_",rownames(sep))][index_keep]
 rowRanges(result_se) <- result_grl
 
 id_num <- as.numeric(  gsub("^.*_","",rownames(result_se)) )
@@ -176,7 +186,12 @@ colnames(result_df)[colnames( result_df ) == "group_name"] = "mod_name"
 result_df <- cbind(result_df, as.data.frame( mcols(result_grl) )[rep(seq_along(result_grl),elementNROWS(result_grl)),] )
 
 } else {
-mcols(result_grl)$score <- -1*log2( mcols(result_grl)$padj )
+
+scores <- -1*log2( mcols(result_grl)$padj )
+
+scores[is.na(scores)] <- 0
+
+mcols(result_grl)$score <- scores
 
 export(object = result_grl,
          con = paste0(file_name,".bed"),
@@ -197,6 +212,8 @@ colnames(result_df) <- c("chr",
                          "blockSizes",
                          "blockStarts")
 
+mcols(result_grl) <- mcols(result_grl)[,!colnames(mcols(result_grl)) %in% "score" ]
+
 result_df <- cbind( result_df , as.data.frame( mcols(result_grl) ) )
 
 }
@@ -210,11 +227,16 @@ write.table(result_df,
 
 } else {
 
-mcols(result_grl)$score <- -1*log2( mcols(result_grl)$padj )
+scores <- -1*log2( mcols(result_grl)$padj )
+
+scores[is.na(scores)] <- 0
+
+mcols(result_grl)$score <- scores
+
 export(object = result_grl,
        con = paste0(file_name,".",tolower(format)),
        format = format)
 
 }
 }
-}
+})

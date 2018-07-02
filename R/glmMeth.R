@@ -6,35 +6,43 @@
 #' @description This function conduct a second round of RNA methylation level quantification using generalized linear model estimates of the
 #' neative binomial distribution. The RNA methyltion level is quantified as the log2 beta-value (log2 IP to input ratio).
 #'
-#' By default, the methylation level estimates will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in the package \package{apeglm}.
+#' By default, the methylation level estimates will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in the package \link{apeglm}.
 #'
 #' @import SummarizedExperiment
 #' @import DESeq2
+#' @docType methods
+#'
+#' @name glmMeth
+#'
+#' @rdname glmMeth
+#'
 #' @export
-glm_meth <- function(sep,
-                     shrinkage_method = c("apeglm","normal","ashr"),
-                     ...) {
+setMethod("glmMeth",
+          "SummarizedExomePeak",
+           function(sep,
+                    shrinkage_method = c("apeglm","normal","ashr"),
+                    ...) {
 
-  stopifnot((any(sep$SE$design_IP) & any(!sep$SE$design_IP)))
+  stopifnot((any(sep$design_IP) & any(!sep$design_IP)))
 
-  if(is.null(colData( sep$SE )$sizeFactor)){
+  if(is.null(colData( sep )$sizeFactor)){
     sep <- estimate_size_factors(sep)
   }
 
-  indx_meth <- grepl("meth", rownames( sep$SE ) )
+  indx_meth <- grepl("meth", rownames( sep ) )
 
-  SE_M <- sep$SE
+  SE_M <- sep
   SE_M$IPinput = "input"
   SE_M$IPinput[SE_M$design_IP] = "IP"
   SE_M$IPinput = factor(SE_M$IPinput)
 
-    if(!is.null(sep$FS_sizeFactor)) {
+    if(nrow(GCsizeFactors( sep )) == nrow(sep)) {
 
-      gc_na_indx <- rowSums( is.na(sep$FS_sizeFactor) ) > 0
+      gc_na_indx <- rowSums( is.na(GCsizeFactors(sep)) ) > 0
       #Need to deal with the missing values in GC content size factor.
       Cov = ~ IPinput
       dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_meth,], design = Cov) )
-      normalizationFactors(dds) <- sep$FS_sizeFactor[(!gc_na_indx) & indx_meth,]
+      normalizationFactors(dds) <- GCsizeFactors(sep)[(!gc_na_indx) & indx_meth,]
       dds$IPinput <- relevel(dds$IPinput, "input")
       dds <- suppressMessages( DESeq(dds) )
 
@@ -49,7 +57,7 @@ glm_meth <- function(sep,
 
    #Generation of the DESeq2 report.
 
-    if (!is.null(sep$FS_sizeFactor)) {
+    if (nrow(GCsizeFactors( sep )) == nrow(sep)) {
 
       DS_result <- lfcShrink(dds=dds, coef=2, type="apeglm")
 
@@ -69,7 +77,8 @@ glm_meth <- function(sep,
 
   rownames(quantification_rst) = rownames(SE_M)[indx_meth]
 
-  sep$DESeq2Result = quantification_rst
+  DESeq2Results( sep ) = quantification_rst
 
   return(sep)
-}
+
+})

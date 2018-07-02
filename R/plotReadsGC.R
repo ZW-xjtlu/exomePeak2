@@ -1,6 +1,6 @@
-#' @title Plot the relationship between GC content and feature abundance.
+#' @title Plot the relationship between GC content and reads abundance.
 #'
-#' @description  This function plot the local regression curves of the normalized feature abundance (reads count) against the local GC content levels.
+#' @description  This function plot the local regression curves of the normalized feature abundance against the local GC content levels.
 #'
 #' @details The read abundances of both the control and the modification site regions are plotted,
 #' the read counts are normalized using the following method:
@@ -23,44 +23,53 @@
 #'@import BSgenome
 #'@import SummarizedExperiment
 #'@importFrom reshape2 melt
+#'
+#'@docType methods
+#'
+#'@name plotReadsGC
+#'
+#'@rdname plotReadsGC
+#'
 #'@export
-abundance_GC_plot <- function(sep,
-                          bsgenome,
-                          fragment_length = 100,
-                          save_pdf_prefix = NULL,
-                          combine_replicates = FALSE) {
+setMethod("plotReadsGC",
+          "SummarizedExomePeak",
+               function(sep,
+                        bsgenome,
+                        fragment_length = 100,
+                        save_pdf_prefix = NULL,
+                        combine_replicates = FALSE) {
 
-if(is.null(colData( sep$SE )$sizeFactor)){
-    sep <- estimate_size_factors(sep)
+if(is.null(colData( sep )$sizeFactor)){
+    sep <- estimateSeqDepth(sep)
 }
 
 GC_contents <- GC_content_over_grl(
-                grl = rowRanges(sep$SE),
+                grl = rowRanges(sep),
                 bsgenome = bsgenome,
                 fragment_length = fragment_length
                )
 
-normalized_counts <- ( t( t(assay(sep$SE))/sep$SE$sizeFactor ) / GC_contents$Indx_length ) * 500
+normalized_counts <- ( t( t(assay(sep))/sep$sizeFactor ) / GC_contents$Indx_length ) * 500
 
-if(!is.null(sep$FS_sizeFactor)) {
+if(!is.null(GCsizeFactors( sep ))) {
 
-cqnormalized_counts <- assay(sep$SE)/sep$FS_sizeFactor
+cqnormalized_counts <- assay(sep)/GCsizeFactors( sep )
 
 }
 
 Plot_df <- melt(normalized_counts)
 
-Plot_df$GC_cont = rep( GC_contents$GC_content , ncol(sep$SE) )
+Plot_df$GC_cont = rep( GC_contents$GC_content , ncol(sep) )
 
-IP_input <- rep( "input", ncol(sep$SE) )
+IP_input <- rep( "input", ncol(sep) )
 
-IP_input[ sep$SE$design_IP ] <- "IP"
+IP_input[ sep$design_IP ] <- "IP"
 
-if(any(sep$SE$design_Treatment)) {
+if(any(sep$design_Treatment)) {
 
-Treatment <- rep( "control", ncol(sep$SE) )
+Treatment <- rep( "control", ncol(sep) )
 
-Treatment[ sep$SE$design_Treatment ] <- "treated"
+Treatment[ sep$design_Treatment ] <- "treated"
 
 samples <- paste0(Treatment, "_", IP_input)
 } else {
@@ -71,21 +80,21 @@ Rep_marks <- paste0("Rep", sequence((table(samples))[unique(samples)]))
 
 samples <- paste0(samples,"_", Rep_marks)
 
-Plot_df$samples = rep(samples, each = nrow(sep$SE))
+Plot_df$samples = rep(samples, each = nrow(sep))
 
-Plot_df$IP_input = rep(IP_input, each = nrow(sep$SE))
+Plot_df$IP_input = rep(IP_input, each = nrow(sep))
 
-if(any(sep$SE$design_Treatment)) {
-Plot_df$Treatment = rep(Treatment, each = nrow(sep$SE))
+if(any(sep$design_Treatment)) {
+Plot_df$Treatment = rep(Treatment, each = nrow(sep))
 }
 
-group <- rep("background",nrow(sep$SE))
+group <- rep("background",nrow(sep))
 
-group[grepl("meth",rownames( sep$SE ))] <- "methylated"
+group[grepl("meth",rownames( sep ))] <- "methylated"
 
-Plot_df$group <- rep(group,  ncol(sep$SE))
+Plot_df$group <- rep(group,  ncol(sep))
 
-if(!is.null(sep$FS_sizeFactor)){
+if(!is.null(GCsizeFactors( sep ))){
 Plot_df_cqn = melt(cqnormalized_counts)
 Plot_df_cqn = cbind(Plot_df_cqn,Plot_df[,4:ncol(Plot_df)])
 Plot_df$norm = "original"
@@ -135,21 +144,21 @@ p1 <- ggplot(Plot_df,
 
 }
 
-if (ncol(sep$SE) <= 11)  p1 = p1 + scale_color_brewer(palette = "Spectral")
+if (ncol(sep) <= 11)  p1 = p1 + scale_color_brewer(palette = "Spectral")
 
-if(!is.null(sep$FS_sizeFactor)) {
+if(!is.null(GCsizeFactors( sep ))) {
   p1 = p1 + facet_grid(group~norm,scales = "free_y")
 } else {
   p1 = p1 + facet_grid(~group,scales = "free_y")
 }
 
-figheight = 6.55 + .2 * round(ncol( sep$SE )/4)
+figheight = 6.55 + .2 * round(ncol( sep )/4)
 
-if(!is.null(sep$FS_sizeFactor)) figwidth = 8.8
+if(!is.null(GCsizeFactors( sep ))) figwidth = 8.8
 
 else figwidth = 7.5
 
-if(!is.null(sep$FS_sizeFactor) & !any(sep$SE$design_Treatment)) {
+if(!is.null(GCsizeFactors( sep )) & !any(sep$design_Treatment)) {
 p1 = p1 +
   theme(plot.margin = margin(1,2,1,2,"cm"),
           legend.position = "bottom",
@@ -179,4 +188,4 @@ suppressMessages( ggsave(paste0(save_pdf_prefix,"_ab_GC.pdf"), p1, width = figwi
 
 suppressMessages( return(p1) )
 
-}
+})

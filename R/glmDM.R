@@ -14,25 +14,33 @@
 #'
 #' The resulting RNA differential methyltion level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
 #'
-#' By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in the package \package{apeglm}.
+#' By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in \link{apeglm}.
 #'
 #' @import SummarizedExperiment
 #' @import DESeq2
-#' @export
+#' @docType methods
 #'
-glm_dm <- function(sep,
-                   shrinkage_method = c("apeglm","ashr"),
-                  ...) {
+#' @name glmDM
+#'
+#' @rdname glmDM
+#'
+#' @export
 
-  stopifnot((any(sep$SE$design_Treatment) & any(!sep$SE$design_Treatment)))
+setMethod("glmDM",
+          "SummarizedExomePeak",
+           function(sep,
+                    shrinkage_method = c("apeglm","ashr"),
+                    ...) {
 
-  if(is.null(colData( sep$SE )$sizeFactor)) {
+  stopifnot((any(sep$design_Treatment) & any(!sep$design_Treatment)))
+
+  if(is.null(colData( sep )$sizeFactor)) {
     sep <- estimate_size_factors(sep)
   }
 
-  indx_meth <- grepl("meth", rownames( sep$SE ) )
+  indx_meth <- grepl("meth", rownames( sep ) )
 
-  SE_M <- sep$SE
+  SE_M <- sep
   SE_M$IPinput = "input"
   SE_M$IPinput[SE_M$design_IP] = "IP"
   SE_M$IPinput = factor(SE_M$IPinput)
@@ -41,21 +49,21 @@ glm_dm <- function(sep,
   SE_M$Perturbation[SE_M$design_Treatment] = "Treatment"
   SE_M$Perturbation = factor(  SE_M$Perturbation )
 
-  if(!is.null(sep$FS_sizeFactor)) {
+  if(nrow(GCsizeFactors( sep )) == nrow(sep)) {
 
-    gc_na_indx <- rowSums( is.na(sep$FS_sizeFactor) ) > 0
+    gc_na_indx <- rowSums( is.na(GCsizeFactors(sep)) ) > 0
     #Need to deal with the missing values in GC content size factor.
     Cov = ~ IPinput
     dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_meth,], design = Cov) )
-    normalizationFactors(dds) <- sep$FS_sizeFactor[(!gc_na_indx) & indx_meth,]
+    normalizationFactors(dds) <- GCsizeFactors(sep)[(!gc_na_indx) & indx_meth,]
     dds$IPinput <- relevel(dds$IPinput, "input")
     dds <- suppressMessages( DESeq(dds) )
 
 
-    gc_na_indx <- rowSums( is.na(sep$FS_sizeFactor) ) > 0
+    gc_na_indx <- rowSums( is.na(GCsizeFactors(sep)) ) > 0
     Cov = ~ Perturbation + IPinput + Perturbation:IPinput
     dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_meth,], design = Cov) )
-    normalizationFactors(dds) <- sep$FS_sizeFactor[(!gc_na_indx) & indx_meth,]
+    normalizationFactors(dds) <- GCsizeFactors(sep)[(!gc_na_indx) & indx_meth,]
     dds$IPinput <- relevel(dds$IPinput, "input")
     dds$Perturbation <- relevel(dds$Perturbation, "Control")
     dds <- suppressMessages( DESeq(dds) )
@@ -73,7 +81,7 @@ glm_dm <- function(sep,
 
   #Generation of the DESeq2 report.
 
-  if (!is.null(sep$FS_sizeFactor)) {
+  if (nrow(GCsizeFactors( sep )) == nrow(sep)) {
 
     DS_result  <- lfcShrink(dds=dds, coef=4, type="apeglm")
 
@@ -87,13 +95,14 @@ glm_dm <- function(sep,
 
   } else {
 
-    quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type="apeglm") )
+   suppressWarnings( quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type="apeglm") ) )
 
   }
 
   rownames(quantification_rst) = rownames(SE_M)[indx_meth]
 
-  sep$DESeq2Result = quantification_rst
+  DESeq2Results( sep ) = quantification_rst
 
   return(sep)
-}
+
+})

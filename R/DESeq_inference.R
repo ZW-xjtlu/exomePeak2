@@ -14,7 +14,6 @@
 #' @return a list of the index for the significant methylated peaks (IP > input) and control peaks (peaks other than methylation peaks).
 #'
 #' @importFrom DESeq estimateSizeFactors estimateDispersions newCountDataSet nbinomTest
-#' @export
 DESeq_inference <- function(count_assay,
                             design_IP,
                             p_cutoff = NULL,

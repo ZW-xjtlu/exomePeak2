@@ -1,8 +1,18 @@
+#'@title plot the size factors using different strategies.
+#'@import ggplot2
+#'@import reshape2
+#'
+#'@docType methods
+#'
+#'@name plotSizeFactors
+#'
+#'@rdname plotSizeFactors
+#'
 #'@export
-plot_size_factors <- function(sep){
- require(ggplot2)
- require(reshape2)
- plot_df <- sapply(c("Control","Both","Methylation"),function(x)estimate_size_factors(sep,from = x)$SE$sizeFactor)
+setMethod("plotSizeFactors",
+          "SummarizedExomePeak",
+                function(sep){
+ plot_df <- sapply(c("Control","Both","Methylation"),function(x) estimateSeqDepth(sep,from = x)$sizeFactor)
  plot_df <- reshape2::melt(plot_df)
  colnames(plot_df) <- c("bam_files","Estimation_Methods","size_factors")
  plot_df$Estimation_Methods <- factor(plot_df$Estimation_Methods, levels = c("Control","Both","Methylation"))
@@ -32,7 +42,4 @@ plot_size_factors <- function(sep){
                                l = 1.5,
                                unit = "cm") )
 
-#model_df <- as.data.frame( sapply(c("Control","Both","Methylation"),function(x)estimate_size_factors(sep,from = x)$sizeFactors))
-#model_df$Sum_reads <- colSums(assay(sep$SE))
-#round( cor(model_df) , 3)
-}
+})

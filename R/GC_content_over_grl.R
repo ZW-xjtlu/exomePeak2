@@ -11,7 +11,6 @@
 #'
 #' @import BSgenome
 #' @import GenomicRanges
-#' @export
 GC_content_over_grl <- function(grl,
                                 bsgenome,
                                 fragment_length = 100){
