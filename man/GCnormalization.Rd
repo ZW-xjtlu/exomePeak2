@@ -6,16 +6,26 @@
 \alias{GCnormalization}
 \title{Estimation of the GC content normalization factors.}
 \usage{
-GCnormalization(sep, bsgenome = "hg19", feature = c("background", "all"),
-  qtnorm = FALSE, fragment_length = 100, glm_offset = TRUE)
+GCnormalization(sep, bsgenome = "hg19", txdb = "hg19",
+  fragment_length = 100, binding_length = 25, feature = c("background",
+  "all"), qtnorm = FALSE, effective_GC = FALSE,
+  drop_overlapped_genes = TRUE)
 
 \S4method{GCnormalization}{SummarizedExomePeak}(sep, bsgenome = "hg19",
-  feature = c("background", "all"), qtnorm = FALSE, fragment_length = 100)
+  txdb = "hg19", fragment_length = 100, binding_length = 25,
+  feature = c("background", "all"), qtnorm = FALSE, effective_GC = FALSE,
+  drop_overlapped_genes = TRUE)
 }
 \arguments{
 \item{sep}{a \code{summarizedExomePeak} object.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of this reference genome specified in a way that is accepted by the getBSgenome function defined in the BSgenome software package}
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
+
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.}
+
+\item{fragment_length}{the expected fragment length of the sequencing library; Default 100.}
+
+\item{binding_length}{the expected antibody binding length of IP; Default 25.}
 
 \item{feature}{the features used in the GC effect estimation, can be "background" and "all".
 If "all" is choosed, the GC effect function will be estimated using both the methylated and the background region,
@@ -27,8 +37,9 @@ Default "background".}
 Quantile normalization can correct systematic effect in RNA-seq count data.
 However, it may result in errors due to the biological difference between the distributions of IP and input.}
 
-\item{fragment_length}{the expected fragment length of the sequencing library.
-The widths of the row features for quantifying GC content will be re-sized into the fragment length if it falls bellow it.}
+\item{drop_overlapped_genes}{whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.}
+
+\item{effective_gc}{whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.}
 }
 \value{
 a \code{summarizedExomePeak} object containing the feature specific size factors.
@@ -48,6 +59,6 @@ The GC normalization can results in an improvement of accuracy for most publishe
 and it is particullarly recommended if you want to compare the data between different laboratory conditions.
 }
 \details{
-By default, the sequencing depth factor used is the column size factors obtained by \code{\link{estimate_size_factors}},
-if the column size factors are not provided, it will be estimated using the default method defined in \code{\link{estimate_size_factors}}.
+By default, the sequencing depth factor used is the column size factors obtained by \code{\link{estimateSeqDepth}},
+if the column size factors are not provided, it will be estimated using the default method defined in \code{\link{estimateSeqDepth}}.
 }

@@ -56,7 +56,7 @@ setMethod("RandomPrimer",
 setMethod("GCsizeFactors",
           "SummarizedExomePeak",
           function(x) {
-            return(x@GCsizeFactors)
+            return(assays(x)$GCsizeFactors)
           })
 
 #' @title Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
@@ -76,7 +76,7 @@ setMethod("GCsizeFactors",
 setMethod("GCsizeFactors<-",
           "SummarizedExomePeak",
           function(x,value) {
-            x@GCsizeFactors <- value
+            assays(x)$GCsizeFactors <- value
             return(x)
           })
 

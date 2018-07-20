@@ -5,11 +5,19 @@
 #'GC content and log2 fold change or log2 odds ratio returned by DESeq2.
 #'The significant changed methylation sites will be grouped and lebeled in different colours.
 #'
-#'@param sep a \code{summarizedExomePeak} object.
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence.
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
+#'
+#'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}
+#'
 #'@param save_pdf_prefix a character, if provided, a pdf file with the given name will be saved under the current directory.
-#'@param fragment_length the expected fragment length of the sequencing library.
-#' The widths of the row features for quantifying GC content will be re-sized into the fragment length if it falls bellow it.
+#'
+#'@param fragment_length the expected fragment length of the sequencing library; Default 100.
+#'
+#'@param binding_length the expected antibody binding length of IP; Default 25.
+#'
+#'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
+#'
+#'@param drop_overlapped_genes whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.
 #'
 #'@return a ggplot object.
 #'
@@ -26,27 +34,47 @@
 setMethod("plotBetaGC",
           "SummarizedExomePeak",
                 function(sep,
-                         bsgenome,
+                         bsgenome = NULL,
+                         txdb = NULL,
                          save_pdf_prefix = NULL,
-                         fragment_length = 100) {
+                         fragment_length = 100,
+                         binding_length = 25,
+                         effective_GC = FALSE,
+                         drop_overlapped_genes = TRUE) {
 
 if(is.null(colData( sep )$sizeFactor)){
     sep <- estimateSeqDepth(sep)
 }
 
-if(is.null(DESeq2Results(sep))){
-  if(any(sep$design_Treatment)){
+if(is.null(DESeq2Results(sep))) {
+  if(any(sep$design_Treatment)) {
     sep <- glmDM(sep)
-  }else{
+   } else {
     sep <- glmMeth(sep)
   }
 }
 
-GC_contents <- GC_content_over_grl(
-    grl = rowRanges(sep)[grepl("meth",rownames(sep))],
-    bsgenome = bsgenome,
-    fragment_length = fragment_length
+if(any(is.null(elementMetadata( sep )$GC_content),
+       is.null(elementMetadata( sep )$feature_length))) {
+
+stopifnot(!is.null(bsgenome))
+
+stopifnot(!is.null(txdb))
+
+bsgenome <- getBSgenome( bsgenome )
+
+elementMetadata( sep ) <- GC_content_over_grl(
+                          bsgenome = bsgenome,
+                          txdb = txdb,
+                          grl = rowRanges( sep ),
+                          fragment_length = fragment_length,
+                          binding_length = binding_length,
+                          drop_overlapped_genes = drop_overlapped_genes,
+                          effective_GC = effective_GC
 )
+
+}
+
 
 Decision <- rep("Insignificant",nrow(DESeq2Results(sep)))
 
@@ -56,11 +84,13 @@ Decision[DESeq2Results(sep)$padj < 0.05] <- "padj < 0.05"
 Decision[DESeq2Results(sep)$pvalue < 0.05] <- "p < 0.05"
 }
 
-na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_contents$GC_content)
+GC_content_meth <- elementMetadata(sep)$GC_content[grepl("meth_",rownames(sep))]
+
+na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_content_meth)
 
 plot_df = data.frame(
   Log2FC = DESeq2Results(sep)$log2FoldChange[!na_idx],
-  GC_idx = GC_contents$GC_content[!na_idx],
+  GC_idx = GC_content_meth[!na_idx],
   Label = Decision[!na_idx]
 )
 

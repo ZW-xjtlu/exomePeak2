@@ -18,9 +18,9 @@ setMethod("plotSizeFactors",
  plot_df$Estimation_Methods <- factor(plot_df$Estimation_Methods, levels = c("Control","Both","Methylation"))
  plot_df$bam_files <- as.factor( plot_df$bam_files )
  plot_df$IP_input <- "input"
- plot_df$IP_input[rep(sep$SE$design_IP ,3)] <- "IP"
+ plot_df$IP_input[rep(sep$design_IP ,3)] <- "IP"
  plot_df$Treatment <- "untreated"
- plot_df$Treatment[rep(sep$SE$design_Treatment ,3)] <- "treated"
+ plot_df$Treatment[rep(sep$design_Treatment ,3)] <- "treated"
  plot_df$samples <- paste0(plot_df$Treatment,"_",plot_df$IP_input)
 
  Rep_marks <- paste0("Rep", rep(sequence((table(plot_df$samples)/3)[unique(plot_df$samples)]),3))

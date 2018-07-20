@@ -6,30 +6,28 @@
 \alias{exomePeakCalling}
 \title{Exome peak calling on MeRIP-seq datasets while considering the biological variabilities.}
 \usage{
-exomePeakCalling(merip_bams = NULL, genome = "hg19", gff_dir = NULL,
-  txdb = NULL, window_size = 100, step_size = 10, count_cutoff = 10,
+exomePeakCalling(merip_bams = NULL, txdb = NULL, fragment_length = 100,
+  binding_length = 25, step_length = binding_length, count_cutoff = 10,
   p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0,
   drop_overlapped_genes = TRUE, parallel = FALSE, mod_annotation = NULL,
   background = NULL)
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
-  genome = "hg19", gff_dir = NULL, txdb = NULL, window_size = 100,
-  step_size = 10, count_cutoff = 10, p_cutoff = NULL,
+  txdb = "hg19", fragment_length = 100, binding_length = 25,
+  step_length = binding_length, count_cutoff = 10, p_cutoff = NULL,
   p_adj_cutoff = 0.05, logFC_cutoff = 0, drop_overlapped_genes = TRUE,
   parallel = FALSE, mod_annotation = NULL, background = NULL)
 }
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object.}
 
-\item{genome}{a single character string describing the genome assembly in UCSC, by default it is "hg19". (not implemented yet)}
+\item{txdb}{a txdb object, it could be a single character string that can be recognized by \code{\link{makeTxDbFromUCSC}}; Default "hg19".}
 
-\item{gff_dir}{the path of the GFF or GTF file directory for transcript annotation.}
+\item{fragment_length}{a positive integer of the expected fragment length in bp; default 100.}
 
-\item{txdb}{a txdb object, if provided, it will cover the annotation files defined above.}
+\item{binding_length}{a positive integer of the antibody binding length in IP samples; default 25.}
 
-\item{window_size}{a positive integer value of the window or bin width in bp.}
-
-\item{step_size}{a positive integer value of the step or shift width in bp.}
+\item{step_length}{a positive integer of the shift size of the sliding window; default is the binding length.}
 
 \item{count_cutoff}{a non negative integer value of the minimum total reads count per window used in peak calling, default to be 10.}
 
@@ -43,10 +41,10 @@ exomePeakCalling(merip_bams = NULL, genome = "hg19", gff_dir = NULL,
 
 \item{parallel}{a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.}
 
-\item{mod_annotation}{a \code{GRanges} or \code{GRangesList} object for user provided RNA modification annotation. If provided, the peak calling step will be skipped.
-Reads counting will be performed using the provided annotation, annotations with size less than \code{window_size} are resized to \code{window_size} fixed at the center.
+\item{mod_annotation}{a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
+Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 
-The background regions used in this senario will be the exon ranges other than the provided annotation.}
+The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
 
 \item{background}{a \code{GRanges} or \code{GRangesList} object for user provided background control regions on the genome.}
 }

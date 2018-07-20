@@ -4,7 +4,7 @@
 \alias{exome_bins_from_txdb}
 \title{extract exome bins for peak calling given a txdb object}
 \usage{
-exome_bins_from_txdb(txdb, window_size = 100, step_size = 10,
+exome_bins_from_txdb(txdb, window_size = 25, step_size = 25,
   drop_overlapped_genes = T)
 }
 \arguments{

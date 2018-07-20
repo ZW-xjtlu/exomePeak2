@@ -11,7 +11,7 @@ call_peaks_with_DESeq(SE_bins, count_cutoff = 10, p_cutoff = NULL,
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP & input and treated & control.}
 
-\item{count_cutoff}{an integer value indicating the cutoff of the sum of reads count in a window, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
+\item{count_cutoff}{an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
 
 \item{p_cutoff}{a numeric value of the p value cutoff used in DESeq inference.}
 

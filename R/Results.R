@@ -41,7 +41,14 @@ setMethod("Results",
             expected_direction = "both",
             inhibit_filter = TRUE,
             table_style = c("bed","granges")
-          ){
+          ) {
+
+table_style <- match.arg(table_style)
+
+if(table_style == "bed"){
+ if( file.access(".")!=0 ) stop("The current working directory is not accessible by R,
+                                please consider change the table_style into 'granges'.")
+}
 
 #In case of users have not run inference on the sep.
 if(is.null(DESeq2Results(sep))) {

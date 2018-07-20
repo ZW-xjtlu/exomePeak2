@@ -6,24 +6,31 @@
 \alias{plotReadsGC}
 \title{Plot the relationship between GC content and reads abundance.}
 \usage{
-plotReadsGC(sep, bsgenome, fragment_length = 100, save_pdf_prefix = NULL,
-  combine_replicates = FALSE)
+plotReadsGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
+  fragment_length = 100, binding_length = 25, effective_GC = FALSE,
+  drop_overlapped_genes = TRUE, pool_replicates = FALSE)
 
-\S4method{plotReadsGC}{SummarizedExomePeak}(sep, bsgenome,
-  fragment_length = 100, save_pdf_prefix = NULL,
-  combine_replicates = FALSE)
+\S4method{plotReadsGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
+  txdb = NULL, save_pdf_prefix = NULL, fragment_length = 100,
+  binding_length = 25, effective_GC = FALSE, drop_overlapped_genes = TRUE,
+  pool_replicates = FALSE)
 }
 \arguments{
-\item{sep}{a \code{summarizedExomePeak} object.}
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence.}
-
-\item{fragment_length}{the expected fragment length of the sequencing library.
-The widths of the row features for quantifying GC content will be re-sized into the fragment length if it falls bellow it.}
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.}
 
 \item{save_pdf_prefix}{a character, if provided, a pdf file with the given name will be saved under the current directory.}
 
-\item{combine_replicates}{a logical indicating whether to pool the replicates in the local regression fit; default FALSE.}
+\item{fragment_length}{the expected fragment length of the sequencing library; Default 100.}
+
+\item{binding_length}{the expected antibody binding length of IP; Default 25.}
+
+\item{drop_overlapped_genes}{whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.}
+
+\item{pool_replicates}{a logical indicating whether to pool the replicates in the local regression fit; default FALSE.}
+
+\item{effective_gc}{whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.}
 }
 \value{
 a ggplot object
@@ -38,5 +45,5 @@ the read counts are normalized using the following method:
  normalized feature abundance = ( ( read_count / size_factor) / region_length ) * 500
 
  By default, it will use the sequencing depth size factor defined in \code{summarizedExomePeak},
- if the size factor is not found, new size factors will be estimated using the default method in \code{estimate_size_factors}.
+ if the size factor is not found, new size factors will be estimated using the default method in \code{estimateSeqDepth}.
 }

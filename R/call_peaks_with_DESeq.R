@@ -9,14 +9,20 @@
 #'
 #'
 #' @param SE_bins a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP & input and treated & control.
-#' @param count_cutoff an integer value indicating the cutoff of the sum of reads count in a window, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
-#' @param p_cutoff a numeric value of the p value cutoff used in DESeq inference.
-#' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq inference; if provided, the value of \code{p_cutoff} will be ignored.
-#' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
-#' @param txdb the txdb object that is necessary for the calculation of the merge of the peaks.
-#' @param drop_overlapped_genes A logical indicating whether the overlapping genes were dropped.
-#' @return This function will return a list of \code{GRangesList} object storing peaks for both methylation and control results,
 #'
+#' @param count_cutoff an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
+#'
+#' @param p_cutoff a numeric value of the p value cutoff used in DESeq inference.
+#'
+#' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq inference; if provided, the value of \code{p_cutoff} will be ignored.
+#'
+#' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
+#'
+#' @param txdb the txdb object that is necessary for the calculation of the merge of the peaks.
+#'
+#' @param drop_overlapped_genes A logical indicating whether the overlapping genes were dropped.
+#'
+#' @return This function will return a list of \code{GRangesList} object storing peaks for both methylation and control results,
 #'
 #' @import SummarizedExperiment
 #'
@@ -29,29 +35,22 @@ call_peaks_with_DESeq <- function(SE_bins,
                                   drop_overlapped_genes = TRUE){
 
   design_IP <- rep("input",ncol(SE_bins))
+
   design_IP[colData(SE_bins)$design_IP] <- "IP"
 
-  result_indx = DESeq_inference( count_assay = assay(SE_bins),
-                                 design_IP = design_IP ,
-                                 p_cutoff = p_cutoff,
-                                 p_adj_cutoff = p_adj_cutoff,
-                                 count_cutoff = count_cutoff,
-                                 logFC_meth = logFC_cutoff)
+  index_meth = DESeq_inference( count_assay = assay(SE_bins),
+                               design_IP = design_IP ,
+                               p_cutoff = p_cutoff,
+                               p_adj_cutoff = p_adj_cutoff,
+                               count_cutoff = count_cutoff,
+                               logFC_meth = logFC_cutoff )
 
-  gr_meth <- reduce_peaks(peaks_grl = rowRanges(SE_bins)[result_indx$index_meth],
-                          txdb = txdb,
-                          drop_overlapped_genes = drop_overlapped_genes)
-
-  gr_control <- reduce_peaks(peaks_grl = rowRanges(SE_bins)[result_indx$index_control],
-                             txdb = txdb,
-                             drop_overlapped_genes = drop_overlapped_genes)
-
-  names(gr_meth) = paste0("meth_",names(gr_meth))
-  names(gr_control) = paste0("control_",names(gr_control))
-  gr_total <- c(gr_meth,gr_control)
+  gr_meth <- reduce_peaks( peaks_grl = rowRanges(SE_bins)[index_meth],
+                           txdb = txdb,
+                           drop_overlapped_genes = drop_overlapped_genes )
 
   return(
-    split(gr_total, names(gr_total))
-    )
+    split(gr_meth, names(gr_meth))
+ )
 
 }

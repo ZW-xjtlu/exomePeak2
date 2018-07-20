@@ -1,7 +1,13 @@
 #'@title Estimation of the GC content normalization factors.
 #'@param sep a \code{summarizedExomePeak} object.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of this reference genome specified in a way that is accepted by the getBSgenome function defined in the BSgenome software package
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
+#'
+#'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
+#'
+#'@param fragment_length the expected fragment length of the sequencing library; Default 100.
+#'
+#'@param binding_length the expected antibody binding length of IP; Default 25.
 #'
 #'@param feature the features used in the GC effect estimation, can be "background" and "all".
 #'If "all" is choosed, the GC effect function will be estimated using both the methylated and the background region,
@@ -13,9 +19,9 @@
 #'Quantile normalization can correct systematic effect in RNA-seq count data.
 #'However, it may result in errors due to the biological difference between the distributions of IP and input.
 #'
-#'@param fragment_length the expected fragment length of the sequencing library.
-#'The widths of the row features for quantifying GC content will be re-sized into the fragment length if it falls bellow it.
+#'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
 #'
+#'@param drop_overlapped_genes whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.
 #'
 #'@description This function estimates the feature specific size factors in order to correct the GC content artifacts,
 #'the GC content biases can contributed to the following sources of variabilities in MeRIP-seq data:
@@ -30,8 +36,8 @@
 #'The GC normalization can results in an improvement of accuracy for most published m6A-seq data,
 #'and it is particullarly recommended if you want to compare the data between different laboratory conditions.
 #'
-#'@details By default, the sequencing depth factor used is the column size factors obtained by \code{\link{estimate_size_factors}},
-#' if the column size factors are not provided, it will be estimated using the default method defined in \code{\link{estimate_size_factors}}.
+#'@details By default, the sequencing depth factor used is the column size factors obtained by \code{\link{estimateSeqDepth}},
+#' if the column size factors are not provided, it will be estimated using the default method defined in \code{\link{estimateSeqDepth}}.
 #'
 #'@return a \code{summarizedExomePeak} object containing the feature specific size factors.
 #'
@@ -49,16 +55,22 @@ setMethod("GCnormalization",
           "SummarizedExomePeak",
                         function(sep,
                                  bsgenome = "hg19",
+                                 txdb = "hg19",
+                                 fragment_length = 100,
+                                 binding_length = 25,
                                  feature = c("background","all"),
                                  qtnorm = FALSE,
-                                 fragment_length = 100
+                                 effective_GC = FALSE,
+                                 drop_overlapped_genes = TRUE
                                  ) {
 
-stopifnot(!(is.null(bsgenome)))
+stopifnot(!(is.null(bsgenome)|is.null(txdb)))
 
-if(is.character(bsgenome)) {
-  bsgenome <- getBSgenome(bsgenome)
+if(is(txdb,"TxDb")){ }else{
+  txdb <- makeTxDbFromUCSC(txdb)
 }
+
+bsgenome <- getBSgenome(bsgenome)
 
 #check if the sep object is abscent of the collumn wised size factors.
 if(is.null(colData( sep )$sizeFactor)){
@@ -68,40 +80,44 @@ sep <- estimateSeqDepth(sep)
 #CQN normalization with everything pooled
 feature <- match.arg(feature)
 
-#retrieve the vector of GC content from Genome.
-CQN_parameter <- GC_content_over_grl(bsgenome = bsgenome,
-                                  grl = rowRanges( sep ),
-                                  fragment_length = fragment_length)
+#retrieve the vector of the exon level GC content from Genome.
+
+elementMetadata( sep ) <- GC_content_over_grl(
+                                      bsgenome = bsgenome,
+                                      txdb = txdb,
+                                      grl = rowRanges( sep ),
+                                      fragment_length = fragment_length,
+                                      binding_length = binding_length,
+                                      drop_overlapped_genes = drop_overlapped_genes,
+                                      effective_GC = effective_GC
+                                 )
 
 #Reserve any potential NA in the GC_content vector
-GC_size_factors <- matrix(NA,nrow = nrow(sep),ncol = ncol(sep))
+GC_size_factors <- matrix(NA, nrow = nrow(sep), ncol = ncol(sep))
 rownames(GC_size_factors) = rownames(sep)
-GC_na_index <- is.na(CQN_parameter$GC_content)
+GC_na_index <- is.na(elementMetadata( sep )$GC_content)
 
 
 if(feature == "all"){
-  Subindex = which( rowMeans(assay(sep)) > 50 )
+  Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 )
 } else {
-  Subindex = which( rowMeans(assay(sep)) > 50 & grepl("control",rownames(sep)) )
+  Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 & grepl("control",rownames(sep))[!GC_na_index] )
 }
 
 cqnObject <- suppressMessages( cqn(assay(sep)[!GC_na_index,],
-                                   lengths = CQN_parameter$Indx_length[!GC_na_index],
+                                   lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                    lengthMethod = "smooth",
-                                   x = CQN_parameter$GC_content[!GC_na_index],
+                                   x = elementMetadata( sep )$GC_content[!GC_na_index],
                                    subindex = Subindex,
                                    sizeFactors = sep$sizeFactor,
                                    sqn = qtnorm,
                                    verbose = FALSE) )
 
-cqnOffset <- cqnObject$glm.offset
-normFactors <- exp(cqnOffset)
-normFactors <- normFactors / exp(rowMeans(log(normFactors)))
+GC_size_factors[!GC_na_index,] <- cqnObject$glm.offset
 
-GC_size_factors[!GC_na_index,] <- normFactors
-
-GCsizeFactors( sep )<- GC_size_factors
+assays(sep)$GCsizeFactors <- GC_size_factors
 
 return(sep)
 
 })
+

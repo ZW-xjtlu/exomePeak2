@@ -1,10 +1,10 @@
 #' @title Statistical Inference with DESeq on IP over input ratio.
 #'
-#' @param count_assay a \code{matrix} of read count. Rows of the matrix represent the peaks, and collumns represent the samples.
+#' @param count_assay a \code{matrix} of read count. Rows of the matrix represent the peaks, and the collumns represent the samples.
 #' @param design_IP a character vector with values of "IP" and "input", which will indicate the design of MeRIP-Seq experiment.
 #' @param p_cutoff a numeric value of the p value cutoff used in DESeq inference.
 #' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq inference; if provided, values in \code{p_cutoff} will be ignored.
-#' @param count_cutoff an integer value indicating the cutoff of the sum of reads count in a window, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
+#' @param count_cutoff an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
 #' @param logFC_meth a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for methylated peaks (IP > input).
 #' @param min_meth_number a non negative numeric value of the he minimum number of the reported methylated bins.
 #' If the bins are filtered less than this number by the p values or effect sizes,
@@ -24,7 +24,7 @@ DESeq_inference <- function(count_assay,
 
   stopifnot( !(is.null(p_cutoff) & is.null(p_adj_cutoff)) )
 
-  indx_count <- which( rowSums(count_assay) > count_cutoff )
+  indx_count <- which( rowMeans(count_assay) > count_cutoff )
 
   cds = newCountDataSet( countData = count_assay[indx_count,],
                          conditions = design_IP )
@@ -56,10 +56,7 @@ DESeq_inference <- function(count_assay,
 
   sig_peak_meth <- as.numeric( rownames(res)[stat_sig_indx & res$log2FoldChange > logFC_meth] )
 
-  sig_peak_control <- setdiff( as.numeric( rownames(res) ), sig_peak_meth )
-
   return(
-    list(index_meth = indx_count[as.numeric( sig_peak_meth )],
-         index_control = indx_count[as.numeric( sig_peak_control )])
-    )
+  index_meth = indx_count[as.numeric( sig_peak_meth )]
+  )
 }

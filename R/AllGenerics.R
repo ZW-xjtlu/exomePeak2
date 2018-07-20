@@ -9,11 +9,10 @@ setGeneric("RandomPrimer", function(x) standardGeneric("RandomPrimer"))
 #' @rdname exomePeakCalling
 #' @export
 setGeneric("exomePeakCalling",function(merip_bams = NULL,
-                                       genome = "hg19",
-                                       gff_dir = NULL,
                                        txdb = NULL,
-                                       window_size = 100,
-                                       step_size = 10,
+                                       fragment_length = 100,
+                                       binding_length = 25,
+                                       step_length = binding_length,
                                        count_cutoff = 10,
                                        p_cutoff = NULL,
                                        p_adj_cutoff = 0.05,
@@ -26,8 +25,8 @@ setGeneric("exomePeakCalling",function(merip_bams = NULL,
 #' @rdname estimateSeqDepth
 #' @export
 setGeneric("estimateSeqDepth", function(sep,
-                                           from = c("Control","Methylation","Both"),
-                                           ...) {standardGeneric("estimateSeqDepth")})
+                                        from = c("Control","Methylation","Both"),
+                                        ...) {standardGeneric("estimateSeqDepth")})
 
 #' @rdname plotSizeFactors
 #' @export
@@ -52,11 +51,14 @@ setGeneric("DESeq2Results<-", function(x,...,value) {standardGeneric("DESeq2Resu
 #' @rdname GCnormalization
 #' @export
 setGeneric("GCnormalization", function(sep,
-                              bsgenome = "hg19",
-                              feature = c("background","all"),
-                              qtnorm = FALSE,
-                              fragment_length = 100,
-                              glm_offset = TRUE) {standardGeneric("GCnormalization")})
+                                       bsgenome = "hg19",
+                                       txdb = "hg19",
+                                       fragment_length = 100,
+                                       binding_length = 25,
+                                       feature = c("background","all"),
+                                       qtnorm = FALSE,
+                                       effective_GC = FALSE,
+                                       drop_overlapped_genes = TRUE) {standardGeneric("GCnormalization")})
 
 
 #' @rdname glmMeth
@@ -90,17 +92,25 @@ setGeneric("plotExonLength", function(sep,
 #' @rdname plotReadsGC
 #' @export
 setGeneric("plotReadsGC", function(sep,
-                                   bsgenome,
-                                   fragment_length = 100,
+                                   bsgenome = NULL,
+                                   txdb = NULL,
                                    save_pdf_prefix = NULL,
-                                   combine_replicates = FALSE) {standardGeneric("plotReadsGC")})
+                                   fragment_length = 100,
+                                   binding_length = 25,
+                                   effective_GC = FALSE,
+                                   drop_overlapped_genes = TRUE,
+                                   pool_replicates = FALSE) {standardGeneric("plotReadsGC")})
 
 #' @rdname plotBetaGC
 #' @export
 setGeneric("plotBetaGC", function(sep,
-                                  bsgenome,
+                                  bsgenome = NULL,
+                                  txdb = NULL,
                                   save_pdf_prefix = NULL,
-                                  fragment_length = 100) {standardGeneric("plotBetaGC")})
+                                  fragment_length = 100,
+                                  binding_length = 25,
+                                  effective_GC = FALSE,
+                                  drop_overlapped_genes = TRUE) {standardGeneric("plotBetaGC")})
 
 #' @rdname exportResults
 #' @export

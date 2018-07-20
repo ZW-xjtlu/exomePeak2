@@ -20,6 +20,7 @@ reduce_peaks <- function(peaks_grl,txdb,drop_overlapped_genes) {
     drop_overlapped_genes = drop_overlapped_genes
   )
   reduced_peaks_on_genome <- mapFromTranscripts( reduce( mapToTranscripts( unlist(peaks_grl) , exBygene) ), exBygene )
+  names(reduced_peaks_on_genome) <- reduced_peaks_on_genome$xHits
   reduced_peaks_on_genome <- remove_introns( reduced_peaks_on_genome, exBygene )
   return(reduced_peaks_on_genome)
 }

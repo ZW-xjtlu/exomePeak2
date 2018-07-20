@@ -6,20 +6,28 @@
 \alias{plotBetaGC}
 \title{Plot the relationship between the glm estimate and GC content.}
 \usage{
-plotBetaGC(sep, bsgenome, save_pdf_prefix = NULL, fragment_length = 100)
+plotBetaGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
+  fragment_length = 100, binding_length = 25, effective_GC = FALSE,
+  drop_overlapped_genes = TRUE)
 
-\S4method{plotBetaGC}{SummarizedExomePeak}(sep, bsgenome,
-  save_pdf_prefix = NULL, fragment_length = 100)
+\S4method{plotBetaGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
+  txdb = NULL, save_pdf_prefix = NULL, fragment_length = 100,
+  binding_length = 25, effective_GC = FALSE, drop_overlapped_genes = TRUE)
 }
 \arguments{
-\item{sep}{a \code{summarizedExomePeak} object.}
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence.}
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}}
 
 \item{save_pdf_prefix}{a character, if provided, a pdf file with the given name will be saved under the current directory.}
 
-\item{fragment_length}{the expected fragment length of the sequencing library.
-The widths of the row features for quantifying GC content will be re-sized into the fragment length if it falls bellow it.}
+\item{fragment_length}{the expected fragment length of the sequencing library; Default 100.}
+
+\item{binding_length}{the expected antibody binding length of IP; Default 25.}
+
+\item{drop_overlapped_genes}{whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.}
+
+\item{effective_gc}{whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.}
 }
 \value{
 a ggplot object.

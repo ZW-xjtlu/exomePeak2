@@ -23,8 +23,7 @@ setClass(
 
 setClass(
   Class = "SummarizedExomePeak",
-  slots = list(GCsizeFactors = "matrix",
-               DESeq2Results = "data.frame"),
+  slots = list(DESeq2Results = "data.frame"),
   contains = "RangedSummarizedExperiment"
 )
 

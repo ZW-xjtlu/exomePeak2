@@ -4,22 +4,32 @@
 \alias{GC_content_over_grl}
 \title{Retrieve GC content level from genome over regions defined by a GRanges or GRangesList object.}
 \usage{
-GC_content_over_grl(grl, bsgenome, fragment_length = 100)
+GC_content_over_grl(bsgenome, txdb, grl, fragment_length = 100,
+  binding_length = 25, drop_overlapped_genes = TRUE, effective_GC = FALSE)
 }
 \arguments{
-\item{grl}{a GRanges or GRangesList object.}
+\item{bsgenome}{A BSgenome object.}
 
-\item{bsgenome}{a BSgenome object.}
+\item{txdb}{A TxDb object.}
 
-\item{fragment_length}{an integer of the fragment length.}
+\item{grl}{A GRangesList object.}
+
+\item{fragment_length}{A positive integer of the expected fragment length in the RNA-Seq library; Default 100.}
+
+\item{binding_length}{A positive integer of the expected antibody binding length of IP; Default 25.}
+
+\item{drop_overlapped_genes}{If TRUE, the regions of the overlapped genes on the transcript annotation will be masked; Default TRUE.}
+
+\item{effective_GC}{If TRUE, the GC content calculation will be weighted by the fragment mapping probabilities,
+currently it is only supported for the single based modification annotation; Default FALSE.}
 }
 \value{
-a list contains 2 elements:
+a DataFrame contains 2 columns:
 
-1. GC_content: the GC content of each GRanges / GRangesList element
+1. GC_content: the (effective) GC content of each GRanges / GRangesList element
 2. Indx_length: the calculated total feature length used to quantify reads.
 }
 \description{
-if the GRanges contain regions less than fragment_length, it will be re-sized to fragment_length by fixing at center.
-This is currently not supported for user provided GRangesList annotations.
+The GC content is calculated only on exon sequences, for regions that failed to mapped to exons in txdb, the function would return NA instead.
+The ranges in grl will be flanked by the size fragment_length - binding_length before GC content calculation.
 }

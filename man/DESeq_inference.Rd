@@ -9,7 +9,7 @@ DESeq_inference(count_assay, design_IP, p_cutoff = NULL,
   min_meth_number = floor(nrow(count_assay) * 0.002))
 }
 \arguments{
-\item{count_assay}{a \code{matrix} of read count. Rows of the matrix represent the peaks, and collumns represent the samples.}
+\item{count_assay}{a \code{matrix} of read count. Rows of the matrix represent the peaks, and the collumns represent the samples.}
 
 \item{design_IP}{a character vector with values of "IP" and "input", which will indicate the design of MeRIP-Seq experiment.}
 
@@ -17,7 +17,7 @@ DESeq_inference(count_assay, design_IP, p_cutoff = NULL,
 
 \item{p_adj_cutoff}{a numeric value of the adjusted p value cutoff used in DESeq inference; if provided, values in \code{p_cutoff} will be ignored.}
 
-\item{count_cutoff}{an integer value indicating the cutoff of the sum of reads count in a window, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
+\item{count_cutoff}{an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
 
 \item{logFC_meth}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for methylated peaks (IP > input).}
 

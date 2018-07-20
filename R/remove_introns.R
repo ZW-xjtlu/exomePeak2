@@ -7,11 +7,11 @@
 
 remove_introns <- function(gr_bins, grl_exbg){
   #Calculate intronic regions
-  Introns_iranges <-  gaps(ranges(grl_exbg))
+  Introns_iranges <- gaps(ranges(grl_exbg))
   unlist_ebg <- unlist(grl_exbg)
 
-  seq_lev <- tapply(as.vector( seqnames(unlist_ebg) ),names(unlist_ebg), function(x)x[1] )
-  strand_lev <- tapply(as.vector( strand(unlist_ebg) ),names(unlist_ebg), function(x)x[1] )
+  seq_lev <- tapply(as.vector( seqnames(unlist_ebg) ), names(unlist_ebg), function(x) x[1] )
+  strand_lev <- tapply(as.vector( strand(unlist_ebg) ), names(unlist_ebg), function(x) x[1] )
 
   #Find the mapping between introns and bins, for only those bins that "contain" introns.
   introns_granges <- GRanges(
@@ -72,6 +72,8 @@ remove_introns <- function(gr_bins, grl_exbg){
   bins_intron_removed <- bins_intron_removed[order(as.numeric(names(bins_intron_removed)))]
 
   bins_intron_removed$gene_id <- names(grl_exbg)[gr_bins$transcriptsHits[as.integer( names(bins_intron_removed) )]]
+
+  names(bins_intron_removed) <- names(gr_bins)[as.integer( names(bins_intron_removed) )]
 
   return(bins_intron_removed)
 }
