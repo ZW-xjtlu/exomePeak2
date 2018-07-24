@@ -6,7 +6,7 @@ Author: Zhen Wei
 Maintainer: Zhen Wei <zhen.wei10@icloud.com>
 Description: This package can conduct peak calling and quantification for MeRIP-seq data sets while considering the biological variabilities and the GC-content normalization. 
 License: GPL (>= 2)
-Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq,DESeq2,ggplot2,Guitar
+Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,Guitar
 Depends: SummarizedExperiment,cqn
 Encoding: UTF-8
 LazyData: true
