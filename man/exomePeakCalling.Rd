@@ -14,7 +14,7 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, fragment_length = 100,
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
   txdb = "hg19", fragment_length = 100, binding_length = 25,
-  step_length = binding_length, count_cutoff = 10, p_cutoff = NULL,
+  step_length = binding_length, count_cutoff = 5, p_cutoff = NULL,
   p_adj_cutoff = 0.05, logFC_cutoff = 0, drop_overlapped_genes = TRUE,
   parallel = FALSE, mod_annotation = NULL, background = NULL)
 }
@@ -29,11 +29,11 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, fragment_length = 100,
 
 \item{step_length}{a positive integer of the shift size of the sliding window; default is the binding length.}
 
-\item{count_cutoff}{a non negative integer value of the minimum total reads count per window used in peak calling, default to be 10.}
+\item{count_cutoff}{a non negative integer value of the average reads count per window used in peak calling, default to be 5.}
 
-\item{p_cutoff}{a value of the p value cut-off used in peak calling, default to be 0.05.}
+\item{p_cutoff}{a value of the p value cut-off used in peak calling.}
 
-\item{p_adj_cutoff}{a value of the adjusted p value cutoff used in DESeq inference; if provided, the value of \code{p_cutoff} will be ignored.}
+\item{p_adj_cutoff}{a value of the adjusted p value cutoff used in DESeq inference; default 0.05.}
 
 \item{logFC_cutoff}{a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.}
 

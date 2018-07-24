@@ -9,9 +9,9 @@
 #' @param fragment_length a positive integer of the expected fragment length in bp; default 100.
 #' @param binding_length a positive integer of the antibody binding length in IP samples; default 25.
 #' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
-#' @param count_cutoff a non negative integer value of the minimum total reads count per window used in peak calling, default to be 10.
-#' @param p_cutoff a value of the p value cut-off used in peak calling, default to be 0.05.
-#' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; if provided, the value of \code{p_cutoff} will be ignored.
+#' @param count_cutoff a non negative integer value of the average reads count per window used in peak calling, default to be 5.
+#' @param p_cutoff a value of the p value cut-off used in peak calling.
+#' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not, default to be TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
@@ -48,7 +48,7 @@ setMethod("exomePeakCalling",
                       fragment_length = 100,
                       binding_length = 25,
                       step_length = binding_length,
-                      count_cutoff = 10,
+                      count_cutoff = 5,
                       p_cutoff = NULL,
                       p_adj_cutoff = 0.05,
                       logFC_cutoff = 0,
@@ -120,16 +120,16 @@ setMethod("exomePeakCalling",
   colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
 
   #Peak calling with user defined statistical methods
-  message("Peak calling with DESeq test.")
+  message("Peak calling with DESeq2 negative binomial Wald test.")
 
   #Directly return the merged summarized experiment
-  gr_meth <- call_peaks_with_DESeq(SE_bins = SE_Peak_counts,
-                                   count_cutoff = count_cutoff,
-                                   p_cutoff = p_cutoff,
-                                   p_adj_cutoff = p_adj_cutoff,
-                                   logFC_cutoff = logFC_cutoff,
-                                   txdb = txdb,
-                                   drop_overlapped_genes = drop_overlapped_genes)
+  gr_meth <- call_peaks_with_DESeq2( SE_bins = SE_Peak_counts,
+                                     count_cutoff = count_cutoff,
+                                     p_cutoff = p_cutoff,
+                                     p_adj_cutoff = p_adj_cutoff,
+                                     logFC_cutoff = logFC_cutoff,
+                                     txdb = txdb,
+                                     drop_overlapped_genes = drop_overlapped_genes )
 
   rm(SE_Peak_counts)
 
@@ -153,7 +153,7 @@ setMethod("exomePeakCalling",
 
   annotation_row_features[grepl("meth_", names( annotation_row_features ))] <- gr_meth[ gsub("meth_", "", grep("meth_", names( count_row_features ) , value = TRUE) ) ]
 
-  rm(gr_meth, gr_meth_flanked, grl_control)
+  rm(gr_meth, gr_meth_flanked)
 
   message("Count reads on the merged peaks and the control regions.")
 

@@ -79,7 +79,7 @@ elementMetadata( sep ) <- GC_content_over_grl(
 
 normalized_counts <- ( t( t(assay(sep))/sep$sizeFactor ) / elementMetadata( sep )$feature_length )
 
-if(nrow(GCsizeFactors( sep )) != 0) {
+if(!is.null(GCsizeFactors( sep ))) {
 
 cqnormalized_counts <- assay(sep)/exp( GCsizeFactors( sep ) )
 
@@ -129,7 +129,7 @@ group[grepl("meth",rownames( sep ))] <- "methylated"
 
 Plot_df$group <- rep(group,  ncol(sep))
 
-if(nrow(GCsizeFactors( sep )) != 0){
+if(!is.null(GCsizeFactors( sep ))){
 Plot_df_cqn = melt(cqnormalized_counts)
 Plot_df_cqn = cbind(Plot_df_cqn,Plot_df[,4:ncol(Plot_df)])
 Plot_df$norm = "original"
@@ -181,7 +181,7 @@ p1 <- ggplot(Plot_df,
 
 if (ncol(sep) <= 11)  p1 = p1 + scale_color_brewer(palette = "Spectral")
 
-if(nrow(GCsizeFactors( sep )) != 0) {
+if(!is.null(GCsizeFactors( sep ))) {
   p1 = p1 + facet_grid(norm~group,scales = "free_y")
 } else {
   p1 = p1 + facet_grid(~group,scales = "free_y")
@@ -189,11 +189,11 @@ if(nrow(GCsizeFactors( sep )) != 0) {
 
 figheight = 6.55 + .2 * round(ncol( sep )/4)
 
-if(nrow(GCsizeFactors( sep )) != 0) figwidth = 8.8
+if(!is.null(GCsizeFactors( sep ))) figwidth = 8.8
 
 else figwidth = 7.5
 
-if(nrow(GCsizeFactors( sep )) != 0 & !any(sep$design_Treatment)) {
+if(!is.null(GCsizeFactors( sep )) & !any(sep$design_Treatment)) {
 p1 = p1 +
   theme(plot.margin = margin(1,2,1,2,"cm"),
           legend.position = "bottom",
