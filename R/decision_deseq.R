@@ -35,7 +35,6 @@ decision_deseq <- function(res,
   EXP_idx =  eval(parse(text = paste0( "res$log2FoldChange ",result_df$Expected_dir) ))
 
   #First let's do regular cut-off
-
   if( !is.null( padj_cut ) ) {
     res$padj[is.na(res$padj)] = 1
     result_df$Cut_By_ctrl = "padj"
