@@ -63,7 +63,7 @@
 #'identical(MeRIP_Seq_Alignment, MeRIP_Seq_Alignment2)
 #'
 #' @seealso \code{\link{merip_peak_calling}}
-#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path indexBam index<-
+#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path indexBam sortBam index<-
 #' @export
 
 scanMeripBAM <- function(bam_ip = NULL,
@@ -101,25 +101,27 @@ bam.list = BamFileList(
 
 bai_temp = paste0(bam_files,".bai")
 
-exist_indx <- file.exists( bai_temp )
+sorted_bai_temp = gsub(".bam$","_sorted.bam.bai",bam_files)
 
-if(any(!exist_indx)){
+exist_indx <- all( file.exists( bai_temp ) ) | all( file.exists( sorted_bai_temp ) )
+
+if(!exist_indx){
 
   if(!index_bam) {
     warning(paste0("cannot find the bam index files under: ",
-                   paste0( index(bam.list)[!exist_indx] ,collapse = ", "),
+                   paste0( index(bam.list)[!exist_indx], collapse = ", "),
                    ", The bam files are treated as not indexed."),
-            call. = F,immediate. = T)
+                   call. = F, immediate. = T )
   } else {
      message("The BAM files are not indexed, sort and indexing BAM files using RsamTools...")
 
-     sorted_bam_names <- gsub(".bam$" ,"_sorted" ,bam_files )
+     sorted_bam_names <- gsub( ".bam$", "_sorted", bam_files )
 
      for(i in seq_along(sorted_bam_names)){
       suppressWarnings( sortBam(bam_files[i], destination = sorted_bam_names[i]) )
      }
 
-     indexBam(paste0( sorted_bam_names , ".bam" ))
+     indexBam(paste0( sorted_bam_names, ".bam" ))
 
      bam.list = BamFileList(
        file = paste0( sorted_bam_names , ".bam" ),
@@ -134,6 +136,7 @@ if(any(!exist_indx)){
 index(bam.list) = bai_temp
 }
 
+rm(bai_temp, sorted_bai_temp)
 
 
 #Check the existence of the bam files
