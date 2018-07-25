@@ -20,7 +20,7 @@ DESeq2_inference <- function(SE_bins,
                              p_adj_cutoff = 0.05,
                              count_cutoff = 5,
                              logFC_meth = 0,
-                             min_meth_number = floor( nrow(SE_bins) * 0.002 )) {
+                             min_meth_number = floor( nrow(SE_bins) * 0.01 )) {
 
   stopifnot( !(is.null(p_cutoff) & is.null(p_adj_cutoff)) )
 
@@ -52,11 +52,11 @@ DESeq2_inference <- function(SE_bins,
 
   if(!is.null(p_adj_cutoff)) {
 
-  stat_sig_indx <- res$padj < decision_table$Cut_Val_expected
+  stat_sig_indx <- res[[decision_table$Cut_By_expected]] < decision_table$Cut_Val_expected
 
   } else {
 
-  stat_sig_indx <- res$pval < decision_table$Cut_Val_expected
+  stat_sig_indx <- res[[decision_table$Cut_By_expected]] < decision_table$Cut_Val_expected
 
   }
 

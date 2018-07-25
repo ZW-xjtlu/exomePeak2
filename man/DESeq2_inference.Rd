@@ -6,7 +6,7 @@
 \usage{
 DESeq2_inference(SE_bins, p_cutoff = NULL, p_adj_cutoff = 0.05,
   count_cutoff = 5, logFC_meth = 0, min_meth_number = floor(nrow(SE_bins)
-  * 0.002))
+  * 0.01))
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,

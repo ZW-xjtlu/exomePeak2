@@ -43,4 +43,16 @@ test_that( "Peak Calling", {
   SummarizedExomePeaks_meth <- merip_peak_calling(MeRIP_Seq_Alignment_meth,txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
 
   expect_that(SummarizedExomePeaks, is_a("list") ) #Later when we use OOP, we should change the list into our own S4 object.
+
+
+  MeRIP_Seq_Alignment_no_rep <- scanMeripBAM(
+    bam_ip = c("./bam/SRR1182619.bam"),
+    bam_input = c("./bam/SRR1182620.bam"),
+    paired_end = TRUE
+  )
+
+  SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment_no_rep,
+                                           txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
+
+
 } )
