@@ -101,9 +101,7 @@ bam.list = BamFileList(
 
 bai_temp = paste0(bam_files,".bai")
 
-sorted_bai_temp = gsub(".bam$","_sorted.bam.bai",bam_files)
-
-exist_indx <- all( file.exists( bai_temp ) ) | all( file.exists( sorted_bai_temp ) )
+exist_indx <- all( file.exists( bai_temp ) )
 
 if(!exist_indx){
 
@@ -113,7 +111,7 @@ if(!exist_indx){
                    ", The bam files are treated as not indexed."),
                    call. = F, immediate. = T )
   } else {
-     message("The BAM files are not indexed, sort and indexing BAM files using RsamTools...")
+     message("The BAM files are not indexed, sorting and indexing BAM files using Rsamtools...")
 
      sorted_bam_names <- gsub( ".bam$", "_sorted", bam_files )
 
@@ -124,19 +122,21 @@ if(!exist_indx){
      indexBam(paste0( sorted_bam_names, ".bam" ))
 
      bam.list = BamFileList(
-       file = paste0( sorted_bam_names , ".bam" ),
+       file = paste0( sorted_bam_names, ".bam" ),
        asMates=paired_end
      )
 
-    index(bam.list) = paste0(sorted_bam_names,".bam.bai")
+    index(bam.list) = paste0( sorted_bam_names, ".bam.bai" )
 
   }
 
 } else {
+
 index(bam.list) = bai_temp
+
 }
 
-rm(bai_temp, sorted_bai_temp)
+rm(bai_temp)
 
 
 #Check the existence of the bam files
