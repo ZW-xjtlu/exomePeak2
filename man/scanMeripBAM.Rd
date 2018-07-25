@@ -26,7 +26,7 @@ If the dataset does not contain the extra design of treatment (such as the pertu
 
 \item{random_primer}{a logical value indicating whether the library used is strand specific, default to be FALSE.}
 
-\item{index_bam}{a logical value indicating whether to create BAM indexes automatically.
+\item{index_bam}{a logical value indicating whether to sort and index BAM automatically if the bam index is not found; default TRUE.
 
 The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.}
 
@@ -36,7 +36,7 @@ The BAM index files will be named by adding ".bai" after the names of correspond
 
 \item{design_treatment}{an optional logical vector indicating the design of treatment and control, with TRUE represents for treated samples.}
 
-\item{mapq}{A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded.}
+\item{mapq}{A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded; default 30L.}
 
 \item{isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments that determine the sam flag filtering, inherited from \code{\link{ScanBAMParam}}.}
 }

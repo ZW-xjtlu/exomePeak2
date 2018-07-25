@@ -15,14 +15,14 @@
 #'
 #' @param paired_end a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.
 #' @param random_primer a logical value indicating whether the library used is strand specific, default to be FALSE.
-#' @param index_bam a logical value indicating whether to create BAM indexes automatically.
+#' @param index_bam a logical value indicating whether to sort and index BAM automatically if the bam index is not found; default TRUE.
 #'
 #' The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.
 #'
 #' @param bam_files an optional character string of all the BAM files to be analyzed, if it is provided, the first 4 arguments above will be ignored.
 #' @param design_ip an optional logical vector indicating the design of IP and input, with TRUE represents for IP.
 #' @param design_treatment an optional logical vector indicating the design of treatment and control, with TRUE represents for treated samples.
-#' @param mapq A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded.
+#' @param mapq A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded; default 30L.
 #' @param isSecondaryAlignment,isNotPassingQualityControls,isDuplicate,... arguments that determine the sam flag filtering, inherited from \code{\link{ScanBAMParam}}.
 #'
 #' @return This function will return a list with 2 named elements: BAMList and Parameter.
@@ -111,11 +111,23 @@ if(any(!exist_indx)){
                    ", The bam files are treated as not indexed."),
             call. = F,immediate. = T)
   } else {
-      message("indexing BAM files...")
+     message("The BAM files are not indexed, sort and indexing BAM files using RsamTools...")
 
-     indexBam(bam_files)
+     sorted_bam_names <- gsub(".bam$" ,"_sorted" ,bam_files )
 
-    index(bam.list) = bai_temp
+     for(i in seq_along(sorted_bam_names)){
+      suppressWarnings( sortBam(bam_files[i], destination = sorted_bam_names[i]) )
+     }
+
+     indexBam(paste0( sorted_bam_names , ".bam" ))
+
+     bam.list = BamFileList(
+       file = paste0( sorted_bam_names , ".bam" ),
+       asMates=paired_end
+     )
+
+    index(bam.list) = paste0(sorted_bam_names,".bam.bai")
+
   }
 
 } else {

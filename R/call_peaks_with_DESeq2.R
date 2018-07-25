@@ -36,23 +36,23 @@ call_peaks_with_DESeq2 <- function(SE_bins,
                                   txdb,
                                   drop_overlapped_genes = TRUE){
 
-  design_IP_temp <- rep("input",ncol(SE_bins))
+  design_IP_temp <- rep( "input",ncol(SE_bins) )
 
-  design_IP_temp[colData(SE_bins)$design_IP] <- "IP"
+  design_IP_temp[ colData(SE_bins)$design_IP ] <- "IP"
 
   SE_bins$design_IP <- factor( design_IP_temp )
 
-  SE_bins$design_IP <- relevel(SE_bins$design_IP, "input")
+  SE_bins$design_IP <- relevel( SE_bins$design_IP, "input" )
 
   rm(design_IP_temp)
 
-  index_meth = DESeq2_inference(SE_bins = SE_bins,
-                               p_cutoff = p_cutoff,
-                               p_adj_cutoff = p_adj_cutoff,
-                               count_cutoff = count_cutoff,
-                               logFC_meth = logFC_cutoff )
+  index_meth = DESeq2_inference( SE_bins = SE_bins,
+                                 p_cutoff = p_cutoff,
+                                 p_adj_cutoff = p_adj_cutoff,
+                                 count_cutoff = count_cutoff,
+                                 logFC_meth = logFC_cutoff )
 
-  gr_meth <- reduce_peaks( peaks_grl = rowRanges(SE_bins)[as.numeric(rownames(SE_bins)) %in% index_meth],
+  gr_meth <- reduce_peaks( peaks_grl = rowRanges(SE_bins)[ as.numeric(rownames(SE_bins)) %in% index_meth ],
                            txdb = txdb,
                            drop_overlapped_genes = drop_overlapped_genes )
 

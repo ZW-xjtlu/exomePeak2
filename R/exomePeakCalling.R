@@ -279,15 +279,16 @@ setMethod("exomePeakCalling",
 
   return(
 
-    new( "SummarizedExomePeak",
-         rowRanges = SummarizedExomePeaks@rowRanges,
-         colData = SummarizedExomePeaks@colData,
-         assays = SummarizedExomePeaks@assays,
-         NAMES = SummarizedExomePeaks@NAMES,
-         elementMetadata = SummarizedExomePeaks@elementMetadata,
-         metadata = SummarizedExomePeaks@metadata,
-         DESeq2Results = data.frame() )
+    new("SummarizedExomePeak",
+        rowRanges = SummarizedExomePeaks@rowRanges,
+        colData = SummarizedExomePeaks@colData,
+        assays = SummarizedExomePeaks@assays,
+        NAMES = SummarizedExomePeaks@NAMES,
+        elementMetadata = SummarizedExomePeaks@elementMetadata,
+        metadata = SummarizedExomePeaks@metadata,
+        DESeq2Results = data.frame() )
   )
 
 }
+
 )
