@@ -67,139 +67,160 @@
 #' @export
 
 scanMeripBAM <- function(bam_ip = NULL,
-                     bam_input = NULL,
-                     bam_treated_ip = NULL,
-                     bam_treated_input = NULL,
-                     paired_end = FALSE,
-                     random_primer = TRUE,
-                     index_bam = TRUE,
-                     bam_files = NULL,
-                     design_ip = NULL,
-                     design_treatment = NULL,
-                     mapq = 30L,
-                     isSecondaryAlignment = FALSE,
-                     isNotPassingQualityControls = FALSE,
-                     isDuplicate = FALSE,
-                     isPaired = NA,
-                     isProperPair = NA,
-                     hasUnmappedMate = NA,
-                     ...) {
-
-#Create bamfile list
-if(is.null(bam_files)) {
-bam_files <- c(bam_ip,
-               bam_input,
-               bam_treated_ip,
-               bam_treated_input)
-}
-
-bam.list = BamFileList(
-                       file = bam_files,
-                       asMates=paired_end
-          )
-
-
-bai_temp = paste0(bam_files,".bai")
-
-exist_indx <- all( file.exists( bai_temp ) )
-
-if(!exist_indx){
-
-  if(!index_bam) {
-    warning(paste0("cannot find the bam index files, The bam files are treated as not indexed."),
-                   call. = F, immediate. = T )
-  } else {
-     message("The BAM files are not indexed, sorting and indexing BAM files using Rsamtools...")
-
-     sorted_bam_names <- gsub( ".bam$", "_sorted", bam_files )
-
-     for(i in seq_along(sorted_bam_names)){
-      suppressWarnings( sortBam(bam_files[i], destination = sorted_bam_names[i]) )
-     }
-
-     indexBam(paste0( sorted_bam_names, ".bam" ))
-
-     bam.list = BamFileList(
-       file = paste0( sorted_bam_names, ".bam" ),
-       asMates=paired_end
-     )
-
-    index(bam.list) = normalizePath( paste0( sorted_bam_names, ".bam.bai" ) )
-
+                         bam_input = NULL,
+                         bam_treated_ip = NULL,
+                         bam_treated_input = NULL,
+                         paired_end = FALSE,
+                         random_primer = TRUE,
+                         index_bam = TRUE,
+                         bam_files = NULL,
+                         design_ip = NULL,
+                         design_treatment = NULL,
+                         mapq = 30L,
+                         isSecondaryAlignment = FALSE,
+                         isNotPassingQualityControls = FALSE,
+                         isDuplicate = FALSE,
+                         isPaired = NA,
+                         isProperPair = NA,
+                         hasUnmappedMate = NA,
+                         ...) {
+  #Create bamfile list
+  if (is.null(bam_files)) {
+    bam_files <- c(bam_ip,
+                   bam_input,
+                   bam_treated_ip,
+                   bam_treated_input)
   }
 
-} else {
-
-index(bam.list) = normalizePath( bai_temp )
-
-}
-
-rm(bai_temp)
+  bam.list = BamFileList(file = bam_files,
+                         asMates = paired_end)
 
 
-#Check the existence of the bam files
-exist_indx <- file.exists( path(bam.list) )
+  bai_temp = paste0(bam_files, ".bai")
 
-if(any(!exist_indx)){
-  stop(paste0("cannot find bam files under: ",
-              paste0( path(bam.list)[!exist_indx] ,collapse = ", ")))
-}
+  sorted_bai_temp = gsub(".bam$", "_sorted.bam.bai", bam_files)
 
-#Create metadata of the bam files for experimental design information
-if(is.null(design_ip)) {
-  design_ip = vector(length = length(bam_files))
-  names(design_ip) = bam_files
-  design_ip[c(bam_ip,bam_treated_ip)] = T
-  names(design_ip) = NULL
-}
+  exist_indx <-
+    all(file.exists(bai_temp)) |
+    (all(file.exists(sorted_bai_temp)) &
+       all(file.exists(
+         gsub(".bam$", "_sorted.bam", bam_files)
+       )))
 
-if(is.null(design_treatment)) {
-  design_treatment = vector(length = length(bam_files))
-  names(design_treatment) = bam_files
-  design_treatment[c(bam_treated_ip,bam_treated_input)] = T
-  names(design_treatment) = NULL
-}
+  if (!exist_indx) {
+    if (!index_bam) {
+      warning(
+        paste0(
+          "cannot find the bam index files, The bam files are treated as not indexed."
+        ),
+        call. = F,
+        immediate. = T
+      )
+    } else {
+      message("The BAM files are not indexed, sorting and indexing BAM files using Rsamtools...")
 
-stopifnot(length(design_ip) == length(design_treatment))
+      sorted_bam_names <- gsub(".bam$", "_sorted", bam_files)
 
-mdf = data.frame(design_IP = design_ip,
-                 design_Treatment = design_treatment)
+      for (i in seq_along(sorted_bam_names)) {
+        suppressWarnings(sortBam(bam_files[i], destination = sorted_bam_names[i]))
+      }
 
-metadata(bam.list) <- mdf
+      indexBam(paste0(sorted_bam_names, ".bam"))
 
-#Check if there are any duplicated bam names.
-dup_indx <- duplicated(names(bam.list))
+      bam.list = BamFileList(file = paste0(sorted_bam_names, ".bam"),
+                             asMates = paired_end)
 
-if(any(dup_indx)) {
-  warning("Containing duplicated bam file names, the bam files are re-named.")
-  ip_char <- rep("input",length(bam_files))
-  ip_char[mdf$design_IP] <- "IP"
-  trt_char <- rep("ctrl",length(bam_files))
-  trt_char[mdf$design_Treatment] <- "Trt"
-  new_name <- paste0(ip_char,"_",trt_char)
-  names(bam.list) <- paste0(new_name,"_rep", sequence( as.integer( table(new_name)[unique(new_name)] ) ) )
-}
+      index(bam.list) = normalizePath(paste0(sorted_bam_names, ".bam.bai"))
 
-#Finally create the attribute for bam flag
+    }
 
-bam_flag <- scanBamFlag(isPaired = isPaired,
-isProperPair = isProperPair,
-hasUnmappedMate = hasUnmappedMate,
-isSecondaryAlignment = isSecondaryAlignment,
-isNotPassingQualityControls = isNotPassingQualityControls,
-isDuplicate = isDuplicate,
-...)
+  } else {
+    if (all(file.exists(sorted_bai_temp))) {
+      bam.list = BamFileList(file = gsub(".bam$", "_sorted.bam", bam_files),
+                             asMates = paired_end)
 
-return(
+      index(bam.list) = normalizePath(sorted_bai_temp)
 
-new("MeripBamFileList",
-    listData = bam.list@listData,
-    elementType = bam.list@elementType,
-    elementMetadata = bam.list@elementMetadata,
-    metadata = bam.list@metadata,
-    Parameter =  ScanBamParam(what = "mapq", flag = bam_flag, mapqFilter = mapq),
-    RandomPrimer = random_primer)
+    } else {
+      index(bam.list) = normalizePath(bai_temp)
 
-)
+    }
+  }
+
+  rm(bai_temp, sorted_bai_temp)
+
+
+  #Check the existence of the bam files
+  exist_indx <- file.exists(path(bam.list))
+
+  if (any(!exist_indx)) {
+    stop(paste0("cannot find bam files under: ",
+                paste0(path(bam.list)[!exist_indx] , collapse = ", ")))
+  }
+
+  #Create metadata of the bam files for experimental design information
+  if (is.null(design_ip)) {
+    design_ip = vector(length = length(bam_files))
+    names(design_ip) = bam_files
+    design_ip[c(bam_ip, bam_treated_ip)] = T
+    names(design_ip) = NULL
+  }
+
+  if (is.null(design_treatment)) {
+    design_treatment = vector(length = length(bam_files))
+    names(design_treatment) = bam_files
+    design_treatment[c(bam_treated_ip, bam_treated_input)] = T
+    names(design_treatment) = NULL
+  }
+
+  stopifnot(length(design_ip) == length(design_treatment))
+
+  mdf = data.frame(design_IP = design_ip,
+                   design_Treatment = design_treatment)
+
+  metadata(bam.list) <- mdf
+
+  #Check if there are any duplicated bam names.
+  dup_indx <- duplicated(names(bam.list))
+
+  if (any(dup_indx)) {
+    warning("Containing duplicated bam file names, the bam files are re-named.")
+    ip_char <- rep("input", length(bam_files))
+    ip_char[mdf$design_IP] <- "IP"
+    trt_char <- rep("ctrl", length(bam_files))
+    trt_char[mdf$design_Treatment] <- "Trt"
+    new_name <- paste0(ip_char, "_", trt_char)
+    names(bam.list) <-
+      paste0(new_name, "_rep", sequence(as.integer(table(new_name)[unique(new_name)])))
+  }
+
+  #Finally create the attribute for bam flag
+
+  bam_flag <- scanBamFlag(
+    isPaired = isPaired,
+    isProperPair = isProperPair,
+    hasUnmappedMate = hasUnmappedMate,
+    isSecondaryAlignment = isSecondaryAlignment,
+    isNotPassingQualityControls = isNotPassingQualityControls,
+    isDuplicate = isDuplicate,
+    ...
+  )
+
+  return(
+    new(
+      "MeripBamFileList",
+      listData = bam.list@listData,
+      elementType = bam.list@elementType,
+      elementMetadata = bam.list@elementMetadata,
+      metadata = bam.list@metadata,
+      Parameter =  ScanBamParam(
+        what = "mapq",
+        flag = bam_flag,
+        mapqFilter = mapq
+      ),
+      RandomPrimer = random_primer
+    )
+
+  )
 }
 
