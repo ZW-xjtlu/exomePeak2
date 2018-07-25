@@ -106,9 +106,7 @@ exist_indx <- all( file.exists( bai_temp ) )
 if(!exist_indx){
 
   if(!index_bam) {
-    warning(paste0("cannot find the bam index files under: ",
-                   paste0( index(bam.list)[!exist_indx], collapse = ", "),
-                   ", The bam files are treated as not indexed."),
+    warning(paste0("cannot find the bam index files, The bam files are treated as not indexed."),
                    call. = F, immediate. = T )
   } else {
      message("The BAM files are not indexed, sorting and indexing BAM files using Rsamtools...")
@@ -126,13 +124,13 @@ if(!exist_indx){
        asMates=paired_end
      )
 
-    index(bam.list) = paste0( sorted_bam_names, ".bam.bai" )
+    index(bam.list) = normalizePath( paste0( sorted_bam_names, ".bam.bai" ) )
 
   }
 
 } else {
 
-index(bam.list) = bai_temp
+index(bam.list) = normalizePath( bai_temp )
 
 }
 
