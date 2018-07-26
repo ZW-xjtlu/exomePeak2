@@ -189,9 +189,7 @@ if(!is.null(GCsizeFactors( sep ))) {
 
 figheight = 6.55 + .2 * round(ncol( sep )/4)
 
-if(!is.null(GCsizeFactors( sep ))) figwidth = 8.8
-
-else figwidth = 7.5
+if(!is.null(GCsizeFactors( sep ))) figwidth = 12
 
 if(!is.null(GCsizeFactors( sep )) & !any(sep$design_Treatment)) {
 p1 = p1 +
@@ -200,8 +198,6 @@ p1 = p1 +
           legend.direction = "horizontal",
           legend.box = "vertical",
           legend.justification = "center")
-
-figwidth = 6.3
 
 } else {
 
