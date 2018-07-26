@@ -45,7 +45,7 @@ if(is.null(guitar_coordinate)){
 
   #first check whether the input object contains quantification result.
     #if so, we need only plot the meth peaks and control peaks.
-if(is.null(DESeq2Results(sep))){
+if(nrow(DESeq2Results(sep)) == 0){
 row_grl <- rowRanges( sep )
 
 gr_list <- list(
