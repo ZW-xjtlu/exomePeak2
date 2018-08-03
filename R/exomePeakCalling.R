@@ -5,15 +5,17 @@
 #' @details The function conduct exome level peak calling based on the read alignment results and the transcript annotations.
 #'
 #' @param merip_bams a \code{MeripBamFileList} object.
-#' @param txdb a txdb object, it could be a single character string that can be recognized by \code{\link{makeTxDbFromUCSC}}; Default "hg19".
+#' @param txdb a \code{TxDb} object, it can also be a single character string such as "hg19" which is processed by \code{\link{makeTxDbFromUCSC}}.
+#' @param gene_anno a string, which specifies a gene annotation GFF/GTF file if available, default: NA.
 #' @param fragment_length a positive integer of the expected fragment length in bp; default 100.
 #' @param binding_length a positive integer of the antibody binding length in IP samples; default 25.
 #' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
-#' @param count_cutoff a non negative integer value of the average reads count per window used in peak calling, default to be 5.
-#' @param p_cutoff a value of the p value cut-off used in peak calling.
+#' @param count_cutoff a non negative integer value of the minimum average reads count per window used in peak calling; default 5.
+#' @param p_cutoff a value of the p value cut-off used in peak calling; default NULL.
 #' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
-#' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not, default to be TRUE.
+#' @param peak_width positive integer of the minimum width for the merged peaks; default \code{fragment_length} .
+#' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annotation a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
@@ -44,7 +46,8 @@
 setMethod("exomePeakCalling",
           "MeripBamFileList",
              function(merip_bams = NULL,
-                      txdb = "hg19",
+                      txdb = NULL,
+                      gene_anno_gff = NULL,
                       fragment_length = 100,
                       binding_length = 25,
                       step_length = binding_length,
@@ -52,6 +55,7 @@ setMethod("exomePeakCalling",
                       p_cutoff = NULL,
                       p_adj_cutoff = 0.05,
                       logFC_cutoff = 0,
+                      peak_width = fragment_length/2,
                       drop_overlapped_genes = TRUE,
                       parallel = FALSE,
                       mod_annotation = NULL,
@@ -62,16 +66,22 @@ setMethod("exomePeakCalling",
 
   stopifnot(step_length > 0)
 
+  stopifnot(peak_width > 0)
+
   stopifnot(logFC_cutoff >= 0)
 
   stopifnot(count_cutoff >= 0)
 
-  if(is.null(txdb)) {
-      stop("Transcript annotation undefined.")
-  }
+  if(!is.null(gene_anno_gff)) {
+    txdb <- makeTxDbFromGFF(gene_anno_gff)
+  } else {
+    if(is.null(txdb)) {
+      stop("require transcript annotation in either GTF/GFF file or txdb object.")
+    }
 
-  if(!is(txdb,"TxDb")){
-  txdb <- makeTxDbFromUCSC(txdb)
+    if(!is(txdb,"TxDb")){
+      txdb <- makeTxDbFromUCSC(txdb)
+    }
   }
 
   paired <- any( asMates(merip_bams) )
@@ -132,6 +142,11 @@ setMethod("exomePeakCalling",
                                      drop_overlapped_genes = drop_overlapped_genes )
 
   rm(SE_Peak_counts)
+
+  #Filter and rename the methylation peaks.
+  gr_meth <- gr_meth[ sum(width(gr_meth)) >= peak_width ]
+
+  names(gr_meth) <- seq_along( gr_meth )
 
   #flank the merged methylation sites
 

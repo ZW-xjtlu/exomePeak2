@@ -16,69 +16,89 @@
 exome_bins_from_txdb <- function(txdb,
                                  window_size = 25,
                                  step_size = 25,
-                                 drop_overlapped_genes = T){
+                                 drop_overlapped_genes = T) {
 
-exBygene  <- exons_by_unique_gene(
-                          txdb = txdb,
-                          drop_overlapped_genes = drop_overlapped_genes
-                          )
+  stopifnot(step_size <= window_size)
 
-tx_widths <- sum( width(exBygene) )
+  exBygene  <- exons_by_unique_gene(txdb = txdb,
+                                    drop_overlapped_genes = drop_overlapped_genes)
 
-#Try to define the bins start always from the five prime ends of any transcripts / genes.
+  tx_widths <- sum(width(exBygene))
 
-bin_nums_on_tx <- ceiling( pmax( (tx_widths - window_size) / step_size, 1) ) + 1 #About 7 million exome bins on hg19.
+  #Try to define the bins start always from the five prime ends of any transcripts / genes.
 
-strands_tx <- as.vector( strand(unlist(range(exBygene))) )
+  bin_nums_on_tx <-
+    ceiling(pmax((tx_widths - window_size) / step_size, 1)) + 1 #About 7 million exome bins on hg19.
 
-indx_plus <- strands_tx == "+"
+  strands_tx <- as.vector(strand(unlist(range(exBygene))))
 
-indx_minus <- strands_tx == "-"
+  indx_plus <- strands_tx == "+"
 
-strands_bins <- rep( strands_tx, bin_nums_on_tx )
+  indx_minus <- strands_tx == "-"
 
-indx_bin_plus <- strands_bins == "+"
+  strands_bins <- rep(strands_tx, bin_nums_on_tx)
 
-indx_bin_minus <- strands_bins == "-"
+  indx_bin_plus <- strands_bins == "+"
 
-seqnames_bins <- rep( names(tx_widths),bin_nums_on_tx )
+  indx_bin_minus <- strands_bins == "-"
 
-bin_starts_on_tx <- vector("integer",length = sum(bin_nums_on_tx))
+  seqnames_bins <- rep(names(tx_widths), bin_nums_on_tx)
 
-bin_starts_on_tx[indx_bin_plus] <- unlist(sapply(bin_nums_on_tx[indx_plus],function(x)seq(1,step_size*x,by = step_size)),use.names = F)
+  bin_starts_on_tx <- vector("integer", length = sum(bin_nums_on_tx))
 
-bin_starts_on_tx[indx_bin_minus] <-  unlist(mapply(function(x,y) seq(y, y - step_size*(x-1), by = -1*step_size),
-                                                   bin_nums_on_tx[indx_minus],tx_widths[indx_minus]),use.names = F) - window_size + 1
+  bin_starts_on_tx[indx_bin_plus] <-
+    unlist(sapply(bin_nums_on_tx[indx_plus], function(x)
+      seq(1, step_size * x, by = step_size)), use.names = F)
 
-rm(bin_nums_on_tx, strands_tx, indx_plus, indx_minus, indx_bin_plus, indx_bin_minus)
+  bin_starts_on_tx[indx_bin_minus] <-
+    unlist(mapply(
+      function(x, y)
+        seq(y, y - step_size * (x - 1), by = -1 * step_size),
+      bin_nums_on_tx[indx_minus],
+      tx_widths[indx_minus]
+    ),
+    use.names = F) - window_size + 1
 
-bins_on_tx <- GRanges( seqnames = seqnames_bins,
-                       ranges = IRanges(start = bin_starts_on_tx,
-                                       width = window_size),
-                       strand = strands_bins )
+  rm(bin_nums_on_tx,
+     strands_tx,
+     indx_plus,
+     indx_minus,
+     indx_bin_plus,
+     indx_bin_minus)
 
-#Trim over-hanging ends
-tx_widths <- sum( width(exBygene) )
+  bins_on_tx <- GRanges(
+    seqnames = seqnames_bins,
+    ranges = IRanges(start = bin_starts_on_tx,
+                     width = window_size),
+    strand = strands_bins
+  )
 
-suppressWarnings( seqlengths(bins_on_tx) <- tx_widths[names(seqlengths(bins_on_tx))] )
+  #Trim over-hanging ends
+  tx_widths <- sum(width(exBygene))
 
-bins_on_tx <- trim(bins_on_tx)
+  suppressWarnings(seqlengths(bins_on_tx) <-
+                     tx_widths[names(seqlengths(bins_on_tx))])
 
-bins_on_genome <- suppressWarnings( mapFromTranscripts(bins_on_tx,exBygene) )
+  bins_on_tx <- trim(bins_on_tx)
 
-names(bins_on_genome) <- seq_along(bins_on_genome)
+  bins_on_genome <-
+    suppressWarnings(mapFromTranscripts(bins_on_tx, exBygene))
 
-rm(bins_on_tx)
+  names(bins_on_genome) <- seq_along(bins_on_genome)
 
-#Removal of introns is time consuming ~ 1min.
-bins_on_genome <- remove_introns(bins_on_genome, exBygene) #Ps. some ranges are not preserved, and we need to track them with rownames of the granges.
+  rm(bins_on_tx)
 
-# Use the command "visualize_gene_bins("337967",bins_on_genome,exBygene)" to visualize the bins on genome.
+  #Removal of introns is time consuming ~ 1min.
+  bins_on_genome <-
+    remove_introns(bins_on_genome, exBygene) #Ps. some ranges are not preserved, and we need to track them with rownames of the granges.
 
-bins_on_genome  <- split(bins_on_genome ,names(bins_on_genome))
+  # Use the command "visualize_gene_bins("337967",bins_on_genome,exBygene)" to visualize the bins on genome.
 
-bins_on_genome <- bins_on_genome[ order( as.numeric( names(bins_on_genome ) ) ) ]
+  bins_on_genome  <- split(bins_on_genome , names(bins_on_genome))
 
-return(bins_on_genome)
+  bins_on_genome <-
+    bins_on_genome[order(as.numeric(names(bins_on_genome)))]
+
+  return(bins_on_genome)
 
 }

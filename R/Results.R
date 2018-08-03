@@ -14,7 +14,7 @@
 #' @param expected_direction The expected differential methylation direction, could be "hyper", "hypo", or "both".
 #' This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; Default "both".
 #'
-#' @param inhibit_filter Remove all the filters upon on the result, this is desired for user provided modification annotation; Default FALSE.
+#' @param inhibit_filter Remove all the filters upon on the result; Default TRUE.
 #'
 #' @param table_style Determine the style of the tsv table being returned, could be one of "bed" and "granges", the later would index the site containing multiple ranges with an id.
 #'

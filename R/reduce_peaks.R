@@ -14,7 +14,9 @@
 #' @import GenomicFeatures
 
 
-reduce_peaks <- function(peaks_grl,txdb,drop_overlapped_genes) {
+reduce_peaks <- function(peaks_grl,
+                         txdb,
+                         drop_overlapped_genes) {
   exBygene  <- exons_by_unique_gene(
     txdb = txdb,
     drop_overlapped_genes = drop_overlapped_genes

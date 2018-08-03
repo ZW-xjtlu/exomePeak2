@@ -9,15 +9,15 @@
 glmMeth(sep, shrinkage_method = c("apeglm", "normal", "ashr"), ...)
 
 \S4method{glmMeth}{SummarizedExomePeak}(sep, shrinkage_method = c("apeglm",
-  "normal", "ashr"), ...)
+  "normal", "ashr", "none"), ...)
 }
 \arguments{
 \item{sep}{is a summarizedExomePeak object.}
 
-\item{shrinkage_method}{a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", and "ashr".
+\item{shrinkage_method}{a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", "ashr", or "none".
 Please check \code{\link{lfcShrink}} for more information.}
 
-\item{...}{inherited arguments from \code{\link{DESeq}}}
+\item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
 \description{
 This function conduct a second round of RNA methylation level quantification using generalized linear model estimates of the

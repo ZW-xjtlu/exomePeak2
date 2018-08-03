@@ -5,7 +5,7 @@
 #' @param shrinkage_method a character indicating the method for emperical bayes shrinkage, can be one in "apeglm" and "ashr".
 #' Please check \code{\link{lfcShrink}} for more information.
 #'
-#' @param ... inherited arguments from \code{\link{DESeq}}
+#' @param ... Optional arguments passed to \code{\link{DESeq}}
 #'
 #' @description This function conducts a second round of RNA differential methylation inference based on an interactive generalized linear model of negative binomial distribution.
 #'
@@ -34,7 +34,7 @@
 setMethod("glmDM",
           "SummarizedExomePeak",
            function(sep,
-                    shrinkage_method = c("apeglm","ashr"),
+                    shrinkage_method = c("apeglm","ashr","none"),
                     ...) {
 
   stopifnot( ( any(sep$design_Treatment) & any(!sep$design_Treatment) ) )
@@ -125,7 +125,15 @@ setMethod("glmDM",
 
   if (nrow(GCsizeFactors( sep )) == nrow(sep)) {
 
-    DS_result  <- lfcShrink(dds=dds, coef=4, type="apeglm")
+   if(shrinkage_method == "none") {
+
+     DS_result <- results(dds)
+
+   } else {
+
+     DS_result  <- lfcShrink(dds=dds, coef=4, type = shrinkage_method)
+
+   }
 
     quantification_rst <- matrix( NA, nrow = nrow(SE_M[indx_meth,]), ncol = ncol(DS_result) )
 
@@ -137,7 +145,15 @@ setMethod("glmDM",
 
   } else {
 
-   suppressWarnings( quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type="apeglm") ) )
+    if(shrinkage_method == "none") {
+
+    quantification_rst  <- results(dds)
+
+    } else {
+
+    suppressWarnings( quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type = shrinkage_method) ) )
+
+    }
 
   }
 

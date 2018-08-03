@@ -7,21 +7,21 @@
 \title{Estimation of the GC content normalization factors.}
 \usage{
 GCnormalization(sep, bsgenome = "hg19", txdb = "hg19",
-  fragment_length = 100, binding_length = 25, feature = c("background",
-  "all"), qtnorm = FALSE, effective_GC = FALSE,
-  drop_overlapped_genes = TRUE)
-
-\S4method{GCnormalization}{SummarizedExomePeak}(sep, bsgenome = "hg19",
-  txdb = "hg19", fragment_length = 100, binding_length = 25,
+  gene_anno_gff = NULL, fragment_length = 100, binding_length = 25,
   feature = c("background", "all"), qtnorm = FALSE, effective_GC = FALSE,
   drop_overlapped_genes = TRUE)
+
+\S4method{GCnormalization}{SummarizedExomePeak}(sep, bsgenome = NULL,
+  txdb = NULL, gene_anno_gff = NULL, fragment_length = 100,
+  binding_length = 25, feature = c("background", "all"), qtnorm = FALSE,
+  effective_GC = FALSE, drop_overlapped_genes = TRUE)
 }
 \arguments{
 \item{sep}{a \code{summarizedExomePeak} object.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
 
-\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.}
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, or it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.}
 
 \item{fragment_length}{the expected fragment length of the sequencing library; Default 100.}
 

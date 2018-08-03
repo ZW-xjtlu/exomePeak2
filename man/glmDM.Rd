@@ -9,7 +9,7 @@
 glmDM(sep, shrinkage_method = c("apeglm", "ashr"), ...)
 
 \S4method{glmDM}{SummarizedExomePeak}(sep, shrinkage_method = c("apeglm",
-  "ashr"), ...)
+  "ashr", "none"), ...)
 }
 \arguments{
 \item{sep}{is a summarizedExomePeak object.}
@@ -17,7 +17,7 @@ glmDM(sep, shrinkage_method = c("apeglm", "ashr"), ...)
 \item{shrinkage_method}{a character indicating the method for emperical bayes shrinkage, can be one in "apeglm" and "ashr".
 Please check \code{\link{lfcShrink}} for more information.}
 
-\item{...}{inherited arguments from \code{\link{DESeq}}}
+\item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
 \description{
 This function conducts a second round of RNA differential methylation inference based on an interactive generalized linear model of negative binomial distribution.

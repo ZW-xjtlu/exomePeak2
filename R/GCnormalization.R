@@ -1,9 +1,9 @@
 #'@title Estimation of the GC content normalization factors.
 #'@param sep a \code{summarizedExomePeak} object.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
 #'
-#'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
+#'@param txdb a \code{\link{TxDb}} object for the transcript annotation, or it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
 #'
 #'@param fragment_length the expected fragment length of the sequencing library; Default 100.
 #'
@@ -54,8 +54,9 @@
 setMethod("GCnormalization",
           "SummarizedExomePeak",
                         function(sep,
-                                 bsgenome = "hg19",
-                                 txdb = "hg19",
+                                 bsgenome = NULL,
+                                 txdb = NULL,
+                                 gene_anno_gff = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
                                  feature = c("background","all"),
@@ -63,11 +64,20 @@ setMethod("GCnormalization",
                                  effective_GC = FALSE,
                                  drop_overlapped_genes = TRUE
                                  ) {
+if(is.null(bsgenome)) {
+stop("require BSgenome objects in GC size factor estimaton.")
+}
 
-stopifnot(!(is.null(bsgenome)|is.null(txdb)))
+if(!is.null(gene_anno_gff)) {
+  txdb <- makeTxDbFromGFF(gene_anno_gff)
+} else {
+  if (is.null(txdb)) {
+    stop("require transcript annotation in either GTF/GFF file or txdb object.")
+  }
 
-if(is(txdb,"TxDb")){ }else{
-  txdb <- makeTxDbFromUCSC(txdb)
+  if (!is(txdb, "TxDb")) {
+    txdb <- makeTxDbFromUCSC(txdb)
+  }
 }
 
 bsgenome <- getBSgenome(bsgenome)

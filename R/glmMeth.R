@@ -2,10 +2,10 @@
 #'
 #' @param sep is a summarizedExomePeak object.
 #'
-#' @param shrinkage_method a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", and "ashr".
+#' @param shrinkage_method a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", "ashr", or "none".
 #' Please check \code{\link{lfcShrink}} for more information.
 #'
-#' @param ... inherited arguments from \code{\link{DESeq}}
+#' @param ... Optional arguments passed to \code{\link{DESeq}}
 #'
 #' @description This function conduct a second round of RNA methylation level quantification using generalized linear model estimates of the
 #' neative binomial distribution. The RNA methyltion level is quantified as the log2 beta-value (log2 IP to input ratio).
@@ -26,7 +26,7 @@
 setMethod("glmMeth",
           "SummarizedExomePeak",
            function(sep,
-                    shrinkage_method = c("apeglm", "normal", "ashr"),
+                    shrinkage_method = c("apeglm", "normal", "ashr", "none"),
                     ...) {
 
   stopifnot((any(sep$design_IP) & any(!sep$design_IP)))
@@ -86,7 +86,11 @@ setMethod("glmMeth",
 
     if (nrow(GCsizeFactors( sep )) == nrow(sep)) {
 
-      DS_result <- lfcShrink(dds=dds, coef=2, type="apeglm")
+      if(shrinkage_method == "none") {
+        DS_result <- results( dds, altHypothesis = "greater" )
+      } else {
+        DS_result <- lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  )
+      }
 
       quantification_rst <- matrix(NA,nrow = nrow(SE_M[indx_meth,]), ncol = ncol(DS_result))
 
@@ -98,7 +102,11 @@ setMethod("glmMeth",
 
     } else {
 
-      quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=2, type="apeglm") )
+      if(shrinkage_method == "none") {
+        quantification_rst <- results( dds, altHypothesis = "greater" )
+      } else {
+        quantification_rst <- lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  )
+      }
 
     }
 

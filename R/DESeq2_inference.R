@@ -35,7 +35,7 @@ DESeq2_inference <- function(SE_bins,
 
   dds = nbinomWaldTest( dds )
 
-  res <- results(dds)
+  res <- results(dds, altHypothesis = "greater")
 
   if( anyNA(res) ){
   res <- as.data.frame(  na.omit(res) )

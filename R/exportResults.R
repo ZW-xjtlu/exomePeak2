@@ -1,17 +1,21 @@
 #' @title Export the methylation / differential methylation sites
 #' @param sep A SummarizedExomePeak object.
-#' @param format A character string of one of the c("txt", "BED", "RDS"), indicating the exported format.
+#' @param format A character string of one of the c("tsv", "BED", "RDS"), indicating the exported format.
 #'
-#' - The choice txt will save a tab separated values (tsv) file with the ranges and test information.
+#' - The choice tsv will save a tab separated values (tsv) file with the ranges and test information.
 #'
 #' - The choice BED will save a BEDGraph file with the score column being the -log2 adjusted p value.
 #'
 #' - The choice RDS will save a Rdata of the SummarizedExperiment object which will additional include a comprehensive summary of the count and the design information (recommended).
 #'
 #' @param file_name The name of the file being saved; Default "exomepeaks_result".
+#'
 #' @param cut_off_pvalue A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.
+#'
 #' @param cut_off_padj A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.05.
+#'
 #' @param cut_off_log2FC A non negative number indicating the log2 fold change cutoff of the exported result,
+#'
 #' only sites with log2 IP/input fold change bigger than this value are kept; Default 0.
 #'
 #' For differential methylation analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.
@@ -23,7 +27,7 @@
 #' @param expected_direction The expected differential methylation direction, could be "hyper", "hypo", or "both".
 #' This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; Default "both".
 #'
-#' @param inhibit_filter Remove all the filters upon on the result, this is desired for user provided modification annotation; Default FALSE.
+#' @param inhibit_filter Remove all the filters on the result, this is desired for user provided modification annotation; Default FALSE.
 #'
 #' @param table_style Determine the style of the tsv table being exported, could be one of "bed" and "granges", the later would index the site containing multiple ranges with an id.
 #'
@@ -45,7 +49,7 @@ setMethod("exportResults",
           "SummarizedExomePeak",
           function(
                   sep,
-                  format = c("txt","BED","RDS"),
+                  format = c("tsv","BED","RDS"),
                   file_name = "exomepeaks_result",
                   cut_off_pvalue = NULL,
                   cut_off_padj = 0.05,
@@ -176,7 +180,7 @@ names(result_grl) <- renamed_id
 
 #sort grl
 
-if(format == "txt"){
+if(format == "tsv"){
 
 if(table_style == "granges") {
 
