@@ -88,12 +88,15 @@ exomePeak2 <- function(bam_ip = NULL,
                       ){
 
 shrinkage_method <- match.arg(shrinkage_method)
+
 export_format <- match.arg(export_format)
+
 table_style <- match.arg(table_style)
+
 gc_feature <- match.arg(gc_feature)
 
-if(any(sep$design_Treatment) & shrinkage_method == "normal"){
-stop("normal prior is not applicable for differential methylation analysis.")
+if(!is.null(bam_treated_ip) & shrinkage_method == "normal"){
+  stop("normal prior is not applicable for differential methylation analysis")
 }
 
 stopifnot(fragment_length > 0)
@@ -115,7 +118,7 @@ if(!is.null(gene_anno_gff)) {
   txdb <- makeTxDbFromGFF(gene_anno_gff)
 } else {
   if (is.null(txdb)) {
-    stop("required argument of txdb or gene_anno_gff for transcript annotation.")
+    stop("required argument of txdb or gene_anno_gff for transcript annotation")
   }
 
   if (!is(txdb, "TxDb")) {
@@ -162,6 +165,8 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
 
 sep <- estimateSeqDepth(sep)
 
+message("calculate GC content effects on background")
+
 if(gc_correction) {
   sep <- GCnormalization(sep,
                          bsgenome = bsgenome,
@@ -173,8 +178,10 @@ if(gc_correction) {
 }
 
 if(any(sep$design_Treatment)){
+  message("differential methylation analysis with interactive GLM")
   sep <- glmDM(sep, shrinkage_method = shrinkage_method)
 }else{
+  message("peak refinement with updated GLM offsets")
   sep <- glmMeth(sep, shrinkage_method = shrinkage_method)
 }
 

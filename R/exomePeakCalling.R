@@ -76,7 +76,7 @@ setMethod("exomePeakCalling",
     txdb <- makeTxDbFromGFF(gene_anno_gff)
   } else {
     if(is.null(txdb)) {
-      stop("require transcript annotation in either GTF/GFF file or txdb object.")
+      stop("require transcript annotation in either GTF/GFF file or txdb object")
     }
 
     if(!is(txdb,"TxDb")){
@@ -88,14 +88,14 @@ setMethod("exomePeakCalling",
 
   if(is.null(mod_annotation)) {
 
-  message("Extract bins on exons.")
+  message("generate bins on exons.")
 
   exome_bins_grl <- exome_bins_from_txdb(txdb = txdb,
                                         window_size = binding_length,
                                         step_size = step_length,
                                         drop_overlapped_genes = drop_overlapped_genes)
 
-  message("Count reads on bins.")
+  message("count reads on bins.")
 
   split_x <- function(x){return(split(x,names(x)))}
 
@@ -130,7 +130,7 @@ setMethod("exomePeakCalling",
   colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
 
   #Peak calling with user defined statistical methods
-  message("Peak calling with DESeq2 negative binomial Wald test.")
+  message("initial peak calling with DESeq2 Wald test")
 
   #Directly return the merged summarized experiment
   gr_meth <- call_peaks_with_DESeq2( SE_bins = SE_Peak_counts,
@@ -142,11 +142,6 @@ setMethod("exomePeakCalling",
                                      drop_overlapped_genes = drop_overlapped_genes )
 
   rm(SE_Peak_counts)
-
-  #Filter and rename the methylation peaks.
-  gr_meth <- gr_meth[ sum(width(gr_meth)) >= peak_width ]
-
-  names(gr_meth) <- seq_along( gr_meth )
 
   #flank the merged methylation sites
 
@@ -166,11 +161,23 @@ setMethod("exomePeakCalling",
 
   annotation_row_features <- count_row_features
 
-  annotation_row_features[grepl("meth_", names( annotation_row_features ))] <- gr_meth[ gsub("meth_", "", grep("meth_", names( count_row_features ) , value = TRUE) ) ]
+  #Filter and rename the methylation peaks.
 
-  rm(gr_meth, gr_meth_flanked)
+  indx_meth <- grepl("meth_", names( annotation_row_features ))
 
-  message("Count reads on the merged peaks and the control regions.")
+  annotation_row_features[indx_meth] <- gr_meth[ gsub("meth_", "", grep("meth_", names( count_row_features ) , value = TRUE) ) ]
+
+  indx_keep <- !vector("logical", length = length(annotation_row_features))
+
+  indx_keep[indx_meth][sum(width(annotation_row_features[indx_meth])) < peak_width] = FALSE
+
+  annotation_row_features <- annotation_row_features[indx_keep]
+
+  count_row_features <- count_row_features[indx_keep]
+
+  rm(gr_meth, gr_meth_flanked, indx_meth, indx_keep)
+
+  message("count reads on the merged peaks and the control regions")
 
   if(!parallel) {
     register(SerialParam())
@@ -230,7 +237,7 @@ setMethod("exomePeakCalling",
       register(SerialParam())
     }
 
-    message("Count reads using single base annotation on exons.")
+    message("count reads using single base annotation on exons")
 
     SE_temp <- summarizeOverlaps(
       features = merged_peaks_grl,
