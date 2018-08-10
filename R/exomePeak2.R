@@ -194,7 +194,7 @@ plotReadsGC(sep = sep,
             save_pdf_prefix = "ep2",
             drop_overlapped_genes = drop_overlapped_genes)
 
-plotBetaGC(sep = sep,
+plotEffectGC(sep = sep,
            save_pdf_prefix = "ep2",
            drop_overlapped_genes = drop_overlapped_genes)
 }
