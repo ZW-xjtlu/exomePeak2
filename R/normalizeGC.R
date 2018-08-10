@@ -10,14 +10,13 @@
 #'@param binding_length the expected antibody binding length of IP; Default 25.
 #'
 #'@param feature the features used in the GC effect estimation, can be "background" and "all".
-#'If "all" is choosed, the GC effect function will be estimated using both the methylated and the background region,
-#'this choice will force the resulting modification signals independent of GC content.
-#'However,it is possibably biased if the modification is biologically dependent on GC content;
+#'If "all" is choosed, the GC effect function will be estimated using both the methylated and the background regions,
+#'this choice will force the resulting modification signals independent of GC content, which could be more robust when the background is incorrectly estimated.
+#'However,it is possibably biased if the modification level is biologically dependent on GC content;
 #'Default "background".
 #'
-#'@param qtnorm a logical indicating wheather perform quantile normalization after the GC effect estimation.
-#'Quantile normalization can correct systematic effect in RNA-seq count data.
-#'However, it may result in errors due to the biological difference between the distributions of IP and input.
+#'@param qtnorm A logical indicating wheather perform quantile normalization after the GC effect estimation； default TRUE.
+#'Quantile normalization will be conducted on IP and input samples seperately to account for the biological difference between the marginal distributions of IP and input.
 #'
 #'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
 #'
@@ -45,13 +44,13 @@
 #'@importFrom BSgenome getBSgenome
 #'@docType methods
 #'
-#'@name GCnormalization
+#'@name normalizeGC
 #'
-#'@rdname GCnormalization
+#'@rdname normalizeGC
 #'
 #'@export
 
-setMethod("GCnormalization",
+setMethod("normalizeGC",
           "SummarizedExomePeak",
                         function(sep,
                                  bsgenome = NULL,
@@ -59,8 +58,8 @@ setMethod("GCnormalization",
                                  gene_anno_gff = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
-                                 feature = c("background","all"),
-                                 qtnorm = FALSE,
+                                 feature = c("background", "all"),
+                                 qtnorm = TRUE,
                                  effective_GC = FALSE,
                                  drop_overlapped_genes = TRUE
                                  ) {
@@ -104,7 +103,9 @@ elementMetadata( sep ) <- GC_content_over_grl(
 
 #Reserve any potential NA in the GC_content vector
 GC_size_factors <- matrix(NA, nrow = nrow(sep), ncol = ncol(sep))
+
 rownames(GC_size_factors) = rownames(sep)
+
 GC_na_index <- is.na(elementMetadata( sep )$GC_content)
 
 
@@ -114,18 +115,50 @@ if(feature == "all"){
   Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 & grepl("control",rownames(sep))[!GC_na_index] )
 }
 
+if(!qtnorm) {
+
 cqnObject <- suppressMessages( cqn(assay(sep)[!GC_na_index,],
-                                   lengths = elementMetadata( sep )$feature_length[!GC_na_index],
-                                   lengthMethod = "smooth",
-                                   x = elementMetadata( sep )$GC_content[!GC_na_index],
-                                   subindex = Subindex,
-                                   sizeFactors = sep$sizeFactor,
-                                   sqn = qtnorm,
-                                   verbose = FALSE) )
+                                     lengths = elementMetadata( sep )$feature_length[!GC_na_index],
+                                     lengthMethod = "smooth",
+                                     x = elementMetadata( sep )$GC_content[!GC_na_index],
+                                     subindex = Subindex,
+                                     sizeFactors = sep$sizeFactor,
+                                     sqn = qtnorm,
+                                     verbose = FALSE) )
 
 GC_size_factors[!GC_na_index,] <- cqnObject$glm.offset
 
 assays(sep)$GCsizeFactors <- GC_size_factors
+
+} else {
+
+cqnObject_IP <- suppressMessages( cqn(assay(sep)[!GC_na_index, sep$design_IP],
+                                     lengths = elementMetadata( sep )$feature_length[!GC_na_index],
+                                     lengthMethod = "smooth",
+                                     x = elementMetadata( sep )$GC_content[!GC_na_index],
+                                     subindex = Subindex,
+                                     sizeFactors = sep$sizeFactor[sep$design_IP],
+                                     sqn = qtnorm,
+                                     verbose = FALSE) )
+
+cqnObject_input <- suppressMessages( cqn(assay(sep)[!GC_na_index, !sep$design_IP],
+                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
+                                      lengthMethod = "smooth",
+                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
+                                      subindex = Subindex,
+                                      sizeFactors = sep$sizeFactor[!sep$design_IP],
+                                      sqn = qtnorm,
+                                      verbose = FALSE) )
+
+GC_size_factors[!GC_na_index,sep$design_IP] <- cqnObject_IP$glm.offset
+
+GC_size_factors[!GC_na_index,!sep$design_IP] <- cqnObject_input$glm.offset
+
+rm(cqnObject_IP, cqnObject_input)
+
+assays(sep)$GCsizeFactors <- GC_size_factors
+
+}
 
 return(sep)
 

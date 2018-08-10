@@ -6,10 +6,16 @@
 #'
 #' @param merip_bams a \code{MeripBamFileList} object.
 #' @param txdb a \code{TxDb} object, it can also be a single character string such as "hg19" which is processed by \code{\link{makeTxDbFromUCSC}}.
+#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence, alternatively it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
 #' @param gene_anno a string, which specifies a gene annotation GFF/GTF file if available, default: NA.
 #' @param fragment_length a positive integer of the expected fragment length in bp; default 100.
 #' @param binding_length a positive integer of the antibody binding length in IP samples; default 25.
 #' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
+#' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
+#'
+#' Under the default setting, the DESeq2 method is implemented on experiments with more than 3 biological replicates for both IP and input samples.
+#' The poisson GLM will be implemented otherwise.
+#'
 #' @param count_cutoff a non negative integer value of the minimum average reads count per window used in peak calling; default 5.
 #' @param p_cutoff a value of the p value cut-off used in peak calling; default NULL.
 #' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
@@ -18,6 +24,7 @@
 #' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annotation a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
+#' @param mask_5p a logical of whether to exclude the transcript five prime regions in control; default TRUE.
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
@@ -47,10 +54,12 @@ setMethod("exomePeakCalling",
           "MeripBamFileList",
              function(merip_bams = NULL,
                       txdb = NULL,
+                      bsgenome = NULL,
                       gene_anno_gff = NULL,
                       fragment_length = 100,
                       binding_length = 25,
                       step_length = binding_length,
+                      glm_type = c("auto","poisson","NB","DESeq2"),
                       count_cutoff = 5,
                       p_cutoff = NULL,
                       p_adj_cutoff = 0.05,
@@ -59,8 +68,10 @@ setMethod("exomePeakCalling",
                       drop_overlapped_genes = TRUE,
                       parallel = FALSE,
                       mod_annotation = NULL,
-                      background = NULL
+                      background = NULL,
+                      mask_5p = TRUE
                       ){
+  glm_type <- match.arg(glm_type)
 
   stopifnot(fragment_length > 0)
 
@@ -72,15 +83,19 @@ setMethod("exomePeakCalling",
 
   stopifnot(count_cutoff >= 0)
 
+  if(is.null(bsgenome)) {
+    warning("bsgenome is not provided, peak calling will be performed without GC correction.\nIt is highly recommended to conduct GC conrrection for accurate peak calling and quantification.", call. = FALSE, immediate. = TRUE)
+  }
+
   if(!is.null(gene_anno_gff)) {
-    txdb <- makeTxDbFromGFF(gene_anno_gff)
+    txdb <- makeTxDbFromGFF( gene_anno_gff )
   } else {
     if(is.null(txdb)) {
-      stop("require transcript annotation in either GTF/GFF file or txdb object")
+      stop("missing transcript annotation, please provide either txdb object or GFF/GTF file.")
     }
 
     if(!is(txdb,"TxDb")){
-      txdb <- makeTxDbFromUCSC(txdb)
+      txdb <- makeTxDbFromUCSC( txdb )
     }
   }
 
@@ -95,9 +110,9 @@ setMethod("exomePeakCalling",
                                         step_size = step_length,
                                         drop_overlapped_genes = drop_overlapped_genes)
 
-  message("count reads on bins.")
+  message("count reads 5'TAGs on bins.")
 
-  split_x <- function(x){return(split(x,names(x)))}
+  split_x <- function(x){return(split(x, names(x)))}
 
   if(!parallel) {
     register(SerialParam())
@@ -121,6 +136,24 @@ setMethod("exomePeakCalling",
                     fragments = paired
   )
 
+  #calculate effective GC content if BSgenome is provided
+
+  if(!is.null(bsgenome)){
+
+   indx_gr <- names(unlist(rowRanges(SE_Peak_counts)))
+
+   gc_freq <- as.vector( letterFrequency( Views(bsgenome, unlist(rowRanges(SE_Peak_counts))), letters="CG" ) )
+
+   region_widths <- sum(width(rowRanges(SE_Peak_counts)))
+
+   gc_contents <- tapply(gc_freq, indx_gr, sum) / region_widths
+
+   rowData_SE <- DataFrame(gc_contents = gc_contents,
+                        region_widths = region_widths)
+
+   rm(indx_gr, gc_freq, region_widths, gc_contents)
+  }
+
   rowRanges(SE_Peak_counts) <- exome_bins_grl[as.numeric(rownames(SE_Peak_counts))] #replace the row ranges with the not expanded version
 
   rm(exome_bins_grl) #release RAM
@@ -129,17 +162,41 @@ setMethod("exomePeakCalling",
 
   colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
 
+  rowData(SE_Peak_counts) = rowData_SE
+
+  rm(rowData_SE)
+
   #Peak calling with user defined statistical methods
-  message("initial peak calling with DESeq2 Wald test")
+
+  if(glm_type == "auto") {
+    if(all( table(colData(SE_Peak_counts)$design_IP) > 3)) {
+      glm_type <- "DESeq2"
+    } else {
+      glm_type <- "poisson"
+    }
+  }
+
+  if(glm_type == "poisson") {
+    message("peak calling with poisson GLM Wald test")
+  }
+
+  if(glm_type == "NB") {
+    message("peak calling with NB GLM Wald test")
+  }
+
+  if(glm_type == "DESeq2") {
+    message("peak calling with DESeq2 NB GLM Wald test")
+  }
 
   #Directly return the merged summarized experiment
-  gr_meth <- call_peaks_with_DESeq2( SE_bins = SE_Peak_counts,
-                                     count_cutoff = count_cutoff,
-                                     p_cutoff = p_cutoff,
-                                     p_adj_cutoff = p_adj_cutoff,
-                                     logFC_cutoff = logFC_cutoff,
-                                     txdb = txdb,
-                                     drop_overlapped_genes = drop_overlapped_genes )
+  gr_meth <- call_peaks_with_GLM( SE_bins = SE_Peak_counts,
+                                  glm_type = glm_type,
+                                  count_cutoff = count_cutoff,
+                                  p_cutoff = p_cutoff,
+                                  p_adj_cutoff = p_adj_cutoff,
+                                  logFC_cutoff = logFC_cutoff,
+                                  txdb = txdb,
+                                  drop_overlapped_genes = drop_overlapped_genes )
 
   rm(SE_Peak_counts)
 
@@ -157,7 +214,10 @@ setMethod("exomePeakCalling",
                                   txdb = txdb,
                                   cut_off_width = 1e5,
                                   cut_off_num = 2000,
-                                  drop_overlapped_genes = drop_overlapped_genes )
+                                  drop_overlapped_genes = drop_overlapped_genes,
+                                  drop_5p = mask_5p,
+                                  distance_5p = 200,
+                                  control_width = peak_width)
 
   annotation_row_features <- count_row_features
 
@@ -231,7 +291,10 @@ setMethod("exomePeakCalling",
                                     txdb = txdb,
                                     cut_off_width = 1e5,
                                     cut_off_num = 2000,
-                                    drop_overlapped_genes = drop_overlapped_genes )
+                                    drop_overlapped_genes = drop_overlapped_genes,
+                                    drop_5p = mask_5p,
+                                    distance_5p = 200,
+                                    control_width = peak_width)
 
     if(!parallel){
       register(SerialParam())
@@ -297,6 +360,18 @@ setMethod("exomePeakCalling",
                                                    bg = background,
                                                    txdb = txdb,
                                                    drop_overlapped_genes = drop_overlapped_genes )
+  }
+
+  if(!is.null(bsgenome)){
+    elementMetadata( SummarizedExomePeaks ) <- GC_content_over_grl(
+      bsgenome = bsgenome,
+      txdb = txdb,
+      grl = rowRanges( SummarizedExomePeaks ),
+      fragment_length = fragment_length,
+      binding_length = binding_length,
+      drop_overlapped_genes = drop_overlapped_genes,
+      effective_GC = FALSE
+    )
   }
 
   return(

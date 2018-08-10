@@ -2,6 +2,11 @@
 #'
 #' @param sep is a summarizedExomePeak object.
 #'
+#' @param glm_type a character, that specify the type of generalized linear model used in peak calling; The argument can be one of the "auto", "poisson", "NB", and "DESeq2". Default to be "auto".
+#'
+#' Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples of the treatment and control.
+#' The poisson GLM will be applied in the other cases.
+#'
 #' @param shrinkage_method a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", "ashr", or "none".
 #' Please check \code{\link{lfcShrink}} for more information.
 #'
@@ -26,8 +31,34 @@
 setMethod("glmMeth",
           "SummarizedExomePeak",
            function(sep,
+                    glm_type = c("auto","poisson", "NB", "DESeq2"),
                     shrinkage_method = c("apeglm", "normal", "ashr", "none"),
                     ...) {
+
+  shrinkage_method = match.arg(shrinkage_method)
+
+  glm_type = match.arg(glm_type)
+
+  if(glm_type == "auto") {
+    if( all( table(colData(sep)$design_IP) > 3 ) ) {
+      glm_type <- "DESeq2"
+    } else {
+      glm_type <- "poisson"
+    }
+  }
+
+  if(glm_type == "poisson") {
+    message("peak refinement with poisson GLM")
+  }
+
+  if(glm_type == "NB") {
+    message("peak refinement with NB GLM")
+  }
+
+  if(glm_type == "DESeq2") {
+    message("peak refinement with DESeq2 NB GLM")
+  }
+
 
   stopifnot((any(sep$design_IP) & any(!sep$design_IP)))
 
@@ -47,7 +78,7 @@ setMethod("glmMeth",
 
   SE_M$IPinput = factor(SE_M$IPinput)
 
-    if(nrow(GCsizeFactors( sep )) == nrow(sep)) {
+    if(!is.null(GCsizeFactors( sep ))) {
 
       gc_na_indx <- rowSums( is.na(GCsizeFactors(sep)) ) > 0
 
@@ -68,7 +99,6 @@ setMethod("glmMeth",
 
       dds$IPinput <- relevel(dds$IPinput, "input")
 
-      dds <- suppressMessages( DESeq(dds) )
 
     } else {
 
@@ -76,20 +106,36 @@ setMethod("glmMeth",
 
       dds = suppressMessages( DESeqDataSet(se = SE_M[indx_meth,], design = Cov) )
 
-      dds$IPinput <- relevel(dds$IPinput, "input")
-
-      dds <- suppressMessages( DESeq(dds) )
+      dds$IPinput <- relevel( dds$IPinput, "input" )
 
     }
 
+    if(glm_type == "poisson"){
+      dispersions(dds) = 0
+    }
+
+    if(glm_type == "NB"){
+      dds = estimateDispersions( dds, fitType = "mean" )
+    }
+
+    if(glm_type == "DESeq2"){
+      dds = estimateDispersions( dds )
+    }
+
+      dds = nbinomWaldTest( dds )
+
    #Generation of the DESeq2 report.
 
-    if (nrow(GCsizeFactors( sep )) == nrow(sep)) {
+    if (!is.null(GCsizeFactors( sep ))) {
 
       if(shrinkage_method == "none") {
+
         DS_result <- results( dds, altHypothesis = "greater" )
+
       } else {
+
         DS_result <- lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  )
+
       }
 
       quantification_rst <- matrix(NA,nrow = nrow(SE_M[indx_meth,]), ncol = ncol(DS_result))
@@ -103,16 +149,20 @@ setMethod("glmMeth",
     } else {
 
       if(shrinkage_method == "none") {
-        quantification_rst <- results( dds, altHypothesis = "greater" )
+
+        quantification_rst <- as.data.frame( results( dds, altHypothesis = "greater" ) )
+
       } else {
-        quantification_rst <- lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  )
+
+        quantification_rst <- as.data.frame( lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  ) )
+
       }
 
     }
 
   rownames(quantification_rst) = rownames(SE_M)[indx_meth]
 
-  DESeq2Results( sep ) = quantification_rst
+  DESeq2Results( sep ) = as.data.frame( quantification_rst )
 
   return(sep)
 

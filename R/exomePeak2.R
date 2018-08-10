@@ -6,7 +6,7 @@
 #'
 #'  2. call methylation peaks on exons: \code{\link{exomePeakCalling}}.
 #'
-#'  3. gc correction based on non-modification background regions: \code{\link{GCnormalization}}.
+#'  3. gc correction based on non-modification background regions: \code{\link{normalizeGC}}.
 #'
 #'  4. inference and quantify modification / differential modification with Negative Binomial GLM:  \code{\link{glmMeth}}; \code{\link{glmDM}}
 #'
@@ -168,13 +168,13 @@ sep <- estimateSeqDepth(sep)
 message("calculate GC content effects on background")
 
 if(gc_correction) {
-  sep <- GCnormalization(sep,
-                         bsgenome = bsgenome,
-                         txdb = txdb,
-                         fragment_length = fragment_length,
-                         binding_length = binding_length,
-                         drop_overlapped_genes = drop_overlapped_genes,
-                         feature = gc_feature)
+  sep <- normalizeGC(sep,
+                     bsgenome = bsgenome,
+                     txdb = txdb,
+                     fragment_length = fragment_length,
+                     binding_length = binding_length,
+                     drop_overlapped_genes = drop_overlapped_genes,
+                     feature = gc_feature)
 }
 
 if(any(sep$design_Treatment)){

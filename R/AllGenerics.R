@@ -8,21 +8,24 @@ setGeneric("RandomPrimer", function(x) standardGeneric("RandomPrimer"))
 
 #' @rdname exomePeakCalling
 #' @export
-setGeneric("exomePeakCalling",function(merip_bams = NULL,
-                                       txdb = NULL,
-                                       gene_anno_gff = NULL,
-                                       fragment_length = 100,
-                                       binding_length = 25,
-                                       step_length = binding_length,
-                                       count_cutoff = 5,
-                                       p_cutoff = NULL,
-                                       p_adj_cutoff = 0.05,
-                                       logFC_cutoff = 0,
-                                       peak_width = fragment_length/2,
-                                       drop_overlapped_genes = TRUE,
-                                       parallel = FALSE,
-                                       mod_annotation = NULL,
-                                       background = NULL) {standardGeneric("exomePeakCalling")})
+setGeneric("exomePeakCalling", function(merip_bams = NULL,
+                                        txdb = NULL,
+                                        bsgenome = NULL,
+                                        gene_anno_gff = NULL,
+                                        fragment_length = 100,
+                                        binding_length = 25,
+                                        step_length = binding_length,
+                                        glm_type = c("auto","poisson","NB","DESeq2"),
+                                        count_cutoff = 5,
+                                        p_cutoff = NULL,
+                                        p_adj_cutoff = 0.05,
+                                        logFC_cutoff = 0,
+                                        peak_width = fragment_length/2,
+                                        drop_overlapped_genes = TRUE,
+                                        parallel = FALSE,
+                                        mod_annotation = NULL,
+                                        background = NULL,
+                                        mask_5p = TRUE) {standardGeneric("exomePeakCalling")})
 
 #' @rdname estimateSeqDepth
 #' @export
@@ -52,7 +55,7 @@ setGeneric("DESeq2Results<-", function(x,...,value) {standardGeneric("DESeq2Resu
 
 #' @rdname GCnormalization
 #' @export
-setGeneric("GCnormalization", function(sep,
+setGeneric("normalizeGC", function(sep,
                                        bsgenome = "hg19",
                                        txdb = "hg19",
                                        gene_anno_gff = NULL,
@@ -61,18 +64,20 @@ setGeneric("GCnormalization", function(sep,
                                        feature = c("background","all"),
                                        qtnorm = FALSE,
                                        effective_GC = FALSE,
-                                       drop_overlapped_genes = TRUE) {standardGeneric("GCnormalization")})
+                                       drop_overlapped_genes = TRUE) {standardGeneric("normalizeGC")})
 
 
 #' @rdname glmMeth
 #' @export
 setGeneric("glmMeth", function(sep,
+                               glm_type = c("auto","poisson", "NB", "DESeq2"),
                                shrinkage_method = c("apeglm","normal","ashr"),
                                ...) {standardGeneric("glmMeth")})
 
 #' @rdname glmDM
 #' @export
 setGeneric("glmDM", function(sep,
+                             glm_type = c("auto","poisson", "NB", "DESeq2"),
                              shrinkage_method = c("apeglm","ashr"),
                              ...) {standardGeneric("glmDM")})
 
@@ -106,14 +111,14 @@ setGeneric("plotReadsGC", function(sep,
 
 #' @rdname plotBetaGC
 #' @export
-setGeneric("plotBetaGC", function(sep,
+setGeneric("plotEffectGC", function(sep,
                                   bsgenome = NULL,
                                   txdb = NULL,
                                   save_pdf_prefix = NULL,
                                   fragment_length = 100,
                                   binding_length = 25,
                                   effective_GC = FALSE,
-                                  drop_overlapped_genes = TRUE) {standardGeneric("plotBetaGC")})
+                                  drop_overlapped_genes = TRUE) {standardGeneric("plotEffectGC")})
 
 #' @rdname exportResults
 #' @export

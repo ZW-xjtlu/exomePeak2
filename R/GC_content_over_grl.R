@@ -40,7 +40,7 @@ if(effective_GC & !all_sb) {
 }
 
 if(all_sb) {
-  message("Detect methylation sites come from single based annotations,\nThe flanking size is adjusted to floor( fragment_length - binding_length/2 )")
+  message("Detect single based modification annotations,\nThe flanking size is adjusted to floor( fragment_length - binding_length/2 )")
 }
 
 if(!effective_GC){
@@ -50,14 +50,20 @@ flank_length <- ifelse( all_sb,
                         floor( fragment_length - binding_length / 2 ),
                         fragment_length - binding_length )
 
-flanked_gr <- flank_on_exons( grl = grl_meth,
-                              flank_length = flank_length,
-                              txdb = txdb,
-                              drop_overlapped_genes = drop_overlapped_genes,
-                              index_flank = FALSE )
+flanked_meth_gr <- flank_on_exons( grl = grl_meth,
+                                  flank_length = flank_length,
+                                  txdb = txdb,
+                                  drop_overlapped_genes = drop_overlapped_genes,
+                                  index_flank = FALSE )
 
-flanked_grl <- c( grl[ grepl("control_", names(grl)) ],
-                  split(flanked_gr, names( flanked_gr )) )
+flanked_meth_grl <- split( flanked_meth_gr, names( flanked_meth_gr ) )
+
+rm(flanked_meth_gr)
+
+flanked_grl <- c( flanked_meth_grl,
+                  grl[ grepl("control_", names(grl)) ] )
+
+rm(flanked_meth_grl)
 
 flanked_gr <- unlist( flanked_grl )
 
@@ -74,6 +80,12 @@ GC_return <- rep(NA, length(grl))
 names(GC_return) <- names(grl)
 
 GC_return[match(names(flanked_grl), names(grl))] <- sum_freq/sum(width(flanked_grl))
+
+Width_return <- rep(NA, length(grl))
+
+names(Width_return) <- names(grl)
+
+Width_return[match(names(flanked_grl), names(grl))] <- sum(width(flanked_grl))
 
 rm(flanked_gr,flanked_grl)
 
@@ -104,15 +116,15 @@ names(GC_return) <- names(grl)
 
 GC_return[match(names(c(GC_meth,GC_control)), names(grl))] <- c(GC_meth,GC_control)
 
+Width_return <- sum( width( grl ) )
+
+Width_return[grepl("meth_", names(grl))] <- 1 + 2*floor( fragment_length - binding_length / 2 )
+
 }
-
-width_each_group <- sum(width(grl))
-
-width_each_group = pmax(width_each_group, binding_length)
 
 return(
   DataFrame(GC_content = GC_return,
-            feature_length = width_each_group)
+            feature_length = Width_return)
        )
 
 }

@@ -81,7 +81,7 @@ normalized_counts <- ( t( t(assay(sep))/sep$sizeFactor ) / elementMetadata( sep 
 
 if(!is.null(GCsizeFactors( sep ))) {
 
-cqnormalized_counts <- assay(sep)/exp( GCsizeFactors( sep ) )
+cqnormalized_counts <- assay(sep) / exp( GCsizeFactors( sep ) )
 
 }
 

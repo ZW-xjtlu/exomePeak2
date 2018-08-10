@@ -69,18 +69,27 @@ suppressWarnings(
   #In case of the collumn design contains only methylation
   if(!any(sep$design_Treatment)){
 
-   final_alpha  <- decision_deseq2(Inf_RES = DESeq2Results(sep),
-                                   Padj_cut = 0.05,
-                                   log2FC_cut = 0,
-                                    Min_mod = 1000)$Cut_Val_expected
+    row_grl <- rowRanges( sep )
 
-   if(is.na(final_alpha)) {final_alpha = 1}
+    indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
-   row_grl <- rowRanges( sep )
+    gr_lab = "mod padj < .05"
 
-   gr_list <- list(meth_peaks = row_grl[grepl("meth",rownames(sep))][DESeq2Results(sep)$padj < final_alpha],
-        control = row_grl[grepl("control",names(row_grl) )]
-   )
+    if( length(indx_sig) < floor( sum(grepl("meth_", rownames(sep))) * 0.01 ) ){
+
+      indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+
+      gr_lab = "mod p < .05"
+
+    }
+
+    gr_list <- list(meth_peaks = row_grl[ grepl("meth", rownames(sep)) ][indx_sig],
+                    control = row_grl[ grepl("control", names(row_grl)) ]
+    )
+
+    names(gr_list)[1] <- gr_lab
+
+    rm(indx_sig, gr_lab)
 
    if(!include_control_regions){
      gr_list <- gr_list[-2]
@@ -100,27 +109,35 @@ suppressWarnings(
   } else {
     #Finally, the guitar plot will be generated for differential methylation results.
 
-    decision_table  <- decision_deseq2(Inf_RES = DESeq2Results(sep),
-                                    P_cut = 0.05,
-                                    log2FC_cut = 0,
-                                    Min_mod = 1000,
-                                    Exp_dir = "hyper")
-
-    if(is.na(decision_table$Cut_Val_ctrl)) decision_table$Cut_Val_ctrl = 1
-
-    if(is.na(decision_table$Cut_Val_expected)) decision_table$Cut_Val_expected = 1
-
     row_grl <- rowRanges( sep )
 
-    indx_hyper <- which( DESeq2Results(sep)$pvalue < decision_table$Cut_Val_expected &
-                         DESeq2Results(sep)$log2FoldChange > 0)
+    indx_hyper <- which( DESeq2Results(sep)$padj < .05 &
+                           DESeq2Results(sep)$log2FoldChange > 0)
 
-    indx_hypo <- which( DESeq2Results(sep)$pvalue < decision_table$Cut_Val_ctrl &
-                           DESeq2Results(sep)$log2FoldChange < 0)
+    indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
+                          DESeq2Results(sep)$log2FoldChange < 0)
+
+    list_names <- c("hyper padj < .05", "hypo padj < .05")
+
+    min_positive <- floor(sum(grepl("meth_", rownames(sep))) * 0.005)
+
+    if(length(indx_hyper) + length(indx_hypo) < min_positive){
+
+      indx_hyper <- which( DESeq2Results(sep)$padj < .05 &
+                             DESeq2Results(sep)$log2FoldChange > 0)
+
+      indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
+                            DESeq2Results(sep)$log2FoldChange < 0)
+
+      list_names <- c("hyper p < .05", "hypo p < .05")
+
+    }
 
     gr_list <- list(hyperMeth = row_grl[grepl("meth",rownames(sep))][indx_hyper],
                     hypoMeth = row_grl[grepl("meth",rownames(sep))][indx_hypo]
     )
+
+    names(gr_list) <- list_names
 
     suppressWarnings(
 

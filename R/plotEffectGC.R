@@ -1,4 +1,4 @@
-#'@title Plot the relationship between the glm estimate and GC content.
+#'@title Plot the relationship between the effect sizes (GLM log2FC estimates) and GC content.
 #'@description This function plot the scatter plot between GC content and the methylation / differential methylation levels of the modification sites.
 #'
 #'@details By default, this function will generate the countour of the scatter plot, and a linear regression line indicating the trend between
@@ -31,7 +31,7 @@
 #'@rdname plotBetaGC
 #'
 #'@export
-setMethod("plotBetaGC",
+setMethod("plotEffectGC",
           "SummarizedExomePeak",
                 function(sep,
                          bsgenome = NULL,
@@ -79,9 +79,32 @@ elementMetadata( sep ) <- GC_content_over_grl(
 Decision <- rep("Insignificant",nrow(DESeq2Results(sep)))
 
 if(!any(sep$design_Treatment)) {
-Decision[DESeq2Results(sep)$padj < 0.05] <- "padj < 0.05"
+
+indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+
+if( length(indx_sig) < floor( sum(grepl("meth_", rownames(sep))) * 0.01 ) ){
+
+indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+
+Decision[indx_sig] <- "p value < .05"
+
 } else {
-Decision[DESeq2Results(sep)$pvalue < 0.05] <- "p < 0.05"
+
+Decision[indx_sig] <- "padj < .05"
+
+}
+
+} else {
+
+  if(length(which(DESeq2Results(sep)$padj < .05)) <
+     floor(sum(grepl("meth_", rownames(sep))) * 0.005)) {
+    Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < .05"
+
+  } else {
+    Decision[DESeq2Results(sep)$padj < .05] <- "p adj < .05"
+
+  }
+
 }
 
 GC_content_meth <- elementMetadata(sep)$GC_content[grepl("meth_",rownames(sep))]
@@ -95,17 +118,16 @@ plot_df = data.frame(
 )
 
 if(!any(sep$design_Treatment)) {
-  ylabel <- "log2 beta values"
-  mtitle <- "GC content against beta estimates"
+  ylabel <- "log2 IP/input Fold Change"
+  mtitle <- "GC Content Against log2 Fold Change Estimate"
 } else {
-  ylabel <- "log2 odds ratios"
-  mtitle <- "GC content against log2 odds ratios"
+  ylabel <- "log2 Risk Ratio"
+  mtitle <- "GC Content Against log2 Risk Ratio Estimate"
 }
 
 plot_df$GC_idx <- as.numeric(plot_df$GC_idx)
 
 plot_df <- plot_df[plot_df$GC_idx < 0.88 & plot_df$GC_idx > 0.2,]
-
 
 p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
                  geom_point(aes(group = Label,
