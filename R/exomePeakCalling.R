@@ -116,7 +116,7 @@ setMethod("exomePeakCalling",
   split_x <- function(x){return(split(x, names(x)))}
 
   if(!parallel) {
-    register(SerialParam(bpnworkers = 1))
+    register(SerialParam())
     register(MulticoreParam(bpnworkers = 2))
     register(SnowParam(bpnworkers = 2))
   } else {
@@ -247,7 +247,7 @@ setMethod("exomePeakCalling",
   message("count reads on the merged peaks and the control regions")
 
   if(!parallel) {
-    register(SerialParam(bpnworkers = 1))
+    register(SerialParam())
     register(MulticoreParam(bpnworkers = 2))
     register(SnowParam(bpnworkers = 2))
   } else {
@@ -312,7 +312,7 @@ setMethod("exomePeakCalling",
     message("count reads using single base annotation on exons")
 
     if(!parallel) {
-      register(SerialParam(bpnworkers = 1))
+      register(SerialParam())
       register(MulticoreParam(bpnworkers = 2))
       register(SnowParam(bpnworkers = 2))
     } else {
