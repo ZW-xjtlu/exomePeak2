@@ -67,6 +67,7 @@ setMethod("exomePeakCalling",
                       glm_type = c("auto","poisson","NB","DESeq2"),
                       drop_overlapped_genes = TRUE,
                       parallel = FALSE,
+                      bp_param = NULL,
                       mod_annotation = NULL,
                       background = NULL,
                       mask_5p = TRUE
@@ -115,7 +116,13 @@ setMethod("exomePeakCalling",
   split_x <- function(x){return(split(x, names(x)))}
 
   if(!parallel) {
-    register(SerialParam())
+    register(SerialParam(bpnworkers = 1))
+    register(MulticoreParam(bpnworkers = 2))
+    register(SnowParam(bpnworkers = 2))
+  } else {
+    if(!is.null(bp_param)){
+      register(bp_param,default = TRUE)
+    }
   }
 
   SE_Peak_counts <- summarizeOverlaps(
@@ -240,7 +247,13 @@ setMethod("exomePeakCalling",
   message("count reads on the merged peaks and the control regions")
 
   if(!parallel) {
-    register(SerialParam())
+    register(SerialParam(bpnworkers = 1))
+    register(MulticoreParam(bpnworkers = 2))
+    register(SnowParam(bpnworkers = 2))
+  } else {
+    if(!is.null(bp_param)){
+      register(bp_param,default = TRUE)
+    }
   }
 
   SummarizedExomePeaks <- summarizeOverlaps(
@@ -296,11 +309,17 @@ setMethod("exomePeakCalling",
                                     distance_5p = 200,
                                     control_width = peak_width)
 
-    if(!parallel){
-      register(SerialParam())
-    }
-
     message("count reads using single base annotation on exons")
+
+    if(!parallel) {
+      register(SerialParam(bpnworkers = 1))
+      register(MulticoreParam(bpnworkers = 2))
+      register(SnowParam(bpnworkers = 2))
+    } else {
+      if(!is.null(bp_param)){
+        register(bp_param,default = TRUE)
+      }
+    }
 
     SE_temp <- summarizeOverlaps(
       features = merged_peaks_grl,
@@ -387,5 +406,4 @@ setMethod("exomePeakCalling",
   )
 
 }
-
 )

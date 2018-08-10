@@ -23,6 +23,7 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         glm_type = c("auto","poisson","NB","DESeq2"),
                                         drop_overlapped_genes = TRUE,
                                         parallel = FALSE,
+                                        bp_param = NULL,
                                         mod_annotation = NULL,
                                         background = NULL,
                                         mask_5p = TRUE) {standardGeneric("exomePeakCalling")})

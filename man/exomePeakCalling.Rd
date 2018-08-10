@@ -14,8 +14,8 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   step_length = binding_length, count_cutoff = 5, p_cutoff = NULL,
   p_adj_cutoff = 0.05, logFC_cutoff = 0, peak_width = fragment_length/2,
   glm_type = c("auto", "poisson", "NB", "DESeq2"),
-  drop_overlapped_genes = TRUE, parallel = FALSE, mod_annotation = NULL,
-  background = NULL, mask_5p = TRUE)
+  drop_overlapped_genes = TRUE, parallel = FALSE, bp_param = NULL,
+  mod_annotation = NULL, background = NULL, mask_5p = TRUE)
 
 exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   bam_treated_input = NULL, txdb = NULL, bsgenome = NULL,
@@ -36,8 +36,8 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   step_length = binding_length, count_cutoff = 5, p_cutoff = NULL,
   p_adj_cutoff = 0.05, logFC_cutoff = 0, peak_width = fragment_length/2,
   glm_type = c("auto", "poisson", "NB", "DESeq2"),
-  drop_overlapped_genes = TRUE, parallel = FALSE, mod_annotation = NULL,
-  background = NULL, mask_5p = TRUE)
+  drop_overlapped_genes = TRUE, parallel = FALSE, bp_param = NULL,
+  mod_annotation = NULL, background = NULL, mask_5p = TRUE)
 }
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object.}
