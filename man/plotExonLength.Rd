@@ -29,8 +29,8 @@ This function plot the distribution of the exon length for peaks containing exon
 }
 \details{
 If the SummarizedExomePeaks object contains quantification results for methylation, the significantly methylated peaks
-with IP to input log2FC > 0 and DESeq2 Wald test padj < 0.05 will be plotted .
+with IP to input log2FC > 0 and DESeq2 Wald test padj < .05 will be plotted .
 
 If the SummarizedExomePeaks object contains quantification results for differential methylation, both the hyper methylation
-and hypo methylation peaks with DESeq2 Wald test p values < 0.05 will be plotted.
+and hypo methylation peaks with DESeq2 Wald test p values < .05 will be plotted.
 }

@@ -6,13 +6,20 @@
 \alias{glmMeth}
 \title{Quantification of RNA methylation beta values based on the generalized linear models of negative binomial distribution.}
 \usage{
-glmMeth(sep, shrinkage_method = c("apeglm", "normal", "ashr"), ...)
+glmMeth(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
+  shrinkage_method = c("apeglm", "normal", "ashr"), ...)
 
-\S4method{glmMeth}{SummarizedExomePeak}(sep, shrinkage_method = c("apeglm",
-  "normal", "ashr", "none"), ...)
+\S4method{glmMeth}{SummarizedExomePeak}(sep, glm_type = c("auto", "poisson",
+  "NB", "DESeq2"), shrinkage_method = c("apeglm", "normal", "ashr", "none"),
+  ...)
 }
 \arguments{
 \item{sep}{is a summarizedExomePeak object.}
+
+\item{glm_type}{a character, that specify the type of generalized linear model used in peak calling; The argument can be one of the "auto", "poisson", "NB", and "DESeq2". Default to be "auto".
+
+Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples of the treatment and control.
+The poisson GLM will be applied in the other cases.}
 
 \item{shrinkage_method}{a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", "ashr", or "none".
 Please check \code{\link{lfcShrink}} for more information.}

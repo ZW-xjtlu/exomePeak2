@@ -5,7 +5,8 @@
 \title{Find the background of the user provided annotation.}
 \usage{
 annot_bg(annot, txdb, cut_off_width = 1e+05, cut_off_num = 2000,
-  drop_overlapped_genes = TRUE)
+  drop_overlapped_genes = TRUE, drop_5p = FALSE, distance_5p = 200,
+  control_width = 50)
 }
 \arguments{
 \item{annot}{A \code{GRanges} object of user provided annotation (names are neccessary for the index of the splitting).}
@@ -17,6 +18,10 @@ annot_bg(annot, txdb, cut_off_width = 1e+05, cut_off_num = 2000,
 \item{cut_off_num}{A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 2000.}
 
 \item{drop_overlapped_genes}{A logical indicating whether to discard the overlapping genes; Default TRUE.}
+
+\item{drop_5p}{A logical value, TRUE is the region of the five prime start of the transcripts should be dropped in control region; Default TRUE.}
+
+\item{distance_5p}{A numeric value of the length of the transcript starting region; default 200.}
 }
 \value{
 A \code{GRangesList} object.

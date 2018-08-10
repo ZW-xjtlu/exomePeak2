@@ -32,6 +32,8 @@
 #' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annotation a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
+#' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
+#'
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
@@ -78,6 +80,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        parallel = FALSE,
                        mod_annotation = NULL,
                        background = NULL,
+                       glm_type = c("auto","poisson","NB","DESeq2"),
                        shrinkage_method = c("apeglm","ashr","normal","none"),
                        drop_overlapped_genes = TRUE,
                        gc_correction = TRUE,
@@ -148,6 +151,7 @@ random_primer = random_primer
 
 sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         txdb = txdb,
+                        bsgenome = bsgenome,
                         gene_anno_gff = gene_anno_gff,
                         fragment_length = fragment_length,
                         binding_length = binding_length,
