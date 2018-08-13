@@ -38,8 +38,6 @@
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
 #'
-#' @param background a \code{GRanges} or \code{GRangesList} object for user provided background control regions on the genome.
-#'
 #' @return This function will save the results of modification / differrential modification analysis under the current working directory.
 #'
 #' @examples
@@ -79,12 +77,11 @@ exomePeak2 <- function(bam_ip = NULL,
                        logFC_cutoff = 0,
                        parallel = FALSE,
                        mod_annotation = NULL,
-                       background = NULL,
                        glm_type = c("auto","poisson","NB","DESeq2"),
                        shrinkage_method = c("apeglm","ashr","normal","none"),
                        drop_overlapped_genes = TRUE,
                        gc_correction = TRUE,
-                       gc_feature = c("background","all"),
+                       m6Aseq_background = TRUE,
                        export_results = TRUE,
                        export_format = c("tsv","BED","RDS"),
                        table_style = c("bed","granges")
@@ -95,8 +92,6 @@ shrinkage_method <- match.arg(shrinkage_method)
 export_format <- match.arg(export_format)
 
 table_style <- match.arg(table_style)
-
-gc_feature <- match.arg(gc_feature)
 
 if(!is.null(bam_treated_ip) & shrinkage_method == "normal"){
   stop("normal prior is not applicable for differential methylation analysis")
@@ -164,7 +159,7 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         drop_overlapped_genes = drop_overlapped_genes,
                         parallel = parallel,
                         mod_annotation = mod_annotation,
-                        background = background
+                        m6Aseq_background = m6Aseq_background
 )
 
 sep <- estimateSeqDepth(sep)
@@ -177,8 +172,7 @@ if(gc_correction) {
                      txdb = txdb,
                      fragment_length = fragment_length,
                      binding_length = binding_length,
-                     drop_overlapped_genes = drop_overlapped_genes,
-                     feature = gc_feature)
+                     drop_overlapped_genes = drop_overlapped_genes)
 }
 
 if(any(sep$design_Treatment)){

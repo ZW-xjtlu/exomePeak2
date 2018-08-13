@@ -13,7 +13,7 @@
 #' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
 #' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
 #'
-#' Under the default setting, the DESeq2 method is implemented on experiments with more than 3 biological replicates for both IP and input samples.
+#' Under the default setting, the DESeq2 method is implemented on experiments with > 1 biological replicates for both IP and input samples.
 #' The poisson GLM will be implemented otherwise.
 #'
 #' @param count_cutoff a non negative integer value of the minimum average reads count per window used in peak calling; default 5.
@@ -24,7 +24,12 @@
 #' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annotation a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
-#' @param mask_5p a logical of whether to exclude the transcript five prime regions in control; default TRUE.
+#' @param mod_background a \code{GRanges} object for user provided RNA modification background.
+#' @param m6Aseq_background a logical of whether to use the topology knowledge of m6A-Seq to find appropriate background in GC effect estimation;
+#' If TRUE, the GC effect will be estimated on bins that is not overlapping with long exons (exon length >= 400bp) and 5'UTR.
+#' Also, the returned background control ranges returned will also exclude those regions;
+#' It should not be select if you are analyzing MeRIP-seq data of other modification, such as hm5C; default TRUE.
+#'
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
@@ -69,9 +74,9 @@ setMethod("exomePeakCalling",
                       parallel = FALSE,
                       bp_param = NULL,
                       mod_annotation = NULL,
-                      background = NULL,
-                      mask_5p = TRUE
-                      ){
+                      mod_background = NULL,
+                      m6Aseq_background = TRUE
+                      ) {
   glm_type <- match.arg(glm_type)
 
   stopifnot(fragment_length > 0)
@@ -143,6 +148,19 @@ setMethod("exomePeakCalling",
                     fragments = paired
   )
 
+  #Calculate background region for m6A-seq
+
+  if(m6Aseq_background){
+    indx_UTR5 <- rowRanges(SE_Peak_counts) %over% fiveUTRsByTranscript(txdb)
+
+    indx_longexon <- rowRanges(SE_Peak_counts) %over% exons(txdb)[width(exons(txdb)) >= 400]
+
+    indx_topology = !(indx_UTR5 | indx_longexon)
+
+    rm(indx_UTR5, indx_longexon)
+  }
+
+
   #calculate effective GC content if BSgenome is provided
 
   if(!is.null(bsgenome)){
@@ -155,10 +173,39 @@ setMethod("exomePeakCalling",
 
    gc_contents <- tapply(gc_freq, indx_gr, sum) / region_widths
 
-   rowData_SE <- DataFrame(gc_contents = gc_contents,
-                        region_widths = region_widths)
+   indx_N <- rowMeans(assay(SE_Peak_counts)) >= 50
 
-   rm(indx_gr, gc_freq, region_widths, gc_contents)
+   if(m6Aseq_background){
+
+     if(sum(indx_N & indx_topology) < 5000) {
+       warning("The number of background bins < 5000, using all bins as background for peak calling", call. = FALSE, immediate. = TRUE)
+       indx_topology = TRUE
+       glm_type = "poisson"
+     }
+
+   } else {
+
+     indx_topology = TRUE
+
+   }
+
+   rowData_SE <- DataFrame(gc_contents = gc_contents,
+                           region_widths = region_widths,
+                           indx_topology = indx_topology,
+                           indx_N = indx_N)
+
+   rm(indx_gr, gc_freq, region_widths, gc_contents, indx_N, indx_topology)
+
+  } else {
+
+    if(sum(indx_topology) < 5000) {
+      warning("The number of background bins < 5000, using all bins as background for peak calling", call. = FALSE, immediate. = TRUE)
+      indx_topology = TRUE
+      glm_type = "poisson"
+    }
+
+    rowData_SE <- DataFrame(indx_topology = indx_topology)
+
   }
 
   rowRanges(SE_Peak_counts) <- exome_bins_grl[as.numeric(rownames(SE_Peak_counts))] #replace the row ranges with the not expanded version
@@ -176,7 +223,7 @@ setMethod("exomePeakCalling",
   #Peak calling with user defined statistical methods
 
   if(glm_type == "auto") {
-    if(all( table(colData(SE_Peak_counts)$design_IP) > 3)) {
+    if(all( table(colData(SE_Peak_counts)$design_IP) > 1)) {
       glm_type <- "DESeq2"
     } else {
       glm_type <- "poisson"
@@ -222,8 +269,7 @@ setMethod("exomePeakCalling",
                                   cut_off_width = 1e5,
                                   cut_off_num = 2000,
                                   drop_overlapped_genes = drop_overlapped_genes,
-                                  drop_5p = mask_5p,
-                                  distance_5p = 200,
+                                  m6Aseq_background = m6Aseq_background,
                                   control_width = peak_width)
 
   annotation_row_features <- count_row_features
@@ -305,8 +351,7 @@ setMethod("exomePeakCalling",
                                     cut_off_width = 1e5,
                                     cut_off_num = 2000,
                                     drop_overlapped_genes = drop_overlapped_genes,
-                                    drop_5p = mask_5p,
-                                    distance_5p = 200,
+                                    m6Aseq_background = m6Aseq_background,
                                     control_width = peak_width)
 
     message("count reads using single base annotation on exons")
@@ -373,10 +418,10 @@ setMethod("exomePeakCalling",
 
   }
 
-  if(!is.null(background)) {
+  if(!is.null(mod_background)) {
 
     rowRanges(SummarizedExomePeaks) <- replace_bg( grl = rowRanges(SummarizedExomePeaks),
-                                                   bg = background,
+                                                   bg = mod_background,
                                                    txdb = txdb,
                                                    drop_overlapped_genes = drop_overlapped_genes )
   }

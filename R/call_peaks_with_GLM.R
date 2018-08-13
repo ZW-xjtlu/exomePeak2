@@ -40,7 +40,7 @@ call_peaks_with_GLM <- function(SE_bins,
                                 logFC_cutoff = 0,
                                 drop_overlapped_genes = TRUE) {
 
-  design_IP_temp <- rep( "input",ncol(SE_bins) )
+  design_IP_temp <- rep( "input", ncol(SE_bins) )
 
   design_IP_temp[ colData(SE_bins)$design_IP ] <- "IP"
 

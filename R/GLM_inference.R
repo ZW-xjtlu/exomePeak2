@@ -36,9 +36,9 @@ GLM_inference <- function(SE_bins,
   dds = DESeqDataSet( se = SE_bins[indx_count,],
                       design = ~ design_IP )
 
-  dds = estimateSizeFactors( dds ) #The default size factor estimation method is used in peak calling.
+  dds$sizeFactor = estimateSizeFactorsForMatrix( assay(dds)[rowData( dds )$indx_topology,] ) #The default size factor estimation method is used in peak calling.
 
-  if(nrow(rowData(SE_bins)) == nrow(SE_bins)){
+  if(!is.null(rowData(SE_bins)$gc_contents)){
 
     indx_IP <- dds$design_IP == "IP"
 
@@ -47,6 +47,7 @@ GLM_inference <- function(SE_bins,
                                           lengthMethod = "smooth",
                                           x = rowData( dds )$gc_contents,
                                           sizeFactors = dds$sizeFactor[indx_IP],
+                                          subindex = which( rowData( dds )$indx_topology & rowData( dds )$indx_N ),
                                           sqn = TRUE,
                                           verbose = FALSE) )
 
@@ -55,6 +56,7 @@ GLM_inference <- function(SE_bins,
                                              lengthMethod = "smooth",
                                              x = rowData( dds )$gc_contents,
                                              sizeFactors = dds$sizeFactor[!indx_IP],
+                                             subindex = which( rowData( dds )$indx_topology & rowData( dds )$indx_N ),
                                              sqn = TRUE,
                                              verbose = FALSE) )
 

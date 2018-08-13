@@ -5,7 +5,7 @@
 \title{Find the background of the user provided annotation.}
 \usage{
 annot_bg(annot, txdb, cut_off_width = 1e+05, cut_off_num = 2000,
-  drop_overlapped_genes = TRUE, drop_5p = FALSE, distance_5p = 200,
+  drop_overlapped_genes = TRUE, m6Aseq_background = TRUE,
   control_width = 50)
 }
 \arguments{
@@ -19,7 +19,7 @@ annot_bg(annot, txdb, cut_off_width = 1e+05, cut_off_num = 2000,
 
 \item{drop_overlapped_genes}{A logical indicating whether to discard the overlapping genes; Default TRUE.}
 
-\item{drop_5p}{A logical value, TRUE is the region of the five prime start of the transcripts should be dropped in control region; Default TRUE.}
+\item{m6Aseq_background}{A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.}
 
 \item{distance_5p}{A numeric value of the length of the transcript starting region; default 200.}
 }

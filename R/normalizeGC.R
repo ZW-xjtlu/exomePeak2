@@ -63,6 +63,16 @@ setMethod("normalizeGC",
                                  effective_GC = FALSE,
                                  drop_overlapped_genes = TRUE
                                  ) {
+feature <- match.arg(feature)
+
+#check if the sep object is abscent of the collumn wised size factors.
+if(is.null(colData( sep )$sizeFactor)){
+  sep <- estimateSeqDepth(sep)
+}
+
+if(any(is.null(elementMetadata( sep )$GC_content),
+          is.null(elementMetadata( sep )$feature_length))) {
+
 if(is.null(bsgenome)) {
 stop("require BSgenome objects in GC size factor estimaton.")
 }
@@ -81,14 +91,6 @@ if(!is.null(gene_anno_gff)) {
 
 bsgenome <- getBSgenome(bsgenome)
 
-#check if the sep object is abscent of the collumn wised size factors.
-if(is.null(colData( sep )$sizeFactor)){
-sep <- estimateSeqDepth(sep)
-}
-
-#CQN normalization with everything pooled
-feature <- match.arg(feature)
-
 #retrieve the vector of the exon level GC content from Genome.
 
 elementMetadata( sep ) <- GC_content_over_grl(
@@ -100,6 +102,8 @@ elementMetadata( sep ) <- GC_content_over_grl(
                                       drop_overlapped_genes = drop_overlapped_genes,
                                       effective_GC = effective_GC
                                  )
+
+}
 
 #Reserve any potential NA in the GC_content vector
 GC_size_factors <- matrix(NA, nrow = nrow(sep), ncol = ncol(sep))

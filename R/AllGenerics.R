@@ -25,8 +25,8 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         parallel = FALSE,
                                         bp_param = NULL,
                                         mod_annotation = NULL,
-                                        background = NULL,
-                                        mask_5p = TRUE) {standardGeneric("exomePeakCalling")})
+                                        mod_background = NULL,
+                                        m6Aseq_background = TRUE) {standardGeneric("exomePeakCalling")})
 
 #' @rdname estimateSeqDepth
 #' @export

@@ -50,7 +50,7 @@ setMethod("glmDM",
   stopifnot( ( any(sep$design_Treatment) & any(!sep$design_Treatment) ) )
 
   if(glm_type == "auto") {
-    if( all( table(colData(sep)$design_IP,colData(sep)$design_Treatment) > 3 ) ) {
+    if( all( table(colData(sep)$design_IP,colData(sep)$design_Treatment) > 1 ) ) {
       glm_type <- "DESeq2"
     } else {
       glm_type <- "poisson"

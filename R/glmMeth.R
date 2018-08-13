@@ -40,7 +40,7 @@ setMethod("glmMeth",
   glm_type = match.arg(glm_type)
 
   if(glm_type == "auto") {
-    if( all( table(colData(sep)$design_IP) > 3 ) ) {
+    if( all( table(colData(sep)$design_IP) > 1  ) ) {
       glm_type <- "DESeq2"
     } else {
       glm_type <- "poisson"
@@ -150,11 +150,11 @@ setMethod("glmMeth",
 
       if(shrinkage_method == "none") {
 
-        quantification_rst <- as.data.frame( results( dds, altHypothesis = "greater" ) )
+      quantification_rst <- as.data.frame( results( dds, altHypothesis = "greater" ) )
 
       } else {
 
-        quantification_rst <- as.data.frame( lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  ) )
+      quantification_rst <- as.data.frame( lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  ) )
 
       }
 

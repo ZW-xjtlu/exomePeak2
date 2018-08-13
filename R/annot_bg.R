@@ -5,7 +5,7 @@
 #' @param cut_off_width A non-negative integer indicate the least total width of the disjoint exons used as the background; Default 1e5.
 #' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 2000.
 #' @param drop_overlapped_genes A logical indicating whether to discard the overlapping genes; Default TRUE.
-#' @param drop_5p A logical value, TRUE is the region of the five prime start of the transcripts should be dropped in control region; Default TRUE.
+#' @param m6Aseq_background A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
 #' @param distance_5p A numeric value of the length of the transcript starting region; default 200.
 #' @return A \code{GRangesList} object.
 #' The first portion is the exons regions that is not overlapped with \code{annoation}.
@@ -23,8 +23,7 @@ annot_bg <- function(annot,
                      cut_off_width = 1e5,
                      cut_off_num = 2000,
                      drop_overlapped_genes = TRUE,
-                     drop_5p = FALSE,
-                     distance_5p = 200,
+                     m6Aseq_background = TRUE,
                      control_width = 50) {
 
   #Calculate exon regions
@@ -32,21 +31,21 @@ annot_bg <- function(annot,
 
   mcols(annot) <- NULL
 
-  if(drop_5p){
+  if(drop_overlapped_genes){
 
-    tss_5p <- resize( transcripts(txdb), 1, fix = "start")
+    utr5 <- unlist( fiveUTRsByTranscript(txdb) )
 
-    TSS_on_tx <- mapToTranscripts(tss_5p, exbyug)
+    long_exon <- exons(txdb)
 
-    TSS_on_tx <- resize(TSS_on_tx, distance_5p, fix = "start")
+    long_exon <- long_exon[width(long_exon) >= 400]
 
-    tss_5p_extended <- mapFromTranscripts(TSS_on_tx, exbyug)
+    mcols(utr5) <- NULL
 
-    mcols(tss_5p_extended) <- NULL
+    mcols(long_exon) <- NULL
 
-    annot_tmp <- c(unlist(annot), tss_5p_extended)
+    annot_tmp <- c(unlist(annot), utr5, long_exon)
 
-    rm(tss_5p, TSS_on_tx, tss_5p_extended)
+    rm(utr5, long_exon)
 
   } else {
 
