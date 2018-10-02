@@ -81,8 +81,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        background = c("mclust", "m6Aseq_prior", "manual", "all"),
                        glm_type = c("DESeq2","poisson","NB"),
                        shrinkage_method = c("apeglm","ashr","normal","none"),
-                       drop_overlapped_genes = FALSE,
-                       gc_correction = TRUE,
+                       drop_overlapped_genes = TRUE,
                        export_results = TRUE,
                        export_format = c("tsv","BED","RDS"),
                        table_style = c("bed","granges")
@@ -129,13 +128,10 @@ if(!is.null(gene_annot)) {
   }
 }
 
-if(is.null(bsgenome) & gc_correction) {
-  stop("required argument of bsgenome or genome_assemby for GC content correction,
-       if you want to skip the GC correction, please let gc_correction = FALSE.")
-}
 
-if(gc_correction){
-bsgenome <- getBSgenome(bsgenome)
+
+if(!is.null(bsgenome)) {
+  bsgenome <- getBSgenome(bsgenome)
 }
 
 #Check the completeness of the genome annotation
@@ -172,7 +168,7 @@ sep <- estimateSeqDepth(sep)
 
 message("calculate GC content effects on background")
 
-if(gc_correction) {
+if(!is.null(bsgenome)) {
   sep <- normalizeGC(sep,
                      bsgenome = bsgenome,
                      txdb = txdb,
@@ -189,7 +185,7 @@ if(any(sep$design_Treatment)){
   sep <- glmMeth(sep, shrinkage_method = shrinkage_method)
 }
 
-if(gc_correction | is(bsgenome, "BSgenome")) {
+if(!is.null(bsgenome)) {
 plotReadsGC(sep = sep,
             save_pdf_prefix = "ep2",
             drop_overlapped_genes = drop_overlapped_genes)

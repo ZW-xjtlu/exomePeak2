@@ -75,7 +75,7 @@ setMethod("exomePeakCalling",
                    p_adj_cutoff = 0.05,
                    logFC_cutoff = 0,
                    peak_width = fragment_length / 2,
-                   drop_overlapped_genes = FALSE,
+                   drop_overlapped_genes = TRUE,
                    parallel = FALSE,
                    bp_param = NULL
           ) {
@@ -246,7 +246,7 @@ setMethod("exomePeakCalling",
 
               #Check for minimum background #
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
-                      rowData(SE_Peak_counts)$indx_bg) < 5000) {
+                      rowData(SE_Peak_counts)$indx_bg) < 2000) {
                 warning(
                   "Insufficient background, peak calling without background.",
                   call. = FALSE,

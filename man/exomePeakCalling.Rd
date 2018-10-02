@@ -28,9 +28,8 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   logFC_cutoff = 0, parallel = FALSE, background = c("mclust",
   "m6Aseq_prior", "manual", "all"), glm_type = c("DESeq2", "poisson", "NB"),
   shrinkage_method = c("apeglm", "ashr", "normal", "none"),
-  drop_overlapped_genes = FALSE, gc_correction = TRUE,
-  export_results = TRUE, export_format = c("tsv", "BED", "RDS"),
-  table_style = c("bed", "granges"))
+  drop_overlapped_genes = TRUE, export_results = TRUE,
+  export_format = c("tsv", "BED", "RDS"), table_style = c("bed", "granges"))
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
   txdb = NULL, bsgenome = NULL, glm_type = c("DESeq2", "NB", "poisson"),
