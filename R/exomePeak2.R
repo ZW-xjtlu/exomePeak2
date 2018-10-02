@@ -180,7 +180,7 @@ if(!is.null(bsgenome)) {
 if(any(sep$design_Treatment)){
   message("differential methylation analysis with interactive GLM")
   sep <- glmDM(sep, shrinkage_method = shrinkage_method)
-}else{
+} else {
   message("peak refinement with updated GLM offsets")
   sep <- glmMeth(sep, shrinkage_method = shrinkage_method)
 }

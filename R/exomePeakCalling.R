@@ -182,16 +182,18 @@ setMethod("exomePeakCalling",
 
               #GC
               if (is.null(bsgenome)) {
+
               } else{
-                indx_gr <- names(unlist(rowRanges(SE_Peak_counts)))
-                gc_freq <-
-                  as.vector(letterFrequency(Views(bsgenome, unlist(
-                    rowRanges(SE_Peak_counts)
-                  )), letters = "CG"))
-                region_widths <- sum(width(rowRanges(SE_Peak_counts)))
+                flanked_gr <- unlist(rowRanges(SE_Peak_counts))
+                names(flanked_gr) <-
+                  gsub("\\..*$", "", names(flanked_gr))
+                GC_freq <-
+                  as.vector(letterFrequency(Views(bsgenome, flanked_gr), letters = "CG"))
+                sum_freq <- tapply(GC_freq, names(flanked_gr), sum)
+                sum_freq <- sum_freq[names(rowRanges(SE_Peak_counts))]
                 rowData(SE_Peak_counts)$gc_contents <-
-                  tapply(gc_freq, indx_gr, sum) / region_widths
-                rm(indx_gr, gc_freq, region_widths)
+                  sum_freq / sum(width(rowRanges(SE_Peak_counts)))
+                rm(flanked_gr, GC_freq, sum_freq)
               }
 
               #Bin width
@@ -213,12 +215,26 @@ setMethod("exomePeakCalling",
               if (background == "mclust") {
                 message("find background with mclust")
                 rowData(SE_Peak_counts)$indx_bg <- mclust_bg(se_peak_counts = SE_Peak_counts)
+
+                if (sum(rowData(SE_Peak_counts)$indx_gc_est &
+                        rowData(SE_Peak_counts)$indx_bg) < 2000) {
+                  warning(
+                    "background bin # < 2000 using mclust, search background with m6A-seq prior.",
+                    call. = FALSE,
+                    immediate. = TRUE
+                  )
+                   m6A_prior = T
+                }
+
               }
 
 
               #Prior knowledge on m6A topology
 
-              if (background == "m6Aseq_prior") {
+              #Check for minimum background #
+
+
+              if (background == "m6Aseq_prior" | m6A_prior) {
                 indx_UTR5 <-
                   rowRanges(SE_Peak_counts) %over% fiveUTRsByTranscript(txdb)
 
@@ -227,7 +243,7 @@ setMethod("exomePeakCalling",
 
                 rowData(SE_Peak_counts)$indx_bg = !(indx_UTR5 | indx_longexon)
 
-                rm(indx_UTR5, indx_longexon)
+                rm(indx_UTR5, indx_longexon, m6A_prior)
               }
 
               #Provided granges
