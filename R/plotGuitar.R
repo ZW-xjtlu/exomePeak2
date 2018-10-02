@@ -119,14 +119,14 @@ suppressWarnings(
 
     list_names <- c("hyper padj < .05", "hypo padj < .05")
 
-    min_positive <- floor(sum(grepl("meth_", rownames(sep))) * 0.005)
+    min_positive <- floor(sum(grepl("meth_", rownames(sep))) * 0.1)
 
     if(length(indx_hyper) + length(indx_hypo) < min_positive){
 
-      indx_hyper <- which( DESeq2Results(sep)$padj < .05 &
+      indx_hyper <- which( DESeq2Results(sep)$pvalue < .05 &
                              DESeq2Results(sep)$log2FoldChange > 0)
 
-      indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
+      indx_hypo <- which( DESeq2Results(sep)$pvalue < .05 &
                             DESeq2Results(sep)$log2FoldChange < 0)
 
       list_names <- c("hyper p < .05", "hypo p < .05")

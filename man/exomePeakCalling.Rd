@@ -10,34 +10,37 @@
 \title{Exome peak calling and quatification of MeRIP-seq datasets.}
 \usage{
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
-  gene_anno_gff = NULL, fragment_length = 100, binding_length = 25,
-  step_length = binding_length, count_cutoff = 5, p_cutoff = NULL,
-  p_adj_cutoff = 0.05, logFC_cutoff = 0, peak_width = fragment_length/2,
-  glm_type = c("auto", "poisson", "NB", "DESeq2"),
-  drop_overlapped_genes = TRUE, parallel = FALSE, bp_param = NULL,
-  mod_annotation = NULL, mod_background = NULL, m6Aseq_background = TRUE)
+  glm_type = c("DESeq2", "NB", "poisson"), background = c("mclust",
+  "m6Aseq_prior", "manual", "all"), manual_background = NULL,
+  gene_annot = NULL, mod_annot = NULL, fragment_length = 100,
+  binding_length = 25, step_length = binding_length, pc_count_cutoff = 5,
+  gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  logFC_cutoff = 0, peak_width = fragment_length/2,
+  drop_overlapped_genes = FALSE, parallel = FALSE, bp_param = NULL)
 
 exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   bam_treated_input = NULL, txdb = NULL, bsgenome = NULL,
-  genome_assembly = NA, gene_anno_gff = NULL, paired_end = FALSE,
-  random_primer = TRUE, fragment_length = 100, binding_length = 25,
-  step_length = binding_length, peak_width = fragment_length/2,
-  count_cutoff = 5, p_cutoff = NULL, p_adj_cutoff = 0.05,
-  logFC_cutoff = 0, parallel = FALSE, mod_annotation = NULL,
-  glm_type = c("auto", "poisson", "NB", "DESeq2"),
+  genome_assembly = NA, gene_annot = NULL, mod_annot = NULL,
+  paired_end = FALSE, random_primer = TRUE, fragment_length = 100,
+  binding_length = 25, step_length = binding_length,
+  peak_width = fragment_length/2, pc_count_cutoff = 5,
+  gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  logFC_cutoff = 0, parallel = FALSE, background = c("mclust",
+  "m6Aseq_prior", "manual", "all"), glm_type = c("DESeq2", "poisson", "NB"),
   shrinkage_method = c("apeglm", "ashr", "normal", "none"),
-  drop_overlapped_genes = TRUE, gc_correction = TRUE,
-  m6Aseq_background = TRUE, export_results = TRUE,
-  export_format = c("tsv", "BED", "RDS"), table_style = c("bed", "granges"))
+  drop_overlapped_genes = FALSE, gc_correction = TRUE,
+  export_results = TRUE, export_format = c("tsv", "BED", "RDS"),
+  table_style = c("bed", "granges"))
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
-  txdb = NULL, bsgenome = NULL, gene_anno_gff = NULL,
+  txdb = NULL, bsgenome = NULL, glm_type = c("DESeq2", "NB", "poisson"),
+  background = c("mclust", "m6Aseq_prior", "manual", "all"),
+  manual_background = NULL, gene_annot = NULL, mod_annot = NULL,
   fragment_length = 100, binding_length = 25,
-  step_length = binding_length, count_cutoff = 5, p_cutoff = NULL,
-  p_adj_cutoff = 0.05, logFC_cutoff = 0, peak_width = fragment_length/2,
-  glm_type = c("auto", "poisson", "NB", "DESeq2"),
-  drop_overlapped_genes = TRUE, parallel = FALSE, bp_param = NULL,
-  mod_annotation = NULL, mod_background = NULL, m6Aseq_background = TRUE)
+  step_length = binding_length, pc_count_cutoff = 5, gc_count_cutoff = 50,
+  p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0,
+  peak_width = fragment_length/2, drop_overlapped_genes = FALSE,
+  parallel = FALSE, bp_param = NULL)
 }
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object.}
@@ -46,13 +49,27 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
 
 \item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, alternatively it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
 
+\item{glm_type}{a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
+
+Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
+
+The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
+
+\item{background}{a \code{GRanges} or \code{GRangesList} object for user provided background control regions on the genome.}
+
+\item{manual_background}{a \code{GRanges} object for user provided RNA modification background.}
+
+\item{mod_annot}{a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.}
+
 \item{fragment_length}{a positive integer of the expected fragment length in bp; default 100.}
 
 \item{binding_length}{a positive integer of the antibody binding length in IP samples; default 25.}
 
 \item{step_length}{a positive integer of the shift size of the sliding window; default is the binding length.}
 
-\item{count_cutoff}{a non negative integer value of the average reads count per window used in peak calling; default 5.}
+\item{pc_count_cutoff}{a non negative integer value of the average reads count per window used in peak calling; default 5.}
+
+\item{gc_count_cutoff}{a non negative integer value of the minimum average reads count per window used in GC effect estimation; default 50.}
 
 \item{p_cutoff}{a value of the p value cut-off used in peak calling; default NULL.}
 
@@ -62,28 +79,9 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
 
 \item{peak_width}{positive integer of the minimum width for the merged peaks; default \code{fragment_length} .}
 
-\item{glm_type}{a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
-
-Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
-
-The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
-
 \item{drop_overlapped_genes}{a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.}
 
 \item{parallel}{a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.}
-
-\item{mod_annotation}{a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.}
-
-\item{mod_background}{a \code{GRanges} object for user provided RNA modification background.}
-
-\item{m6Aseq_background}{a logical of whether to use the topology knowledge of m6A-Seq to find appropriate background in GC effect estimation;
-If TRUE, the GC effect will be estimated on bins that is not overlapping with long exons (exon length >= 400bp) and 5'UTR.
-Also, the returned background control ranges returned will also exclude those regions;
-It should not be select if you are analyzing MeRIP-seq data of other modification, such as hm5C; default TRUE.
-
-Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
-
-The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
 
 \item{width_cutoff}{a positive integer of the minimum width for the merged peaks; default \code{fragment_length} .}
 
@@ -99,12 +97,12 @@ The background regions used in this senario will be the disjoint exon regions of
 
 \item{step_length}{a positive integer of the shift size of the sliding window; default is the binding length.}
 
-\item{glm_type}{a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
+\item{glm_type}{a character, which can be one of the "DESeq2", "poisson", "NB". This argument specify the type of generalized linear model used in peak calling; Default to be "DESeq2".
 
 Under the default setting, the DESeq2 method is implemented on experiments with > 1 biological replicates for both IP and input samples.
 The poisson GLM will be implemented otherwise.}
 
-\item{count_cutoff}{a non negative integer value of the minimum average reads count per window used in peak calling; default 5.}
+\item{pc_count_cutoff}{a non negative integer value of the minimum average reads count per window used in peak calling; default 5.}
 
 \item{p_cutoff}{a value of the p value cut-off used in peak calling; default NULL.}
 
@@ -116,9 +114,16 @@ The poisson GLM will be implemented otherwise.}
 
 \item{parallel}{a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.}
 
-\item{mod_annotation}{a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.}
+\item{mod_annot}{a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.}
 
-\item{background}{a \code{GRanges} or \code{GRangesList} object for user provided background control regions on the genome.}
+\item{m6Aseq_background}{a logical of whether to use the topology knowledge of m6A-Seq to find appropriate background in GC effect estimation;
+If TRUE, the GC effect will be estimated on bins that is not overlapping with long exons (exon length >= 400bp) and 5'UTR.
+Also, the returned background control ranges returned will also exclude those regions;
+It should not be select if you are analyzing MeRIP-seq data of other modification, such as hm5C; default TRUE.
+
+Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
+
+The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
 }
 \value{
 This function will save the results of modification / differrential modification analysis under the current working directory.

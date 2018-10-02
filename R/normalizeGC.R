@@ -55,7 +55,7 @@ setMethod("normalizeGC",
                         function(sep,
                                  bsgenome = NULL,
                                  txdb = NULL,
-                                 gene_anno_gff = NULL,
+                                 gene_annot = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
                                  feature = c("background", "all"),
@@ -77,8 +77,8 @@ if(is.null(bsgenome)) {
 stop("require BSgenome objects in GC size factor estimaton.")
 }
 
-if(!is.null(gene_anno_gff)) {
-  txdb <- makeTxDbFromGFF(gene_anno_gff)
+if(!is.null(gene_annot)) {
+  txdb <- makeTxDbFromGFF(gene_annot)
 } else {
   if (is.null(txdb)) {
     stop("require transcript annotation in either GTF/GFF file or txdb object.")

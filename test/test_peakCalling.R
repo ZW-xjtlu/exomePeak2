@@ -29,6 +29,8 @@ test_that( "Peak Calling", {
 
   plotReadsGC(SummarizedExomePeaks)
 
+  plotEffectGC(SummarizedExomePeaks)
+
   expect_is(SummarizedExomePeaks,"SummarizedExomePeak")
 
   saveRDS(SummarizedExomePeaks,"SEP_meth.rds")

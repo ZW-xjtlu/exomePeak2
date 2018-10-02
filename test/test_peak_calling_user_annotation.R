@@ -2,9 +2,10 @@ library(testthat)
 
 test_that( "Peak Calling with user provided annotation", {
   library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+  library(BSgenome.Hsapiens.UCSC.hg19)
   library(exomePeak2)
 
-  MeRIP_Seq_Alignment <- scan_merip_bams(
+  MeRIP_Seq_Alignment <- scanMeripBAM(
     bam_ip = c("./bam/SRR1182619.bam",
                "./bam/SRR1182621.bam",
                "./bam/SRR1182623.bam"),
@@ -20,9 +21,10 @@ test_that( "Peak Calling with user provided annotation", {
 
   hg19_miCLIP <- readRDS("hg19_miCLIP.rds")
 
-  SummarizedExomePeaks <- merip_peak_calling( MeRIP_Seq_Alignment,
+  SummarizedExomePeaks <- exomePeakCalling( MeRIP_Seq_Alignment,
                                               txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-                                              provided_annotation = hg19_miCLIP )
+                                              bsgenome = Hsapiens,
+                                              mod_annotation = hg19_miCLIP )
 
   SummarizedExomePeaks <- estimate_size_factors(SummarizedExomePeaks)
 

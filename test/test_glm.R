@@ -8,7 +8,7 @@ test_that( "Quantification", {
   SEP_meth <- readRDS("SEP_meth.rds")
   SEP_meth <- estimateSeqDepth(SEP_meth)
   plotSizeFactors(SEP_meth)
-  SEP_meth <- GCnormalization(SEP_meth,bsgenome = Hsapiens)
+  SEP_meth <- normalizGC(SEP_meth,bsgenome = Hsapiens)
   SEP_meth <- glmMeth(SEP_meth)
   SEP_meth <- glmDM(SEP_meth)
 

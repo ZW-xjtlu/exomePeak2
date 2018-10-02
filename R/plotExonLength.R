@@ -119,7 +119,7 @@ if( sum(grepl("meth", rownames(sep))) < 10 ) {
 
       list_names <- c("hyper padj < .05", "hypo padj < .05")
 
-      min_positive <- floor(sum(grepl("meth_", rownames(sep))) * 0.005)
+      min_positive <- floor(sum(grepl("meth_", rownames(sep))) * 0.1)
 
       if(length(indx_hyper) + length(indx_hypo) < min_positive){
 

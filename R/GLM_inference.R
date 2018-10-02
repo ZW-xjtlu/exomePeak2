@@ -20,59 +20,77 @@
 #' @importFrom MASS glm.nb
 #'
 GLM_inference <- function(SE_bins,
-                          glm_type = c("poisson","NB","DESeq2"),
+                          glm_type = c("poisson", "NB", "DESeq2"),
                           p_cutoff = NULL,
                           p_adj_cutoff = 0.05,
                           count_cutoff = 5,
                           logFC_meth = 0,
-                          min_meth_number = floor( nrow(SE_bins) * 0.005 )) {
+                          min_meth_number = floor(nrow(SE_bins) * 0.001)) {
 
   glm_type <- match.arg(glm_type)
 
-  stopifnot( !(is.null(p_cutoff) & is.null(p_adj_cutoff)) )
+  stopifnot(!(is.null(p_cutoff) & is.null(p_adj_cutoff)))
 
-  indx_count <- which( rowMeans(assay(SE_bins)) > count_cutoff )
+  indx_count <- which(rowMeans(assay(SE_bins)) > count_cutoff)
 
-  dds = DESeqDataSet( se = SE_bins[indx_count,],
-                      design = ~ design_IP )
+  dds = DESeqDataSet(se = SE_bins[indx_count, ],
+                     design = ~ design_IP)
 
-  dds$sizeFactor = estimateSizeFactorsForMatrix( assay(dds)[rowData( dds )$indx_topology,] ) #The default size factor estimation method is used in peak calling.
+  ######################################################
+  #               Size factor estimation               #
+  ######################################################
 
-  if(!is.null(rowData(SE_bins)$gc_contents)){
+  dds$sizeFactor = estimateSizeFactorsForMatrix(assay(dds)[rowData(dds)$indx_bg, ])
 
+  if (!is.null(rowData(SE_bins)$gc_contents)) {
     indx_IP <- dds$design_IP == "IP"
 
-    cqnObject_IP <- suppressMessages( cqn(assay(dds)[,indx_IP],
-                                          lengths = rowData( dds )$region_widths,
-                                          lengthMethod = "smooth",
-                                          x = rowData( dds )$gc_contents,
-                                          sizeFactors = dds$sizeFactor[indx_IP],
-                                          subindex = which( rowData( dds )$indx_topology & rowData( dds )$indx_N ),
-                                          sqn = TRUE,
-                                          verbose = FALSE) )
+    message("estimate GC size factors for IP samples")
 
-    cqnObject_input <- suppressMessages( cqn(assay(dds)[,!indx_IP],
-                                             lengths = rowData( dds )$region_widths,
-                                             lengthMethod = "smooth",
-                                             x = rowData( dds )$gc_contents,
-                                             sizeFactors = dds$sizeFactor[!indx_IP],
-                                             subindex = which( rowData( dds )$indx_topology & rowData( dds )$indx_N ),
-                                             sqn = TRUE,
-                                             verbose = FALSE) )
+    cqnObject_IP <- suppressMessages(
+      cqn(
+        assay(dds)[, indx_IP],
+        lengths = rowData(dds)$region_widths,
+        lengthMethod = "smooth",
+        x = rowData(dds)$gc_contents,
+        sizeFactors = dds$sizeFactor[indx_IP],
+        subindex = which(rowData(dds)$indx_bg &
+                           rowData(dds)$indx_gc_est ),
+        sqn = TRUE,
+        verbose = FALSE
+      )
+    )
+
+    message("estimate GC size factors for input samples")
+
+    cqnObject_input <- suppressMessages(
+      cqn(
+        assay(dds)[, !indx_IP],
+        lengths = rowData(dds)$region_widths,
+        lengthMethod = "smooth",
+        x = rowData(dds)$gc_contents,
+        sizeFactors = dds$sizeFactor[!indx_IP],
+        subindex = which(rowData(dds)$indx_bg &
+                           rowData(dds)$indx_gc_est ),
+        sqn = TRUE,
+        verbose = FALSE
+      )
+    )
 
     glm_off_sets <- matrix(NA, nrow = nrow(dds), ncol = ncol(dds))
 
     rownames(glm_off_sets) = rownames(dds)
 
-    glm_off_sets[,indx_IP] <- cqnObject_IP$glm.offset
+    glm_off_sets[, indx_IP] <- cqnObject_IP$glm.offset
 
-    glm_off_sets[,!indx_IP] <- cqnObject_input$glm.offset
+    glm_off_sets[, !indx_IP] <- cqnObject_input$glm.offset
 
     rm(cqnObject_IP, cqnObject_input, indx_IP)
 
     #normalization to make the row geometric means = 0 (since DESeq2 only cares about the difference).
     #and this norm factor is still under the original scale (not log scale glm off set).
-    centered_off_sets <- exp(glm_off_sets) / exp(rowMeans(glm_off_sets))
+    centered_off_sets <-
+      exp(glm_off_sets) / exp(rowMeans(glm_off_sets))
 
     normalizationFactors(dds) <- centered_off_sets
 
@@ -80,64 +98,78 @@ GLM_inference <- function(SE_bins,
   }
 
 
-  if(glm_type == "poisson"){
-  dispersions(dds) = 0
+  ######################################################
+  #             Generalized Linear Model               #
+  ######################################################
+
+  if (glm_type == "poisson") {
+    dispersions(dds) = 0
   }
 
-  if(glm_type == "NB"){
-  dds = estimateDispersions( dds, fitType = "mean" )
+  if (glm_type == "NB") {
+    dds = estimateDispersions(dds, fitType = "mean")
   }
 
-  if(glm_type == "DESeq2"){
-    dds = estimateDispersions( dds )
+  if (glm_type == "DESeq2") {
+    dds = estimateDispersions(dds)
   }
 
-  dds = nbinomWaldTest( dds )
+  dds = nbinomWaldTest(dds)
 
   res <- results(dds, altHypothesis = "greater")
 
-  if( anyNA(res) ){
-  res <- as.data.frame(  na.omit(res) )
+  if (anyNA(res)) {
+    res <- as.data.frame(na.omit(res))
   }
 
-  if(is.null(p_cutoff)) {
+  if (is.null(p_cutoff)) {
+    sig_indx <-
+      res$padj < p_adj_cutoff & res$log2FoldChange > logFC_meth
 
-  sig_indx <- res$padj < p_adj_cutoff & res$log2FoldChange > logFC_meth
+    if (sum(sig_indx) < min_meth_number) {
+      warning(
+        "The number of positive bins is too small using DESeq2 under current filter,
+        the filter is changed into p value < 0.05 and log2FC > 0, please consider using poisson GLM.",
+        call. = FALSE,
+        immediate. = TRUE
+      )
 
-  if(sum(sig_indx) < min_meth_number) {
+      sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
 
-    warning("The number of positive bins is too small using DESeq2 under current filter, the filter is changed into p value < 0.05 and log2FC > 0, please consider using poisson GLM.",call. = FALSE, immediate. = TRUE)
+      if (sum(sig_indx) < min_meth_number) {
+        stop(
+          "The bins are not informative to conduct meaningful peak calling, please check the raw data quality."
+        )
+      }
 
-  sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
-
-  if(sum(sig_indx) < min_meth_number) {stop("The bins are not informative to conduct meaningful peak calling, please check the raw data quality.")}
-
-  }
+    }
 
   } else {
+    sig_indx <- res$pvalue < p_cutoff & res$log2FoldChange > logFC_meth
 
-  sig_indx <- res$pvalue < p_cutoff & res$log2FoldChange > logFC_meth
+    if (sum(sig_indx) < min_meth_number) {
+      warning(
+        'The number of positive bins is smaller than the underlimit using DESeq2 method under current filter,
+        the filter is changed into p value < 0.05 & log2FC > 0, please consider set glm_type = "poisson"',
+        call. = FALSE,
+        immediate. = TRUE
+      )
 
-  if(sum(sig_indx) < min_meth_number) {
+      sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
 
-    warning('The number of positive bins is smaller than the underlimit using DESeq2 method under current filter
-         the filter is changed into p value < 0.05 & log2FC > 0, please consider set glm_type = "poisson"',call. = FALSE, immediate. = TRUE)
+      if (sum(sig_indx) < min_meth_number) {
+        stop(
+          "The bins are not informative to conduct meaningful peak calling, please check the raw data quality."
+        )
+      }
 
-    sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
-
-    if(sum(sig_indx) < min_meth_number) {stop("The bins are not informative to conduct meaningful peak calling, please check the raw data quality.")}
+    }
 
   }
 
-  }
-
-  sig_peak_meth <- as.numeric( rownames(res)[sig_indx] )
+  sig_peak_meth <- as.numeric(rownames(res)[sig_indx])
 
 
-  return(
-
-  sig_peak_meth
-
-  )
+  return(sig_peak_meth)
 
 }

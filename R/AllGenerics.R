@@ -11,22 +11,23 @@ setGeneric("RandomPrimer", function(x) standardGeneric("RandomPrimer"))
 setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         txdb = NULL,
                                         bsgenome = NULL,
-                                        gene_anno_gff = NULL,
+                                        glm_type = c("DESeq2", "NB", "poisson"),
+                                        background = c("mclust", "m6Aseq_prior", "manual", "all"),
+                                        manual_background = NULL,
+                                        gene_annot = NULL,
+                                        mod_annot = NULL,
                                         fragment_length = 100,
                                         binding_length = 25,
                                         step_length = binding_length,
-                                        count_cutoff = 5,
+                                        pc_count_cutoff = 5,
+                                        gc_count_cutoff = 50,
                                         p_cutoff = NULL,
                                         p_adj_cutoff = 0.05,
                                         logFC_cutoff = 0,
-                                        peak_width = fragment_length/2,
-                                        glm_type = c("auto","poisson","NB","DESeq2"),
-                                        drop_overlapped_genes = TRUE,
+                                        peak_width = fragment_length / 2,
+                                        drop_overlapped_genes = FALSE,
                                         parallel = FALSE,
-                                        bp_param = NULL,
-                                        mod_annotation = NULL,
-                                        mod_background = NULL,
-                                        m6Aseq_background = TRUE) {standardGeneric("exomePeakCalling")})
+                                        bp_param = NULL) {standardGeneric("exomePeakCalling")})
 
 #' @rdname estimateSeqDepth
 #' @export
@@ -54,12 +55,12 @@ setGeneric("DESeq2Results", function(x) {standardGeneric("DESeq2Results")})
 #' @export
 setGeneric("DESeq2Results<-", function(x,...,value) {standardGeneric("DESeq2Results<-")})
 
-#' @rdname GCnormalization
+#' @rdname normalizeGC
 #' @export
 setGeneric("normalizeGC", function(sep,
                                        bsgenome = "hg19",
                                        txdb = "hg19",
-                                       gene_anno_gff = NULL,
+                                       gene_annot = NULL,
                                        fragment_length = 100,
                                        binding_length = 25,
                                        feature = c("background","all"),

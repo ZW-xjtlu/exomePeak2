@@ -11,20 +11,21 @@
 #' @param fragment_length a positive integer of the expected fragment length in bp; default 100.
 #' @param binding_length a positive integer of the antibody binding length in IP samples; default 25.
 #' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
-#' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
+#' @param glm_type a character, which can be one of the "DESeq2", "poisson", "NB". This argument specify the type of generalized linear model used in peak calling; Default to be "DESeq2".
 #'
 #' Under the default setting, the DESeq2 method is implemented on experiments with > 1 biological replicates for both IP and input samples.
 #' The poisson GLM will be implemented otherwise.
 #'
-#' @param count_cutoff a non negative integer value of the minimum average reads count per window used in peak calling; default 5.
+#' @param pc_count_cutoff a non negative integer value of the minimum average reads count per window used in peak calling; default 5.
+#' @param gc_count_cutoff a non negative integer value of the minimum average reads count per window used in GC effect estimation; default 50.
 #' @param p_cutoff a value of the p value cut-off used in peak calling; default NULL.
 #' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #' @param peak_width positive integer of the minimum width for the merged peaks; default \code{fragment_length} .
 #' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
-#' @param mod_annotation a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
-#' @param mod_background a \code{GRanges} object for user provided RNA modification background.
+#' @param mod_annot a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
+#' @param manual_background a \code{GRanges} object for user provided RNA modification background.
 #' @param m6Aseq_background a logical of whether to use the topology knowledge of m6A-Seq to find appropriate background in GC effect estimation;
 #' If TRUE, the GC effect will be estimated on bins that is not overlapping with long exons (exon length >= 400bp) and 5'UTR.
 #' Also, the returned background control ranges returned will also exclude those regions;
@@ -57,398 +58,459 @@
 #'
 setMethod("exomePeakCalling",
           "MeripBamFileList",
-             function(merip_bams = NULL,
-                      txdb = NULL,
-                      bsgenome = NULL,
-                      gene_anno_gff = NULL,
-                      fragment_length = 100,
-                      binding_length = 25,
-                      step_length = binding_length,
-                      count_cutoff = 5,
-                      p_cutoff = NULL,
-                      p_adj_cutoff = 0.05,
-                      logFC_cutoff = 0,
-                      peak_width = fragment_length/2,
-                      glm_type = c("auto","poisson","NB","DESeq2"),
-                      drop_overlapped_genes = TRUE,
-                      parallel = FALSE,
-                      bp_param = NULL,
-                      mod_annotation = NULL,
-                      mod_background = NULL,
-                      m6Aseq_background = TRUE
-                      ) {
-  glm_type <- match.arg(glm_type)
+          function(merip_bams = NULL,
+                   txdb = NULL,
+                   bsgenome = NULL,
+                   glm_type = c("DESeq2", "NB", "poisson"),
+                   background = c("mclust", "m6Aseq_prior", "manual", "all"),
+                   manual_background = NULL,
+                   gene_annot = NULL,
+                   mod_annot = NULL,
+                   fragment_length = 100,
+                   binding_length = 25,
+                   step_length = binding_length,
+                   pc_count_cutoff = 5,
+                   gc_count_cutoff = 50,
+                   p_cutoff = NULL,
+                   p_adj_cutoff = 0.05,
+                   logFC_cutoff = 0,
+                   peak_width = fragment_length / 2,
+                   drop_overlapped_genes = FALSE,
+                   parallel = FALSE,
+                   bp_param = NULL
+          ) {
+
+
+            ######################################################
+            #                  Parameter check                   #
+            ######################################################
+
+
+            glm_type <- match.arg(glm_type)
+
+            stopifnot(fragment_length > 0)
+
+            stopifnot(step_length > 0)
+
+            stopifnot(peak_width > 0)
+
+            stopifnot(logFC_cutoff >= 0)
+
+            stopifnot(pc_count_cutoff >= 0)
+
+            stopifnot(gc_count_cutoff >= 0)
+
+            if (is.null(bsgenome)) {
+              warning(
+                "Missing bsgenome argument, peak calling without GC correction.",
+                call. = FALSE,
+                immediate. = TRUE
+              )
+            }
+
+            if (!is.null(gene_annot)) {
+              txdb <- makeTxDbFromGFF(gene_annot)
+            } else {
+              if (is.null(txdb)) {
+                stop("Missing transcript annotation, please provide TxDb object or GFF/GTF file.")
+              }
+
+              if (!is(txdb, "TxDb")) {
+                txdb <- makeTxDbFromUCSC(txdb)
+              }
+            }
+
+              message("yield bins on exons")
+
+
+              ######################################################
+              #             Sliding window generation              #
+              ######################################################
+
+
+              exome_bins_grl <- exome_bins_from_txdb(
+                txdb = txdb,
+                window_size = binding_length,
+                step_size = step_length,
+                drop_overlapped_genes = drop_overlapped_genes
+              )
+
+              message("count reads on bins")
+
+
+              ######################################################
+              #                Initial reads count                 #
+              ######################################################
 
-  stopifnot(fragment_length > 0)
+              if (!parallel) {
+                register(SerialParam())
+                register(MulticoreParam(workers = 1))
+                register(SnowParam(workers = 1))
+              } else {
+                if (!is.null(bp_param)) {
+                  register(bp_param, default = TRUE)
+                }
+              }
+
+              SE_Peak_counts <- summarizeOverlaps(
+                features = split_by_name(
+                  flank_on_exons(
+                    grl = exome_bins_grl,
+                    flank_length = fragment_length - binding_length,
+                    txdb = txdb,
+                    drop_overlapped_genes = drop_overlapped_genes,
+                    index_flank = FALSE
+                  )
+                ),
+                reads = merip_bams,
+                param = Parameter(merip_bams),
+                mode = "Union",
+                inter.feature = FALSE,
+                preprocess.reads = reads_five_POS, #The reads are counted as the 5' POS
+                singleEnd = !any(asMates(merip_bams)),
+                ignore.strand = RandomPrimer(merip_bams),
+                fragments = any(asMates(merip_bams))
+              )
 
-  stopifnot(step_length > 0)
-
-  stopifnot(peak_width > 0)
+              ######################################################
+              #               Reads count annotation               #
+              ######################################################
 
-  stopifnot(logFC_cutoff >= 0)
+              #Experimental design
+              colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
 
-  stopifnot(count_cutoff >= 0)
 
-  if(is.null(bsgenome)) {
-    warning("bsgenome is not provided, peak calling will be performed without GC correction.\nIt is highly recommended to conduct GC conrrection for accurate peak calling and quantification.", call. = FALSE, immediate. = TRUE)
-  }
+              #GC
+              if (is.null(bsgenome)) {
+              } else{
+                indx_gr <- names(unlist(rowRanges(SE_Peak_counts)))
+                gc_freq <-
+                  as.vector(letterFrequency(Views(bsgenome, unlist(
+                    rowRanges(SE_Peak_counts)
+                  )), letters = "CG"))
+                region_widths <- sum(width(rowRanges(SE_Peak_counts)))
+                rowData(SE_Peak_counts)$gc_contents <-
+                  tapply(gc_freq, indx_gr, sum) / region_widths
+                rm(indx_gr, gc_freq, region_widths)
+              }
 
-  if(!is.null(gene_anno_gff)) {
-    txdb <- makeTxDbFromGFF( gene_anno_gff )
-  } else {
-    if(is.null(txdb)) {
-      stop("missing transcript annotation, please provide either txdb object or GFF/GTF file.")
-    }
+              #Bin width
+              rowData(SE_Peak_counts)$region_widths <-
+                sum(width(rowRanges(SE_Peak_counts)))
 
-    if(!is(txdb,"TxDb")){
-      txdb <- makeTxDbFromUCSC( txdb )
-    }
-  }
+              #Count index
+              rowData(SE_Peak_counts)$indx_gc_est <-
+                rowMeans(assay(SE_Peak_counts)) >= gc_count_cutoff
 
-  paired <- any( asMates(merip_bams) )
 
-  if(is.null(mod_annotation)) {
+              ######################################################
+              #                 Background search                  #
+              ######################################################
 
-  message("generate bins on exons.")
 
-  exome_bins_grl <- exome_bins_from_txdb(txdb = txdb,
-                                        window_size = binding_length,
-                                        step_size = step_length,
-                                        drop_overlapped_genes = drop_overlapped_genes)
+              #Model based clustering
 
-  message("count reads 5'TAGs on bins.")
+              if (background == "mclust") {
+                message("find background with mclust")
+                rowData(SE_Peak_counts)$indx_bg <- mclust_bg(se_peak_counts = SE_Peak_counts)
+              }
 
-  split_x <- function(x){return(split(x, names(x)))}
 
-  if(!parallel) {
-    register(SerialParam())
-    register(MulticoreParam(workers = 1))
-    register(SnowParam(workers = 1))
-  } else {
-    if(!is.null(bp_param)){
-      register(bp_param,default = TRUE)
-    }
-  }
+              #Prior knowledge on m6A topology
 
-  SE_Peak_counts <- summarizeOverlaps(
-                    features = split_x(flank_on_exons(
-                                       grl = exome_bins_grl,
-                                       flank_length = fragment_length - binding_length,
-                                       txdb = txdb,
-                                       drop_overlapped_genes = drop_overlapped_genes,
-                                       index_flank = FALSE
-                                )),
-                    reads = merip_bams,
-                    param = Parameter(merip_bams),
-                    mode = "Union",
-                    inter.feature = FALSE,
-                    preprocess.reads = reads_five_POS, #The reads are counted as the 5' POS
-                    singleEnd = !paired,
-                    ignore.strand = RandomPrimer(merip_bams),
-                    fragments = paired
-  )
+              if (background == "m6Aseq_prior") {
+                indx_UTR5 <-
+                  rowRanges(SE_Peak_counts) %over% fiveUTRsByTranscript(txdb)
 
-  #Calculate background region for m6A-seq
+                indx_longexon <-
+                  rowRanges(SE_Peak_counts) %over% exons(txdb)[width(exons(txdb)) >= 400]
 
-  if(m6Aseq_background){
-    indx_UTR5 <- rowRanges(SE_Peak_counts) %over% fiveUTRsByTranscript(txdb)
+                rowData(SE_Peak_counts)$indx_bg = !(indx_UTR5 | indx_longexon)
 
-    indx_longexon <- rowRanges(SE_Peak_counts) %over% exons(txdb)[width(exons(txdb)) >= 400]
+                rm(indx_UTR5, indx_longexon)
+              }
 
-    indx_topology = !(indx_UTR5 | indx_longexon)
+              #Provided granges
 
-    rm(indx_UTR5, indx_longexon)
-  }
+              if (background == "manual") {
 
+                rowData(SE_Peak_counts)$indx_bg = rowRanges(SE_Peak_counts) %over% manual_background
 
-  #calculate effective GC content if BSgenome is provided
+              }
 
-  if(!is.null(bsgenome)){
+              if (background == "all") {
 
-   indx_gr <- names(unlist(rowRanges(SE_Peak_counts)))
+                rowData(SE_Peak_counts)$indx_bg = T
 
-   gc_freq <- as.vector( letterFrequency( Views(bsgenome, unlist(rowRanges(SE_Peak_counts))), letters="CG" ) )
+              }
 
-   region_widths <- sum(width(rowRanges(SE_Peak_counts)))
+              #Check for minimum background #
+              if (sum(rowData(SE_Peak_counts)$indx_gc_est &
+                      rowData(SE_Peak_counts)$indx_bg) < 5000) {
+                warning(
+                  "Insufficient background, peak calling without background.",
+                  call. = FALSE,
+                  immediate. = TRUE
+                )
+                rowData(SE_Peak_counts)$indx_bg = T
+              }
 
-   gc_contents <- tapply(gc_freq, indx_gr, sum) / region_widths
+
+              if (is.null(mod_annot)) {
+
+              ######################################################
+              #                    Peak calling                    #
+              ######################################################
+
+              #Change bins into initial widths
+              rowData_tmp <- rowData(SE_Peak_counts)
+
+              rowRanges(SE_Peak_counts) <-
+                exome_bins_grl[as.numeric(rownames(SE_Peak_counts))]
+
+              rowData(SE_Peak_counts) <- rowData_tmp
+
+              rm(exome_bins_grl,rowData_tmp)
+
+              if (glm_type == "poisson") {
+                message("peak calling with poisson GLM")
+              }
 
-   indx_N <- rowMeans(assay(SE_Peak_counts)) >= 50
+              if (glm_type == "NB") {
+                message("peak calling with NB GLM")
+              }
 
-   if(m6Aseq_background){
+              if (glm_type == "DESeq2") {
+                if (any(table(SE_Peak_counts$design_IP) == 1)) {
+                  warning(
+                    "At least one of the IP or input samples has no replicate, peak calling method changed to poisson GLM.",
+                    call. = FALSE,
+                    immediate. = TRUE
+                  )
+                  glm_type = "poisson"
+                } else{
+                  message("peak calling with DESeq2")
+                }
+              }
 
-     if(sum(indx_N & indx_topology) < 5000) {
-       warning("The number of background bins < 5000, using all bins as background for peak calling", call. = FALSE, immediate. = TRUE)
-       indx_topology = TRUE
-       glm_type = "poisson"
-     }
+              grl_meth <- call_peaks_with_GLM(
+                SE_bins = SE_Peak_counts,
+                glm_type = glm_type,
+                count_cutoff = pc_count_cutoff,
+                p_cutoff = p_cutoff,
+                p_adj_cutoff = p_adj_cutoff,
+                logFC_cutoff = logFC_cutoff,
+                txdb = txdb,
+                drop_overlapped_genes = drop_overlapped_genes
+              )
 
-   } else {
+              #Filter peak by width
+              grl_meth <- grl_meth[sum(width(grl_meth)) >= peak_width]
 
-     indx_topology = TRUE
 
-   }
+              #Guitar::GuitarPlot(list(x = unlist(grl_meth)),GuitarCoordsFromTxDb = readRDS("/Users/zhenwei/Datasets/Gtcoords/Gtcoord_hg19.rds"))
 
-   rowData_SE <- DataFrame(gc_contents = gc_contents,
-                           region_widths = region_widths,
-                           indx_topology = indx_topology,
-                           indx_N = indx_N)
 
-   rm(indx_gr, gc_freq, region_widths, gc_contents, indx_N, indx_topology)
+              ######################################################
+              #                 Round 2 reads count                #
+              ######################################################
 
-  } else {
+              #Flank the peaks
 
-    if(sum(indx_topology) < 5000) {
-      warning("The number of background bins < 5000, using all bins as background for peak calling", call. = FALSE, immediate. = TRUE)
-      indx_topology = TRUE
-      glm_type = "poisson"
-    }
+              gr_meth_flanked <- flank_on_exons(
+                grl = grl_meth,
+                flank_length = fragment_length - binding_length,
+                txdb = txdb,
+                drop_overlapped_genes = drop_overlapped_genes,
+                index_flank = FALSE
+              )
 
-    rowData_SE <- DataFrame(indx_topology = indx_topology)
+              #Set control regions with background disjoint by peaks
 
-  }
+              count_row_features <- disj_background(
+                mod_gr = gr_meth_flanked,
+                txdb = txdb,
+                cut_off_num = 2000,
+                drop_overlapped_genes = drop_overlapped_genes,
+                background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
+                background_types = background,
+                control_width = peak_width
+              )
+
+              rm(SE_Peak_counts, gr_meth_flanked)
+
+              message("count reads on the merged peaks and the control regions")
+
+              if (!parallel) {
+                register(SerialParam(), default = FALSE)
+                register(MulticoreParam(workers = 1))
+                register(SnowParam(workers = 1))
+              } else {
+                if (!is.null(bp_param)) {
+                  register(bp_param, default = TRUE)
+                }
+              }
+
+              SummarizedExomePeaks <- summarizeOverlaps(
+                features = count_row_features,
+                reads = merip_bams,
+                param = Parameter(merip_bams),
+                mode = "Union",
+                inter.feature = FALSE,
+                preprocess.reads = reads_five_POS,
+                #The reads are counted as the 5' POS
+                singleEnd = !any(asMates(merip_bams)),
+                ignore.strand = RandomPrimer(merip_bams),
+                fragments = any(asMates(merip_bams))
+              )
 
-  rowRanges(SE_Peak_counts) <- exome_bins_grl[as.numeric(rownames(SE_Peak_counts))] #replace the row ranges with the not expanded version
+              #retrieve the set of unflanked modification sites to replace the row ranges.
 
-  rm(exome_bins_grl) #release RAM
+              names(grl_meth) <- paste0("meth_", names(grl_meth))
 
-  #Replace the row ranges with only the binding regions, but the assays are the sum of the flanking regions.
+              rowRanges(SummarizedExomePeaks)[seq_along(grl_meth)] <- grl_meth
 
-  colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
+              rm(count_row_features, grl_meth)
 
-  rowData(SE_Peak_counts) = rowData_SE
+              colData(SummarizedExomePeaks) <- DataFrame(metadata(merip_bams))
 
-  rm(rowData_SE)
+            } else {
 
-  #Peak calling with user defined statistical methods
+              ######################################################
+              #             Count reads on annotation              #
+              ######################################################
 
-  if(glm_type == "auto") {
-    if(all( table(colData(SE_Peak_counts)$design_IP) > 1)) {
-      glm_type <- "DESeq2"
-    } else {
-      glm_type <- "poisson"
-    }
-  }
+              stopifnot(is(mod_annot, "GRanges") |
+                          is(mod_annot, "GRangesList"))
 
-  if(glm_type == "poisson") {
-    message("peak calling with poisson GLM Wald test")
-  }
+              stopifnot(all(width(mod_annot)) == 1)
 
-  if(glm_type == "NB") {
-    message("peak calling with NB GLM Wald test")
-  }
 
-  if(glm_type == "DESeq2") {
-    message("peak calling with DESeq2 NB GLM Wald test")
-  }
+              if (is(mod_annot, "GRanges")) {
+                mod_annot <-
+                  split(mod_annot , seq_along(mod_annot))
 
-  #Directly return the merged summarized experiment
-  gr_meth <- call_peaks_with_GLM( SE_bins = SE_Peak_counts,
-                                  glm_type = glm_type,
-                                  count_cutoff = count_cutoff,
-                                  p_cutoff = p_cutoff,
-                                  p_adj_cutoff = p_adj_cutoff,
-                                  logFC_cutoff = logFC_cutoff,
-                                  txdb = txdb,
-                                  drop_overlapped_genes = drop_overlapped_genes )
+              } else {
+                names(mod_annot) <-
+                  seq_along(mod_annot) #make sure the annotation is indexed by integer sequence
 
-  rm(SE_Peak_counts)
+              }
 
-  #flank the merged methylation sites
+              mod_annot_flanked <- flank_on_exons(
+                grl = mod_annot,
+                flank_length = floor(fragment_length - binding_length /
+                                       2),
+                txdb = txdb,
+                drop_overlapped_genes = drop_overlapped_genes,
+                index_flank = FALSE
+              )
 
-  gr_meth_flanked <- flank_on_exons( grl = gr_meth,
-                                     flank_length = fragment_length - binding_length,
-                                     txdb = txdb,
-                                     drop_overlapped_genes = drop_overlapped_genes,
-                                     index_flank = FALSE )
-
-  #calculate control regions that are disjoint of the methylation peaks
-
-  count_row_features <- annot_bg( annot = gr_meth_flanked,
-                                  txdb = txdb,
-                                  cut_off_width = 1e5,
-                                  cut_off_num = 2000,
-                                  drop_overlapped_genes = drop_overlapped_genes,
-                                  m6Aseq_background = m6Aseq_background,
-                                  control_width = peak_width)
-
-  annotation_row_features <- count_row_features
-
-  #Filter and rename the methylation peaks.
-
-  indx_meth <- grepl("meth_", names( annotation_row_features ))
-
-  annotation_row_features[indx_meth] <- gr_meth[ gsub("meth_", "", grep("meth_", names( count_row_features ) , value = TRUE) ) ]
-
-  indx_keep <- !vector("logical", length = length(annotation_row_features))
-
-  indx_keep[indx_meth][sum(width(annotation_row_features[indx_meth])) < peak_width] = FALSE
-
-  annotation_row_features <- annotation_row_features[indx_keep]
-
-  count_row_features <- count_row_features[indx_keep]
-
-  rm(gr_meth, gr_meth_flanked, indx_meth, indx_keep)
-
-  message("count reads on the merged peaks and the control regions")
-
-  if(!parallel) {
-    register(SerialParam(),default = FALSE)
-    register(MulticoreParam(workers = 1))
-    register(SnowParam(workers = 1))
-  } else {
-    if(!is.null(bp_param)){
-      register(bp_param,default = TRUE)
-    }
-  }
-
-  SummarizedExomePeaks <- summarizeOverlaps(
-                          features = count_row_features,
-                          reads = merip_bams,
-                          param = Parameter(merip_bams),
-                          mode = "Union",
-                          inter.feature = FALSE,
-                          preprocess.reads = reads_five_POS, #The reads are counted as the 5' POS
-                          singleEnd = !paired,
-                          ignore.strand = RandomPrimer(merip_bams),
-                          fragments = paired
-                       )
-
-  rowRanges(SummarizedExomePeaks) <- annotation_row_features
-
-  rm(count_row_features, annotation_row_features)
-
-  colData(SummarizedExomePeaks) <- DataFrame(metadata(merip_bams))
-
-  } else {
-
-    stopifnot( is( mod_annotation, "GRanges") | is( mod_annotation, "GRangesList") )
-
-    stopifnot( all(width(mod_annotation)) == 1 )
-
-    if(
-
-      is( mod_annotation, "GRanges")
-
-    ) {
-
-      mod_annotation <- split( mod_annotation , seq_along(mod_annotation) )
-
-    } else {
-
-      names(mod_annotation) <- seq_along(mod_annotation) #make sure the annotation is indexed by integer sequence
-
-    }
-
-      mod_annotation_flanked <- flank_on_exons(grl = mod_annotation,
-                                               flank_length = floor( fragment_length - binding_length/2 ),
-                                               txdb = txdb,
-                                               drop_overlapped_genes = drop_overlapped_genes,
-                                               index_flank = FALSE)
-
-      merged_peaks_grl <- annot_bg( annot = mod_annotation_flanked,
-                                    txdb = txdb,
-                                    cut_off_width = 1e5,
-                                    cut_off_num = 2000,
-                                    drop_overlapped_genes = drop_overlapped_genes,
-                                    m6Aseq_background = m6Aseq_background,
-                                    control_width = peak_width)
-
-    message("count reads using single base annotation on exons")
-
-    if(!parallel) {
-      register(SerialParam())
-      register(MulticoreParam(workers = 1))
-      register(SnowParam(workers = 1))
-    } else {
-      if(!is.null(bp_param)){
-        register(bp_param,default = TRUE)
-      }
-    }
-
-    SE_temp <- summarizeOverlaps(
-      features = merged_peaks_grl,
-      reads = merip_bams,
-      param = Parameter(merip_bams),
-      mode = "Union",
-      inter.feature = FALSE,
-      preprocess.reads = reads_five_POS,
-      singleEnd = !paired,
-      ignore.strand = RandomPrimer(merip_bams),
-      fragments = paired
-    )
-
-    #Replace the rowRanges with the single based GRangesList.
-    index_meth <- grepl("meth_",rownames(SE_temp))
-
-    index_sb_annot <- as.numeric( gsub("meth_", "", rownames(SE_temp)[index_meth]) )
-
-    meth_count <- assay(SE_temp)[index_meth,][match(as.numeric(names(mod_annotation)),index_sb_annot),]
-
-    rownames(meth_count) <- paste0("meth_", seq_len(nrow(meth_count)))
-
-    #Fill the rows that are not on exons with zero counts.
-    meth_count[is.na(meth_count)] <- 0
-
-    control_count <- assay(SE_temp)[!index_meth,]
-
-    #replace the metadata collumn with gene_ids
-    mod_annotation_gr <- unlist(mod_annotation)
-
-    mcols(mod_annotation_gr) <- DataFrame(gene_id = NA)
-
-    mcols(mod_annotation_gr)$gene_id[index_sb_annot] <- mcols(unlist(rowRanges(SE_temp)))$gene_id[index_sb_annot]
-
-    mod_annotation <- split(mod_annotation_gr,names(mod_annotation_gr))
-
-    mod_annotation <- mod_annotation[order(as.numeric(names(mod_annotation)))]
-
-    names(mod_annotation) <- paste0("meth_",names(mod_annotation))
-
-    SummarizedExomePeaks <- SummarizedExperiment(
-
-      assay = rbind(meth_count,control_count),
-
-      rowRanges = c(mod_annotation,
-                    rowRanges(SE_temp)[!index_meth]),
-
-      colData = DataFrame(metadata(merip_bams))
-
-    )
-
-  }
-
-  if(!is.null(mod_background)) {
-
-    rowRanges(SummarizedExomePeaks) <- replace_bg( grl = rowRanges(SummarizedExomePeaks),
-                                                   bg = mod_background,
-                                                   txdb = txdb,
-                                                   drop_overlapped_genes = drop_overlapped_genes )
-  }
-
-  if(!is.null(bsgenome)){
-    elementMetadata( SummarizedExomePeaks ) <- GC_content_over_grl(
-      bsgenome = bsgenome,
-      txdb = txdb,
-      grl = rowRanges( SummarizedExomePeaks ),
-      fragment_length = fragment_length,
-      binding_length = binding_length,
-      drop_overlapped_genes = drop_overlapped_genes,
-      effective_GC = FALSE
-    )
-  }
-
-  return(
-
-    new("SummarizedExomePeak",
-        rowRanges = SummarizedExomePeaks@rowRanges,
-        colData = SummarizedExomePeaks@colData,
-        assays = SummarizedExomePeaks@assays,
-        NAMES = SummarizedExomePeaks@NAMES,
-        elementMetadata = SummarizedExomePeaks@elementMetadata,
-        metadata = SummarizedExomePeaks@metadata,
-        DESeq2Results = data.frame() )
-  )
-
-}
+              mod_annot_count <- disj_background(
+                mod_gr = mod_annot_flanked,
+                txdb = txdb,
+                cut_off_num = 2000,
+                drop_overlapped_genes = drop_overlapped_genes,
+                background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
+                background_types = background,
+                control_width = peak_width
+              )
+
+              rm(SE_Peak_counts,mod_annot_flanked)
+
+              message("count reads using single base annotation on exons")
+
+              if (!parallel) {
+                register(SerialParam())
+                register(MulticoreParam(workers = 1))
+                register(SnowParam(workers = 1))
+              } else {
+                if (!is.null(bp_param)) {
+                  register(bp_param, default = TRUE)
+                }
+              }
+
+              SE_temp <- summarizeOverlaps(
+                features = mod_annot_count,
+                reads = merip_bams,
+                param = Parameter(merip_bams),
+                mode = "Union",
+                inter.feature = FALSE,
+                preprocess.reads = reads_five_POS,
+                singleEnd = !any(asMates(merip_bams)),
+                ignore.strand = RandomPrimer(merip_bams),
+                fragments = any(asMates(merip_bams))
+              )
+
+              #Replace the rowRanges with the single based GRangesList.
+              index_meth <- grepl("meth_", rownames(SE_temp))
+
+              index_sb_annot <-
+                as.numeric(gsub("meth_", "", rownames(SE_temp)[index_meth]))
+
+              meth_count <-
+                assay(SE_temp)[index_meth, ][match(as.numeric(names(mod_annot)), index_sb_annot), ]
+
+              rownames(meth_count) <-
+                paste0("meth_", seq_len(nrow(meth_count)))
+
+              #Fill the rows that are not on exons with zero counts.
+              meth_count[is.na(meth_count)] <- 0
+
+              control_count <- assay(SE_temp)[!index_meth, ]
+
+              #replace the metadata collumn with gene_ids
+              mod_annot_gr <- unlist(mod_annot)
+
+              mcols(mod_annot_gr) <- DataFrame(gene_id = NA)
+
+              mcols(mod_annot_gr)$gene_id[index_sb_annot] <-
+                mcols(unlist(rowRanges(SE_temp)))$gene_id[index_sb_annot]
+
+              mod_annot <-
+                split(mod_annot_gr, names(mod_annot_gr))
+
+              mod_annot <-
+                mod_annot[order(as.numeric(names(mod_annot)))]
+
+              names(mod_annot) <- paste0("meth_", names(mod_annot))
+
+              SummarizedExomePeaks <- SummarizedExperiment(
+                assay = rbind(meth_count, control_count),
+
+                rowRanges = c(mod_annot,
+                              rowRanges(SE_temp)[!index_meth]),
+
+                colData = DataFrame(metadata(merip_bams))
+
+              )
+
+            }
+
+            #Annotate GC content if BSgenome is provided
+            if (!is.null(bsgenome)) {
+              elementMetadata(SummarizedExomePeaks) <- GC_content_over_grl(
+                bsgenome = bsgenome,
+                txdb = txdb,
+                grl = rowRanges(SummarizedExomePeaks),
+                fragment_length = fragment_length,
+                binding_length = binding_length,
+                drop_overlapped_genes = drop_overlapped_genes,
+                effective_GC = FALSE
+              )
+            }
+
+            return(
+              new(
+                "SummarizedExomePeak",
+                rowRanges = SummarizedExomePeaks@rowRanges,
+                colData = SummarizedExomePeaks@colData,
+                assays = SummarizedExomePeaks@assays,
+                NAMES = SummarizedExomePeaks@NAMES,
+                elementMetadata = SummarizedExomePeaks@elementMetadata,
+                metadata = SummarizedExomePeaks@metadata,
+                DESeq2Results = data.frame()
+              )
+            )
+
+        }
 )

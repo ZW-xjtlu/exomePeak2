@@ -24,14 +24,14 @@
 #' @param fragment_length a positive integer of the expected fragment length in bp; default 100.
 #' @param binding_length a positive integer of the antibody binding length in IP samples; default 25.
 #' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
-#' @param count_cutoff a non negative integer value of the average reads count per window used in peak calling; default 5.
+#' @param pc_count_cutoff a non negative integer value of the average reads count per window used in peak calling; default 5.
 #' @param p_cutoff a value of the p value cut-off used in peak calling; default NULL.
 #' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #' @param width_cutoff a positive integer of the minimum width for the merged peaks; default \code{fragment_length} .
 #' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
-#' @param mod_annotation a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
+#' @param mod_annot a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
 #' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
 #'
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
@@ -64,24 +64,25 @@ exomePeak2 <- function(bam_ip = NULL,
                        txdb = NULL,
                        bsgenome = NULL,
                        genome_assembly = NA,
-                       gene_anno_gff = NULL,
+                       gene_annot = NULL,
+                       mod_annot = NULL,
                        paired_end = FALSE,
                        random_primer = TRUE,
                        fragment_length = 100,
                        binding_length = 25,
                        step_length = binding_length,
                        peak_width = fragment_length/2,
-                       count_cutoff = 5,
+                       pc_count_cutoff = 5,
+                       gc_count_cutoff = 50,
                        p_cutoff = NULL,
                        p_adj_cutoff = 0.05,
                        logFC_cutoff = 0,
                        parallel = FALSE,
-                       mod_annotation = NULL,
-                       glm_type = c("auto","poisson","NB","DESeq2"),
+                       background = c("mclust", "m6Aseq_prior", "manual", "all"),
+                       glm_type = c("DESeq2","poisson","NB"),
                        shrinkage_method = c("apeglm","ashr","normal","none"),
-                       drop_overlapped_genes = TRUE,
+                       drop_overlapped_genes = FALSE,
                        gc_correction = TRUE,
-                       m6Aseq_background = TRUE,
                        export_results = TRUE,
                        export_format = c("tsv","BED","RDS"),
                        table_style = c("bed","granges")
@@ -92,6 +93,10 @@ shrinkage_method <- match.arg(shrinkage_method)
 export_format <- match.arg(export_format)
 
 table_style <- match.arg(table_style)
+
+background <- match.arg(background)
+
+glm_type <- match.arg(glm_type)
 
 if(!is.null(bam_treated_ip) & shrinkage_method == "normal"){
   stop("normal prior is not applicable for differential methylation analysis")
@@ -105,18 +110,18 @@ stopifnot(peak_width > 0)
 
 stopifnot(logFC_cutoff >= 0)
 
-stopifnot(count_cutoff >= 0)
+stopifnot(pc_count_cutoff >= 0)
 
 if(!is.na(genome_assembly)) {
    if(!is(bsgenome,"BSgenome")) bsgenome = genome_assembly
-   if(!is(txdb,"TxDb") & is.null(gene_anno_gff)) txdb = genome_assembly
+   if(!is(txdb,"TxDb") & is.null(gene_annot)) txdb = genome_assembly
 }
 
-if(!is.null(gene_anno_gff)) {
-  txdb <- makeTxDbFromGFF(gene_anno_gff)
+if(!is.null(gene_annot)) {
+  txdb <- makeTxDbFromGFF(gene_annot)
 } else {
   if (is.null(txdb)) {
-    stop("required argument of txdb or gene_anno_gff for transcript annotation")
+    stop("required argument of txdb or gene_annot for transcript annotation")
   }
 
   if (!is(txdb, "TxDb")) {
@@ -147,19 +152,20 @@ random_primer = random_primer
 sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         txdb = txdb,
                         bsgenome = bsgenome,
-                        gene_anno_gff = gene_anno_gff,
+                        gene_annot = gene_annot,
                         fragment_length = fragment_length,
                         binding_length = binding_length,
                         step_length = binding_length,
-                        count_cutoff = count_cutoff,
+                        pc_count_cutoff = pc_count_cutoff,
+                        gc_count_cutoff = gc_count_cutoff,
                         p_cutoff = p_cutoff,
                         p_adj_cutoff = p_adj_cutoff,
                         logFC_cutoff = logFC_cutoff,
                         peak_width = fragment_length/2,
                         drop_overlapped_genes = drop_overlapped_genes,
                         parallel = parallel,
-                        mod_annotation = mod_annotation,
-                        m6Aseq_background = m6Aseq_background
+                        mod_annot = mod_annot,
+                        background = background
 )
 
 sep <- estimateSeqDepth(sep)

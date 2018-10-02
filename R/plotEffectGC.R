@@ -97,7 +97,7 @@ Decision[indx_sig] <- "padj < .05"
 } else {
 
   if(length(which(DESeq2Results(sep)$padj < .05)) <
-     floor(sum(grepl("meth_", rownames(sep))) * 0.005)) {
+     floor(sum(grepl("meth_", rownames(sep))) * 0.1)) {
     Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < .05"
 
   } else {
@@ -141,11 +141,6 @@ p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
                  title = mtitle,
                  subtitle = save_pdf_prefix) +
             xlim(c(0.2,0.9))
-
-#p2 <- ggplot(plot_df, aes(x = GC_idx, fill = Label)) + geom_density(linetype = 0, alpha = .4) + theme_classic() + xlim(c(0.25,0.75)) + scale_fill_brewer(palette = "Dark2") + labs(x = "GC contents", title = "GC content distribution", subtitle = save_pdf_prefix)
-
-#suppressWarnings( suppressMessages( ggsave(paste0(HDER,"_GC_bias.pdf"),p1,width = 5,height = 2.6) ) )
-#suppressWarnings( ggsave(paste0(HDER,"_GC_dist.pdf"),p2,width = 5,height = 2.6) )
 
 if(!is.null( save_pdf_prefix )){
 
