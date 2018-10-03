@@ -38,7 +38,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   fragment_length = 100, binding_length = 25,
   step_length = binding_length, pc_count_cutoff = 5, gc_count_cutoff = 50,
   p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0,
-  peak_width = fragment_length/2, drop_overlapped_genes = FALSE,
+  peak_width = fragment_length/2, drop_overlapped_genes = TRUE,
   parallel = FALSE, bp_param = NULL)
 }
 \arguments{
