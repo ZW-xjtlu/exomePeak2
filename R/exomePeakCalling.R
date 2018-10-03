@@ -212,6 +212,8 @@ setMethod("exomePeakCalling",
 
               #Model based clustering
 
+              m6A_prior = F
+
               if (background == "mclust") {
                 message("find background with mclust")
                 rowData(SE_Peak_counts)$indx_bg <- mclust_bg(se_peak_counts = SE_Peak_counts)
