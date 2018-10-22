@@ -169,12 +169,7 @@ sep <- estimateSeqDepth(sep)
 message("calculate GC content effects on background")
 
 if(!is.null(bsgenome)) {
-  sep <- normalizeGC(sep,
-                     bsgenome = bsgenome,
-                     txdb = txdb,
-                     fragment_length = fragment_length,
-                     binding_length = binding_length,
-                     drop_overlapped_genes = drop_overlapped_genes)
+  sep <- normalizeGC(sep)
 }
 
 if(any(sep$design_Treatment)){
