@@ -126,7 +126,7 @@ setGeneric("plotEffectGC", function(sep,
 #' @export
 setGeneric("exportResults", function(sep,
                                      format = c("txt","BED","RDS"),
-                                     file_name = "exomepeaks_result",
+                                     dir_name = "exomepeaks_result",
                                      cut_off_pvalue = NULL,
                                      cut_off_padj = 0.05,
                                      cut_off_log2FC = 0,

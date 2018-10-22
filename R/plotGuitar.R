@@ -51,7 +51,7 @@ row_grl <- rowRanges( sep )
 
 gr_list <- list(
   peaks = row_grl[grepl("meth",names(row_grl) )],
-  control = row_grl[grepl("control",names(row_grl) )]
+  background = row_grl[grepl("control",names(row_grl) )]
 )
 
 if(!include_control_regions){
@@ -85,7 +85,7 @@ suppressWarnings(
     }
 
     gr_list <- list(meth_peaks = row_grl[ grepl("meth", rownames(sep)) ][indx_sig],
-                    control = row_grl[ grepl("control", names(row_grl)) ]
+                    background = row_grl[ grepl("control", names(row_grl)) ]
     )
 
     names(gr_list)[1] <- gr_lab

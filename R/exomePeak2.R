@@ -201,10 +201,9 @@ plotExonLength(sep,
 if( export_results ) {
 exportResults(sep,
               format = export_format,
-              inhibit_filter = TRUE,
+              inhibit_filter = !is.null( mod_annot ),
               table_style = table_style)
 }
 
-return(Results(sep,
-               table_style = table_style))
+return(sep)
 }

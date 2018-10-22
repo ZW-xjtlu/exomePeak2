@@ -24,7 +24,6 @@
 mclust_bg <- function(se_peak_counts,
                       alpha = 1){
 
-
 #1. Calculate the methylation levels as M values.
 
 indx_input_control <- !(se_peak_counts$design_IP) & !(se_peak_counts$design_Treatment)
@@ -77,13 +76,25 @@ colnames(model_matrix) <- paste0("sample_",1:ncol(model_matrix))
 if(!is.null(rowData(se_peak_counts)$gc_contents)) model_matrix$GC <- rowData(se_peak_counts)$gc_contents[rowData(se_peak_counts)$indx_gc_est]
 
 #Apply univariate gaussian mixture if there is only one column.
+#Classify the bins using bayesian classifier
 if(ncol(model_matrix) == 1){
+
 mod_mix <- densityMclust(as.numeric( model_matrix[,1]), G = 2, modelNames = "V")
 bg_class <- which.min( mod_mix$parameters$mean )
+
 } else {
+
 mod_mix <- densityMclust(model_matrix, G = 2, modelNames = "VVV")
-#3. Classify the bins using bayesian classifier
-bg_class <- which.min( colSums( mod_mix$parameters$mean[seq_len(sum(grepl("sample",colnames(model_matrix) ))),] ) )
+par_samples <- mod_mix$parameters$mean[seq_len(sum(grepl("sample",colnames(model_matrix) ))),]
+
+if(ncol(model_matrix) == 2){
+  bg_class <- which.min( par_samples )
+}else{
+  bg_class <- which.min( colSums( par_samples  ) )
+}
+
+rm(par_samples)
+
 }
 
 indx_bg <- vector(length = nrow(se_peak_counts), mode = "logical")

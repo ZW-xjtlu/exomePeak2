@@ -152,7 +152,7 @@ setMethod("exomePeakCalling",
                 }
               }
 
-              SE_Peak_counts <- summarizeOverlaps(
+              SE_Peak_counts <- suppressWarnings( summarizeOverlaps(
                 features = split_by_name(
                   flank_on_exons(
                     grl = exome_bins_grl,
@@ -170,7 +170,7 @@ setMethod("exomePeakCalling",
                 singleEnd = !any(asMates(merip_bams)),
                 ignore.strand = RandomPrimer(merip_bams),
                 fragments = any(asMates(merip_bams))
-              )
+              ) )
 
               ######################################################
               #               Reads count annotation               #
@@ -369,18 +369,18 @@ setMethod("exomePeakCalling",
                 }
               }
 
-              SummarizedExomePeaks <- summarizeOverlaps(
+              SummarizedExomePeaks <- suppressWarnings( summarizeOverlaps(
                 features = count_row_features,
                 reads = merip_bams,
                 param = Parameter(merip_bams),
                 mode = "Union",
                 inter.feature = FALSE,
                 preprocess.reads = reads_five_POS,
-                #The reads are counted as the 5' POS
+                #The reads are counted by the 5' POS
                 singleEnd = !any(asMates(merip_bams)),
                 ignore.strand = RandomPrimer(merip_bams),
                 fragments = any(asMates(merip_bams))
-              )
+              ) )
 
               #retrieve the set of unflanked modification sites to replace the row ranges.
 

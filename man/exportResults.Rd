@@ -7,13 +7,13 @@
 \title{Export the methylation / differential methylation sites}
 \usage{
 exportResults(sep, format = c("txt", "BED", "RDS"),
-  file_name = "exomepeaks_result", cut_off_pvalue = NULL,
+  dir_name = "exomepeaks_result", cut_off_pvalue = NULL,
   cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 2000,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
 
 \S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv", "BED",
-  "RDS"), file_name = "exomepeaks_result", cut_off_pvalue = NULL,
+  "RDS"), dir_name = "exomePeak2_output", cut_off_pvalue = NULL,
   cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 2000,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
@@ -29,7 +29,7 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 
 - The choice RDS will save a Rdata of the SummarizedExperiment object which will additional include a comprehensive summary of the count and the design information (recommended).}
 
-\item{file_name}{The name of the file being saved; Default "exomepeaks_result".}
+\item{dir_name}{The name of the file being saved; Default "exomepeaks_result".}
 
 \item{cut_off_pvalue}{A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.}
 
