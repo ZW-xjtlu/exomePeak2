@@ -120,7 +120,7 @@ setMethod("exomePeakCalling",
               }
             }
 
-              message("yield bins on exons")
+              message("extract bins on exons")
 
 
               ######################################################
@@ -301,7 +301,7 @@ setMethod("exomePeakCalling",
               if (glm_type == "DESeq2") {
                 if (any(table(SE_Peak_counts$design_IP) == 1)) {
                   warning(
-                    "At least one of the IP or input samples has no replicate, peak calling method changed to poisson GLM.",
+                    "At least one of the IP or input samples have no replicate, peak calling method changed to poisson GLM.",
                     call. = FALSE,
                     immediate. = TRUE
                   )

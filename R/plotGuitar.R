@@ -23,6 +23,7 @@
 #' @name plotGuitar
 #'
 #' @rdname plotGuitar
+#'
 #' @export
 
 setMethod("plotGuitar",

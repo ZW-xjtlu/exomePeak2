@@ -14,7 +14,9 @@
 #'
 #'@import GenomicRanges
 #'@import GenomicFeatures
+#'
 #'@export
+#'
 flank_on_exons <- function(grl,
                            flank_length,
                            txdb,

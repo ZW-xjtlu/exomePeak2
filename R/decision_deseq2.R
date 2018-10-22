@@ -11,6 +11,8 @@
 #'
 #' @return A \code{data.frame} object indicating the column and cut-off value used for desicion, also it includes the number of positive sites in both directions based on the decision.
 #'
+#' @export
+#'
 decision_deseq2 <- function(Inf_RES,
                             log2FC_cut = 0,
                             P_cut = 0.05,

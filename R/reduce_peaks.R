@@ -12,6 +12,8 @@
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures
+#'
+#' @export
 
 
 reduce_peaks <- function(peaks_grl,

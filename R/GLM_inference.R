@@ -19,6 +19,8 @@
 #' @importFrom DESeq2 DESeqDataSet estimateDispersions estimateSizeFactors nbinomWaldTest results
 #' @importFrom MASS glm.nb
 #'
+#' @export
+#'
 GLM_inference <- function(SE_bins,
                           glm_type = c("poisson", "NB", "DESeq2"),
                           p_cutoff = NULL,

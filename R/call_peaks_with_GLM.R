@@ -30,6 +30,7 @@
 #'
 #' @import SummarizedExperiment
 #'
+#' @export
 #'
 call_peaks_with_GLM <- function(SE_bins,
                                 glm_type = c("poisson", "NB", "DESeq2"),

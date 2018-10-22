@@ -28,6 +28,7 @@
 #' @rdname glmMeth
 #'
 #' @export
+#'
 setMethod("glmMeth",
           "SummarizedExomePeak",
            function(sep,

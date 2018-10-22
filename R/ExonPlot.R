@@ -5,6 +5,9 @@
 #' @importFrom GenomicFeatures exons
 #' @importFrom IRanges subsetByOverlaps
 #' @import ggplot2
+#'
+#' @export
+#'
 exonPlot <- function(
   gfeatures,
   txdb,

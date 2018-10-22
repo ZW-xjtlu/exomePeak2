@@ -3,6 +3,8 @@
 #'@import GenomicAlignments
 #'@import GenomicRanges
 #'
+#'@export
+#'
 reads_five_POS <- function(reads,
                            width = 1,
                            fix = "start",

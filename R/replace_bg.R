@@ -13,6 +13,9 @@
 #' The second portion is the restructed user provided annotation with gene id annotated.
 #'
 #' @import GenomicRanges
+#'
+#' @export
+#'
 
 replace_bg <- function(grl,
                        bg,

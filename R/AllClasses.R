@@ -4,6 +4,7 @@
 #'
 #' @exportClass MeripBamFileList
 #'
+#' @export
 
 setClass(
   Class = "MeripBamFileList",

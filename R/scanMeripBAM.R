@@ -92,9 +92,18 @@ scanMeripBAM <- function(bam_ip = NULL,
                    bam_treated_input)
   }
 
+  exist_bam <- file.exists(bam_files)
+
+  if( any(!exist_bam) ){
+    stop(paste0("Files do not exist for:\n",
+          paste(bam_files[!exist_bam],collapse = ", "),
+         "\nplease check the input directories of the BAM files."))
+  }
+
+  rm(exist_bam)
+
   bam.list = BamFileList(file = bam_files,
                          asMates = paired_end)
-
 
   bai_temp = paste0(bam_files, ".bai")
 

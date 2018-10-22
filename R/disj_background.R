@@ -17,6 +17,8 @@
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures
+#'
+#' @export
 
 disj_background <- function(mod_gr,
                             txdb,

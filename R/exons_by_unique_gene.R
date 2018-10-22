@@ -6,6 +6,8 @@
 #'
 #' @importFrom GenomicFeatures exonsBy
 #' @import GenomicRanges
+#'
+#' @export
 exons_by_unique_gene <- function(txdb,drop_overlapped_genes = TRUE){
 
 rd_exonsBygene <- reduce( exonsBy(txdb, by = "gene") ,min.gapwidth=0L)

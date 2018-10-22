@@ -25,6 +25,7 @@
 #' @rdname plotExonLength
 #'
 #' @export
+#'
 setMethod("plotExonLength",
           "SummarizedExomePeak",
                   function(sep,
