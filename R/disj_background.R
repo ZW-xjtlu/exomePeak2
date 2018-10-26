@@ -131,6 +131,8 @@ disj_background <- function(mod_gr,
 
     names(control_ranges) = paste0("control_", names(control_ranges))
 
+    seqlengths(control_ranges) = NA
+
   }
 
   #organize the mod_grations

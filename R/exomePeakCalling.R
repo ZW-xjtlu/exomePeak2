@@ -120,7 +120,7 @@ setMethod("exomePeakCalling",
               }
             }
 
-              message("extract bins on exons")
+              message("Extract bins on exons.")
 
 
               ######################################################
@@ -135,7 +135,7 @@ setMethod("exomePeakCalling",
                 drop_overlapped_genes = drop_overlapped_genes
               )
 
-              message("count reads on bins")
+              message("Count reads on bins.")
 
 
               ######################################################
@@ -166,7 +166,7 @@ setMethod("exomePeakCalling",
                 param = Parameter(merip_bams),
                 mode = "Union",
                 inter.feature = FALSE,
-                preprocess.reads = reads_five_POS, #The reads are counted as the 5' POS
+                preprocess.reads = reads_five_POS,
                 singleEnd = !any(asMates(merip_bams)),
                 ignore.strand = RandomPrimer(merip_bams),
                 fragments = any(asMates(merip_bams))

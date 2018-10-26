@@ -47,7 +47,7 @@ GLM_inference <- function(SE_bins,
   if (!is.null(rowData(SE_bins)$gc_contents)) {
     indx_IP <- dds$design_IP == "IP"
 
-    message("estimate GC size factors for IP samples")
+    message("estimate GC content size factors for IP samples")
 
     cqnObject_IP <- suppressMessages(
       cqn(
@@ -63,7 +63,7 @@ GLM_inference <- function(SE_bins,
       )
     )
 
-    message("estimate GC size factors for input samples")
+    message("estimate GC content size factors for input samples")
 
     cqnObject_input <- suppressMessages(
       cqn(
