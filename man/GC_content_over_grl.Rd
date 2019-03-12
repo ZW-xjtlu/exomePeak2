@@ -5,7 +5,7 @@
 \title{Retrieve GC content level from genome over regions defined by a GRanges or GRangesList object.}
 \usage{
 GC_content_over_grl(bsgenome, txdb, grl, fragment_length = 100,
-  binding_length = 25, drop_overlapped_genes = TRUE, effective_GC = FALSE)
+  binding_length = 25, effective_GC = FALSE)
 }
 \arguments{
 \item{bsgenome}{A BSgenome object.}
@@ -17,8 +17,6 @@ GC_content_over_grl(bsgenome, txdb, grl, fragment_length = 100,
 \item{fragment_length}{A positive integer of the expected fragment length in the RNA-Seq library; Default 100.}
 
 \item{binding_length}{A positive integer of the expected antibody binding length of IP; Default 25.}
-
-\item{drop_overlapped_genes}{If TRUE, the regions of the overlapped genes on the transcript annotation will be masked; Default TRUE.}
 
 \item{effective_GC}{If TRUE, the GC content calculation will be weighted by the fragment mapping probabilities,
 currently it is only supported for the single based modification annotation; Default FALSE.}

@@ -24,8 +24,6 @@
 #'
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #'
-#' @param drop_overlapped_genes A logical indicating whether the overlapping genes were dropped.
-#'
 #' @return This function will return a list of \code{GRangesList} object storing peaks for both methylation and control.
 #'
 #' @import SummarizedExperiment
@@ -38,8 +36,7 @@ call_peaks_with_GLM <- function(SE_bins,
                                 count_cutoff = 5,
                                 p_cutoff = NULL,
                                 p_adj_cutoff = 0.05,
-                                logFC_cutoff = 0,
-                                drop_overlapped_genes = TRUE) {
+                                logFC_cutoff = 0) {
 
   design_IP_temp <- rep("input", ncol(SE_bins))
 
@@ -63,8 +60,7 @@ call_peaks_with_GLM <- function(SE_bins,
   gr_meth <-
     reduce_peaks(
       peaks_grl = rowRanges(SE_bins)[as.numeric(rownames(SE_bins)) %in% index_meth],
-      txdb = txdb,
-      drop_overlapped_genes = drop_overlapped_genes
+      txdb = txdb
     )
 
   return(split(gr_meth, names(gr_meth)))

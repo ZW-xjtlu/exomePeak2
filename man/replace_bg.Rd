@@ -4,7 +4,7 @@
 \alias{replace_bg}
 \title{Replace the control regions with user provided background.}
 \usage{
-replace_bg(grl, bg, txdb, drop_overlapped_genes = TRUE)
+replace_bg(grl, bg, txdb)
 }
 \arguments{
 \item{grl}{A \code{GRangesList} of the merged peaks which the background regions are waiting to be replaced.}
@@ -12,8 +12,6 @@ replace_bg(grl, bg, txdb, drop_overlapped_genes = TRUE)
 \item{bg}{A \code{GRanges} or \code{GRangesList} object of the user provided background.}
 
 \item{txdb}{A \code{TxDb} object that define the transcript annotation.}
-
-\item{drop_overlapped_genes}{A logical indicating whether to discard the overlapping genes; Default TRUE.}
 }
 \value{
 A \code{GRangesList} object.

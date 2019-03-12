@@ -22,16 +22,15 @@
 #' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #' @param peak_width positive integer of the minimum width for the merged peaks; default \code{fragment_length} .
-#' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annot a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
+#' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
+#'
 #' @param manual_background a \code{GRanges} object for user provided RNA modification background.
 #' @param m6Aseq_background a logical of whether to use the topology knowledge of m6A-Seq to find appropriate background in GC effect estimation;
 #' If TRUE, the GC effect will be estimated on bins that is not overlapping with long exons (exon length >= 400bp) and 5'UTR.
 #' Also, the returned background control ranges returned will also exclude those regions;
 #' It should not be select if you are analyzing MeRIP-seq data of other modification, such as hm5C; default TRUE.
-#'
-#' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
 #'
@@ -75,7 +74,6 @@ setMethod("exomePeakCalling",
                    p_adj_cutoff = 0.05,
                    logFC_cutoff = 0,
                    peak_width = fragment_length / 2,
-                   drop_overlapped_genes = TRUE,
                    parallel = FALSE,
                    bp_param = NULL
           ) {
@@ -120,7 +118,7 @@ setMethod("exomePeakCalling",
               }
             }
 
-              message("Extract bins on exons.")
+              message("Extract bins on exons")
 
 
               ######################################################
@@ -131,11 +129,10 @@ setMethod("exomePeakCalling",
               exome_bins_grl <- exome_bins_from_txdb(
                 txdb = txdb,
                 window_size = binding_length,
-                step_size = step_length,
-                drop_overlapped_genes = drop_overlapped_genes
+                step_size = step_length
               )
 
-              message("Count reads on bins.")
+              message("Count reads on bins")
 
 
               ######################################################
@@ -158,7 +155,6 @@ setMethod("exomePeakCalling",
                     grl = exome_bins_grl,
                     flank_length = fragment_length - binding_length,
                     txdb = txdb,
-                    drop_overlapped_genes = drop_overlapped_genes,
                     index_flank = FALSE
                   )
                 ),
@@ -318,8 +314,7 @@ setMethod("exomePeakCalling",
                 p_cutoff = p_cutoff,
                 p_adj_cutoff = p_adj_cutoff,
                 logFC_cutoff = logFC_cutoff,
-                txdb = txdb,
-                drop_overlapped_genes = drop_overlapped_genes
+                txdb = txdb
               )
 
               #Filter peak by width
@@ -339,7 +334,6 @@ setMethod("exomePeakCalling",
                 grl = grl_meth,
                 flank_length = fragment_length - binding_length,
                 txdb = txdb,
-                drop_overlapped_genes = drop_overlapped_genes,
                 index_flank = FALSE
               )
 
@@ -349,7 +343,6 @@ setMethod("exomePeakCalling",
                 mod_gr = gr_meth_flanked,
                 txdb = txdb,
                 cut_off_num = 2000,
-                drop_overlapped_genes = drop_overlapped_genes,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background,
                 control_width = peak_width
@@ -419,7 +412,6 @@ setMethod("exomePeakCalling",
                 flank_length = floor(fragment_length - binding_length /
                                        2),
                 txdb = txdb,
-                drop_overlapped_genes = drop_overlapped_genes,
                 index_flank = FALSE
               )
 
@@ -427,7 +419,6 @@ setMethod("exomePeakCalling",
                 mod_gr = mod_annot_flanked,
                 txdb = txdb,
                 cut_off_num = 2000,
-                drop_overlapped_genes = drop_overlapped_genes,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background,
                 control_width = peak_width
@@ -512,7 +503,6 @@ setMethod("exomePeakCalling",
                 grl = rowRanges(SummarizedExomePeaks),
                 fragment_length = fragment_length,
                 binding_length = binding_length,
-                drop_overlapped_genes = drop_overlapped_genes,
                 effective_GC = FALSE
               )
             }

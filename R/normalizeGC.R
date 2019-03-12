@@ -20,8 +20,6 @@
 #'
 #'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
 #'
-#'@param drop_overlapped_genes whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.
-#'
 #'@description This function estimates the feature specific size factors in order to correct the GC content artifacts,
 #'the GC content biases can contributed to the following sources of variabilities in MeRIP-seq data:
 #'
@@ -60,8 +58,7 @@ setMethod("normalizeGC",
                                  binding_length = 25,
                                  feature = c("background", "all"),
                                  qtnorm = TRUE,
-                                 effective_GC = FALSE,
-                                 drop_overlapped_genes = TRUE
+                                 effective_GC = FALSE
                                  ) {
 feature <- match.arg(feature)
 
@@ -99,7 +96,6 @@ elementMetadata( sep ) <- GC_content_over_grl(
                                       grl = rowRanges( sep ),
                                       fragment_length = fragment_length,
                                       binding_length = binding_length,
-                                      drop_overlapped_genes = drop_overlapped_genes,
                                       effective_GC = effective_GC
                                  )
 
@@ -123,7 +119,7 @@ if(!qtnorm) {
 
 cqnObject <- suppressMessages( cqn(assay(sep)[!GC_na_index,],
                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
-                                     lengthMethod = "smooth",
+                                     lengthMethod = "fixed",
                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
                                      subindex = Subindex,
                                      sizeFactors = sep$sizeFactor,
@@ -138,7 +134,7 @@ assays(sep)$GCsizeFactors <- GC_size_factors
 
 cqnObject_IP <- suppressMessages( cqn(assay(sep)[!GC_na_index, sep$design_IP],
                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
-                                     lengthMethod = "smooth",
+                                     lengthMethod = "fixed",
                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
                                      subindex = Subindex,
                                      sizeFactors = sep$sizeFactor[sep$design_IP],
@@ -147,7 +143,7 @@ cqnObject_IP <- suppressMessages( cqn(assay(sep)[!GC_na_index, sep$design_IP],
 
 cqnObject_input <- suppressMessages( cqn(assay(sep)[!GC_na_index, !sep$design_IP],
                                       lengths = elementMetadata( sep )$feature_length[!GC_na_index],
-                                      lengthMethod = "smooth",
+                                      lengthMethod = "fixed",
                                       x = elementMetadata( sep )$GC_content[!GC_na_index],
                                       subindex = Subindex,
                                       sizeFactors = sep$sizeFactor[!sep$design_IP],

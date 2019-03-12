@@ -4,8 +4,7 @@
 \alias{flank_on_exons}
 \title{Flank ranges on exon coordinate.}
 \usage{
-flank_on_exons(grl, flank_length, txdb, drop_overlapped_genes = TRUE,
-  index_flank = TRUE)
+flank_on_exons(grl, flank_length, txdb, index_flank = TRUE)
 }
 \arguments{
 \item{grl}{a GRangesList object which is the target of the flanking.}
@@ -13,8 +12,6 @@ flank_on_exons(grl, flank_length, txdb, drop_overlapped_genes = TRUE,
 \item{flank_length}{the length of the flanking regions (on both left and right).}
 
 \item{txdb}{the TxDb object for the transcript annotation.}
-
-\item{drop_overlapped_genes}{whether to drop the overlapping genes on the txdb object; default TRUE.}
 
 \item{index_flank}{whether to store the flanking regions seperately; default TRUE.}
 }

@@ -4,8 +4,7 @@
 \alias{exome_bins_from_txdb}
 \title{extract exome bins for peak calling given a txdb object}
 \usage{
-exome_bins_from_txdb(txdb, window_size = 25, step_size = 25,
-  drop_overlapped_genes = T)
+exome_bins_from_txdb(txdb, window_size = 25, step_size = 25)
 }
 \arguments{
 \item{txdb}{A \code{txdb} object.}
@@ -13,8 +12,6 @@ exome_bins_from_txdb(txdb, window_size = 25, step_size = 25,
 \item{window_size}{An integer valued number of the width of the sliding windows or bins.}
 
 \item{step_size}{An integer valued number of the width of the bin steps.}
-
-\item{drop_overlapped_genes}{A logical indicating whether the overlapping genes are dropped.}
 }
 \value{
 A \code{GRanges} object of exonic bins with the names corresponding to the indexes of bins.

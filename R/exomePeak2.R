@@ -29,11 +29,10 @@
 #' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #' @param width_cutoff a positive integer of the minimum width for the merged peaks; default \code{fragment_length} .
-#' @param drop_overlapped_genes a logical indicating whether the bins on overlapping genes are dropped or not; default TRUE.
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annot a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
 #' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
-#'
+#' @param save_dir The name of the file being saved; Default "exomePeak2_output".
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
@@ -81,10 +80,10 @@ exomePeak2 <- function(bam_ip = NULL,
                        background = c("mclust", "m6Aseq_prior", "manual", "all"),
                        glm_type = c("DESeq2","poisson","NB"),
                        shrinkage_method = c("apeglm","ashr","normal","none"),
-                       drop_overlapped_genes = TRUE,
                        export_results = TRUE,
                        export_format = c("tsv","BED","RDS"),
-                       table_style = c("bed","granges")
+                       table_style = c("bed","granges"),
+                       save_dir = "exomePeak2_output"
                       ){
 
 shrinkage_method <- match.arg(shrinkage_method)
@@ -158,7 +157,6 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         p_adj_cutoff = p_adj_cutoff,
                         logFC_cutoff = logFC_cutoff,
                         peak_width = fragment_length/2,
-                        drop_overlapped_genes = drop_overlapped_genes,
                         parallel = parallel,
                         mod_annot = mod_annot,
                         background = background
@@ -182,12 +180,10 @@ if(any(sep$design_Treatment)){
 
 if(!is.null(bsgenome)) {
 plotReadsGC(sep = sep,
-            save_pdf_prefix = "ep2",
-            drop_overlapped_genes = drop_overlapped_genes)
+            save_pdf_prefix = "ep2")
 
 plotEffectGC(sep = sep,
-           save_pdf_prefix = "ep2",
-           drop_overlapped_genes = drop_overlapped_genes)
+           save_pdf_prefix = "ep2")
 }
 
 plotGuitar(sep,
@@ -202,7 +198,8 @@ if( export_results ) {
 exportResults(sep,
               format = export_format,
               inhibit_filter = !is.null( mod_annot ),
-              table_style = table_style)
+              table_style = table_style,
+              save_dir = save_dir)
 }
 
 return(sep)

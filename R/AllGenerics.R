@@ -25,7 +25,6 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         p_adj_cutoff = 0.05,
                                         logFC_cutoff = 0,
                                         peak_width = fragment_length / 2,
-                                        drop_overlapped_genes = FALSE,
                                         parallel = FALSE,
                                         bp_param = NULL) {standardGeneric("exomePeakCalling")})
 
@@ -65,8 +64,7 @@ setGeneric("normalizeGC", function(sep,
                                        binding_length = 25,
                                        feature = c("background","all"),
                                        qtnorm = FALSE,
-                                       effective_GC = FALSE,
-                                       drop_overlapped_genes = TRUE) {standardGeneric("normalizeGC")})
+                                       effective_GC = FALSE) {standardGeneric("normalizeGC")})
 
 
 #' @rdname glmMeth
@@ -108,7 +106,6 @@ setGeneric("plotReadsGC", function(sep,
                                    fragment_length = 100,
                                    binding_length = 25,
                                    effective_GC = FALSE,
-                                   drop_overlapped_genes = TRUE,
                                    pool_replicates = FALSE) {standardGeneric("plotReadsGC")})
 
 #' @rdname plotBetaGC
@@ -119,14 +116,13 @@ setGeneric("plotEffectGC", function(sep,
                                   save_pdf_prefix = NULL,
                                   fragment_length = 100,
                                   binding_length = 25,
-                                  effective_GC = FALSE,
-                                  drop_overlapped_genes = TRUE) {standardGeneric("plotEffectGC")})
+                                  effective_GC = FALSE) {standardGeneric("plotEffectGC")})
 
 #' @rdname exportResults
 #' @export
 setGeneric("exportResults", function(sep,
                                      format = c("txt","BED","RDS"),
-                                     dir_name = "exomepeaks_result",
+                                     save_dir = "exomepeaks_result",
                                      cut_off_pvalue = NULL,
                                      cut_off_padj = 0.05,
                                      cut_off_log2FC = 0,

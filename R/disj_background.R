@@ -3,7 +3,6 @@
 #' @param mod_gr A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).
 #' @param txdb A \code{TxDb} object that define the transcript mod_gration.
 #' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 2000.
-#' @param drop_overlapped_genes A logical indicating whether to discard the overlapping genes; Default TRUE.
 #' @param m6Aseq_background A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
 #' @param distance_5p A numeric value of the length of the transcript starting region; default 200.
 #' @param rename_meth Whether to rename the returned methylation sites, default = FALSE.
@@ -23,7 +22,6 @@
 disj_background <- function(mod_gr,
                             txdb,
                             cut_off_num = 2000,
-                            drop_overlapped_genes = TRUE,
                             background_bins = NULL,
                             background_types = c("mclust", "m6Aseq_prior", "manual", "all"),
                             control_width = 50,
@@ -32,7 +30,7 @@ disj_background <- function(mod_gr,
   background_types <- match.arg(background_types)
 
   exbyug <-
-    exons_by_unique_gene(txdb, drop_overlapped_genes = drop_overlapped_genes)
+    exons_by_unique_gene(txdb)
 
   mcols(mod_gr) <- NULL
 

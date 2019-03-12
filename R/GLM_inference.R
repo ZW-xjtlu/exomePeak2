@@ -17,7 +17,6 @@
 #' @return a list of the index for the significant methylated peaks (IP > input) and control peaks (peaks other than methylation peaks).
 #'
 #' @importFrom DESeq2 DESeqDataSet estimateDispersions estimateSizeFactors nbinomWaldTest results
-#' @importFrom MASS glm.nb
 #'
 #' @export
 #'
@@ -53,7 +52,7 @@ GLM_inference <- function(SE_bins,
       cqn(
         assay(dds)[, indx_IP],
         lengths = rowData(dds)$region_widths,
-        lengthMethod = "smooth",
+        lengthMethod = "fixed",
         x = rowData(dds)$gc_contents,
         sizeFactors = dds$sizeFactor[indx_IP],
         subindex = which(rowData(dds)$indx_bg &
@@ -69,7 +68,7 @@ GLM_inference <- function(SE_bins,
       cqn(
         assay(dds)[, !indx_IP],
         lengths = rowData(dds)$region_widths,
-        lengthMethod = "smooth",
+        lengthMethod = "fixed",
         x = rowData(dds)$gc_contents,
         sizeFactors = dds$sizeFactor[!indx_IP],
         subindex = which(rowData(dds)$indx_bg &

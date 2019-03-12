@@ -8,7 +8,6 @@
 #' The metadata collumn is preserved, however the names is not tracked anymore.
 #' @param peaks_grl The GRangesList of the peaks region to be reduced.
 #' @param txdb The txdb object used during the generation of the peaks.
-#' @param drop_overlapped_genes A logical indicating whether the overlapping genes were dropped.
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures
@@ -17,11 +16,9 @@
 
 
 reduce_peaks <- function(peaks_grl,
-                         txdb,
-                         drop_overlapped_genes) {
+                         txdb) {
   exBygene  <- exons_by_unique_gene(
-    txdb = txdb,
-    drop_overlapped_genes = drop_overlapped_genes
+    txdb = txdb
   )
   reduced_peaks_on_genome <- mapFromTranscripts( reduce( mapToTranscripts( unlist(peaks_grl) , exBygene) ), exBygene )
   names(reduced_peaks_on_genome) <- reduced_peaks_on_genome$xHits

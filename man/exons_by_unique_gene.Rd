@@ -4,12 +4,10 @@
 \alias{exons_by_unique_gene}
 \title{Extracting exons by the corresponding genes that are on the same chromosomes and strand.}
 \usage{
-exons_by_unique_gene(txdb, drop_overlapped_genes = TRUE)
+exons_by_unique_gene(txdb)
 }
 \arguments{
 \item{txdb}{A TXDB object.}
-
-\item{drop_overlapped_genes}{A logical value, TRUE if the overlapped genes are deleted from the output.}
 }
 \value{
 A \code{GRangesList} object, each element in it corresponds to GRanges of the reduced exons of an unique gene,

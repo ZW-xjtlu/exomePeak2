@@ -8,7 +8,7 @@
 #'
 #' - The choice RDS will save a Rdata of the SummarizedExperiment object which will additional include a comprehensive summary of the count and the design information (recommended).
 #'
-#' @param dir_name The name of the file being saved; Default "exomepeaks_result".
+#' @param save_dir The name of the file being saved; Default "exomePeak2_output".
 #'
 #' @param cut_off_pvalue A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.
 #'
@@ -50,7 +50,7 @@ setMethod("exportResults",
           function(
                   sep,
                   format = c("tsv","BED","RDS"),
-                  dir_name = "exomePeak2_output",
+                  save_dir = "exomePeak2_output",
                   cut_off_pvalue = NULL,
                   cut_off_padj = 0.05,
                   cut_off_log2FC = 0,
@@ -60,8 +60,8 @@ setMethod("exportResults",
                   table_style = c("bed","granges")
 ){
 
-            if(!dir.exists(dir_name)) {
-              dir.create(dir_name)
+            if(!dir.exists(save_dir)) {
+              dir.create(save_dir)
             }
             if (!any(sep$design_Treatment)) {
               file_name <- "meth"
@@ -182,7 +182,7 @@ setMethod("exportResults",
               result_se <- result_se[id_index, ]
               rownames(result_se) <- renamed_id
 
-              saveRDS(result_se, paste0(dir_name, "/", file_name, ".rds"))
+              saveRDS(result_se, paste0(save_dir, "/", file_name, ".rds"))
 
             } else{
               id_num <- as.numeric(gsub("^.*_", "", names(result_grl)))
@@ -211,12 +211,12 @@ setMethod("exportResults",
 
                   export(
                     object = result_grl,
-                    con = paste0(dir_name, "/", file_name, ".bed"),
+                    con = paste0(save_dir, "/", file_name, ".bed"),
                     format = "BED"
                   )
 
                   result_df <-
-                    read.table(paste0(dir_name, "/", file_name, ".bed"),
+                    read.table(paste0(save_dir, "/", file_name, ".bed"),
                                header = F,
                                sep = "\t")
 
@@ -245,7 +245,7 @@ setMethod("exportResults",
 
                 write.table(
                   result_df,
-                  file = paste0(dir_name, "/", file_name, ".txt"),
+                  file = paste0(save_dir, "/", file_name, ".txt"),
                   sep = "\t",
                   row.names = FALSE,
                   col.names = TRUE
@@ -260,7 +260,7 @@ setMethod("exportResults",
 
                 export(
                   object = result_grl,
-                  con = paste0(dir_name, ".", tolower(format)),
+                  con = paste0(save_dir, ".", tolower(format)),
                   format = format
                 )
 

@@ -5,7 +5,6 @@
 #'@param grl a GRangesList object which is the target of the flanking.
 #'@param flank_length the length of the flanking regions (on both left and right).
 #'@param txdb the TxDb object for the transcript annotation.
-#'@param drop_overlapped_genes whether to drop the overlapping genes on the txdb object; default TRUE.
 #'@param index_flank whether to store the flanking regions seperately; default TRUE.
 #'
 #'@return A GRanges object with the extented ends on exons.
@@ -20,12 +19,10 @@
 flank_on_exons <- function(grl,
                            flank_length,
                            txdb,
-                           drop_overlapped_genes = TRUE,
                            index_flank = TRUE){
 
   exBygene  <- exons_by_unique_gene(
-    txdb = txdb,
-    drop_overlapped_genes = drop_overlapped_genes
+    txdb = txdb
   )
 
   bd_on_tx <- mapToTranscripts(unlist(grl), exBygene)

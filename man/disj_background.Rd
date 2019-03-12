@@ -4,8 +4,7 @@
 \alias{disj_background}
 \title{Find the background of the user provided mod_gration.}
 \usage{
-disj_background(mod_gr, txdb, cut_off_num = 2000,
-  drop_overlapped_genes = TRUE, background_bins = NULL,
+disj_background(mod_gr, txdb, cut_off_num = 2000, background_bins = NULL,
   background_types = c("mclust", "m6Aseq_prior", "manual", "all"),
   control_width = 50, rename_meth = FALSE)
 }
@@ -15,8 +14,6 @@ disj_background(mod_gr, txdb, cut_off_num = 2000,
 \item{txdb}{A \code{TxDb} object that define the transcript mod_gration.}
 
 \item{cut_off_num}{A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 2000.}
-
-\item{drop_overlapped_genes}{A logical indicating whether to discard the overlapping genes; Default TRUE.}
 
 \item{rename_meth}{Whether to rename the returned methylation sites, default = FALSE.}
 

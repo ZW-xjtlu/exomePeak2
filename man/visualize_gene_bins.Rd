@@ -9,7 +9,7 @@ visualize_gene_bins(gene_id, gr_bins, grl_gene)
 \arguments{
 \item{gene_id}{The id of the gene.}
 
-\item{gr_bins}{A \code{GRanges} object of exomePeak bins.}
+\item{gr_bins}{A \code{GRanges} object of exomePeak bins, a metadata column indexing for gene id is required.}
 
 \item{grl_exbg}{A \code{GRangesList} object that define the exon regions of each genes.}
 }

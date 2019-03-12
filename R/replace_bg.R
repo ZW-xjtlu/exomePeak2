@@ -3,7 +3,6 @@
 #' @param grl A \code{GRangesList} of the merged peaks which the background regions are waiting to be replaced.
 #' @param bg A \code{GRanges} or \code{GRangesList} object of the user provided background.
 #' @param txdb A \code{TxDb} object that define the transcript annotation.
-#' @param drop_overlapped_genes A logical indicating whether to discard the overlapping genes; Default TRUE.
 #' @return A \code{GRangesList} object.
 #' The first portion is the exons regions that is not overlapped with \code{annoation}.
 #'
@@ -19,12 +18,11 @@
 
 replace_bg <- function(grl,
                        bg,
-                       txdb,
-                       drop_overlapped_genes = TRUE) {
+                       txdb) {
   grl <- grl[!grepl("control",names(grl))]
   bg_gr <- unlist(bg)
   mcols(bg_gr) <- NULL
-  exbyug <- exons_by_unique_gene(txdb,drop_overlapped_genes = drop_overlapped_genes)
+  exbyug <- exons_by_unique_gene(txdb)
   bg_gr$gene_id = NA
   fol <- findOverlaps(bg_gr,exbyug)
   bg_gr$gene_id[ queryHits( fol ) ] = names(exbyug)[ subjectHits( fol ) ]

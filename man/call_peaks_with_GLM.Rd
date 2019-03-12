@@ -6,7 +6,7 @@
 \usage{
 call_peaks_with_GLM(SE_bins, glm_type = c("poisson", "NB", "DESeq2"), txdb,
   count_cutoff = 5, p_cutoff = NULL, p_adj_cutoff = 0.05,
-  logFC_cutoff = 0, drop_overlapped_genes = TRUE)
+  logFC_cutoff = 0)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP/input + treated/control.}
@@ -23,8 +23,6 @@ The DESeq2 method is only recommended for high power experiments with more than 
 \item{p_adj_cutoff}{a numeric value of the adjusted p value cutoff used in DESeq2 inference; if provided, the value of \code{p_cutoff} will be ignored; Default = 0.05.}
 
 \item{logFC_cutoff}{a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.}
-
-\item{drop_overlapped_genes}{A logical indicating whether the overlapping genes were dropped.}
 }
 \value{
 This function will return a list of \code{GRangesList} object storing peaks for both methylation and control.

@@ -8,12 +8,11 @@
 \usage{
 plotReadsGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
   fragment_length = 100, binding_length = 25, effective_GC = FALSE,
-  drop_overlapped_genes = TRUE, pool_replicates = FALSE)
+  pool_replicates = FALSE)
 
 \S4method{plotReadsGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
   txdb = NULL, save_pdf_prefix = NULL, fragment_length = 100,
-  binding_length = 25, effective_GC = FALSE, drop_overlapped_genes = TRUE,
-  pool_replicates = FALSE)
+  binding_length = 25, effective_GC = FALSE, pool_replicates = FALSE)
 }
 \arguments{
 \item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
@@ -25,8 +24,6 @@ plotReadsGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
 \item{fragment_length}{the expected fragment length of the sequencing library; Default 100.}
 
 \item{binding_length}{the expected antibody binding length of IP; Default 25.}
-
-\item{drop_overlapped_genes}{whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.}
 
 \item{pool_replicates}{a logical indicating whether to pool the replicates in the local regression fit; default FALSE.}
 

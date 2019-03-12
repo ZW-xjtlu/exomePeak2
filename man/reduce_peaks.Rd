@@ -4,14 +4,12 @@
 \alias{reduce_peaks}
 \title{A function to reduce ranges between elements within a GRangesList.}
 \usage{
-reduce_peaks(peaks_grl, txdb, drop_overlapped_genes)
+reduce_peaks(peaks_grl, txdb)
 }
 \arguments{
 \item{peaks_grl}{The GRangesList of the peaks region to be reduced.}
 
 \item{txdb}{The txdb object used during the generation of the peaks.}
-
-\item{drop_overlapped_genes}{A logical indicating whether the overlapping genes were dropped.}
 
 \item{grl}{a GRangesList object.}
 }

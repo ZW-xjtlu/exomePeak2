@@ -17,8 +17,6 @@
 #'
 #'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
 #'
-#'@param drop_overlapped_genes whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.
-#'
 #'@return a ggplot object.
 #'
 #'@import ggplot2
@@ -39,8 +37,7 @@ setMethod("plotEffectGC",
                          save_pdf_prefix = NULL,
                          fragment_length = 100,
                          binding_length = 25,
-                         effective_GC = FALSE,
-                         drop_overlapped_genes = TRUE) {
+                         effective_GC = FALSE) {
 
 if(is.null(colData( sep )$sizeFactor)){
     sep <- estimateSeqDepth(sep)
@@ -69,7 +66,6 @@ elementMetadata( sep ) <- GC_content_over_grl(
                           grl = rowRanges( sep ),
                           fragment_length = fragment_length,
                           binding_length = binding_length,
-                          drop_overlapped_genes = drop_overlapped_genes,
                           effective_GC = effective_GC
 )
 

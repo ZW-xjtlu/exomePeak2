@@ -3,7 +3,6 @@
 #' @param txdb A \code{txdb} object.
 #' @param window_size An integer valued number of the width of the sliding windows or bins.
 #' @param step_size An integer valued number of the width of the bin steps.
-#' @param drop_overlapped_genes A logical indicating whether the overlapping genes are dropped.
 #'
 #' @return A \code{GRanges} object of exonic bins with the names corresponding to the indexes of bins.
 #' A metadata colomn named gene_id is attached to indicate its gene ID, which is provided by the txdb object.
@@ -15,13 +14,11 @@
 #'
 exome_bins_from_txdb <- function(txdb,
                                  window_size = 25,
-                                 step_size = 25,
-                                 drop_overlapped_genes = T) {
+                                 step_size = 25) {
 
   stopifnot(step_size <= window_size)
 
-  exBygene  <- exons_by_unique_gene(txdb = txdb,
-                                    drop_overlapped_genes = drop_overlapped_genes)
+  exBygene  <- exons_by_unique_gene(txdb = txdb)
 
   tx_widths <- sum(width(exBygene))
 
@@ -80,6 +77,8 @@ exome_bins_from_txdb <- function(txdb,
                      tx_widths[names(seqlengths(bins_on_tx))])
 
   bins_on_tx <- trim(bins_on_tx)
+
+  bins_on_tx <- bins_on_tx[width(bins_on_tx) >= 10]
 
   bins_on_genome <-
     suppressWarnings(mapFromTranscripts(bins_on_tx, exBygene))

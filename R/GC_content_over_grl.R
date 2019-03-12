@@ -4,7 +4,6 @@
 #' @param txdb A TxDb object.
 #' @param fragment_length A positive integer of the expected fragment length in the RNA-Seq library; Default 100.
 #' @param binding_length A positive integer of the expected antibody binding length of IP; Default 25.
-#' @param drop_overlapped_genes If TRUE, the regions of the overlapped genes on the transcript annotation will be masked; Default TRUE.
 #' @param effective_GC If TRUE, the GC content calculation will be weighted by the fragment mapping probabilities,
 #' currently it is only supported for the single based modification annotation; Default FALSE.
 #'
@@ -26,7 +25,6 @@ GC_content_over_grl <- function(bsgenome,
                                 grl,
                                 fragment_length = 100,
                                 binding_length = 25,
-                                drop_overlapped_genes = TRUE,
                                 effective_GC = FALSE) {
 
 stopifnot(is(grl,"GRangesList"))
@@ -55,7 +53,6 @@ flank_length <- ifelse( all_sb,
 flanked_meth_gr <- flank_on_exons( grl = grl_meth,
                                   flank_length = flank_length,
                                   txdb = txdb,
-                                  drop_overlapped_genes = drop_overlapped_genes,
                                   index_flank = FALSE )
 
 flanked_meth_grl <- split( flanked_meth_gr, names( flanked_meth_gr ) )

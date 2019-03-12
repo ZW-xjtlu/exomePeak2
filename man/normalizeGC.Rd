@@ -8,13 +8,12 @@
 \usage{
 normalizeGC(sep, bsgenome = "hg19", txdb = "hg19", gene_annot = NULL,
   fragment_length = 100, binding_length = 25, feature = c("background",
-  "all"), qtnorm = FALSE, effective_GC = FALSE,
-  drop_overlapped_genes = TRUE)
+  "all"), qtnorm = FALSE, effective_GC = FALSE)
 
 \S4method{normalizeGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
   txdb = NULL, gene_annot = NULL, fragment_length = 100,
   binding_length = 25, feature = c("background", "all"), qtnorm = TRUE,
-  effective_GC = FALSE, drop_overlapped_genes = TRUE)
+  effective_GC = FALSE)
 }
 \arguments{
 \item{sep}{a \code{summarizedExomePeak} object.}
@@ -35,8 +34,6 @@ Default "background".}
 
 \item{qtnorm}{A logical indicating wheather perform quantile normalization after the GC effect estimation； default TRUE.
 Quantile normalization will be conducted on IP and input samples seperately to account for the biological difference between the marginal distributions of IP and input.}
-
-\item{drop_overlapped_genes}{whether to mask the overlapped genes in gene annotation, this is meaningful because the GC content estimation is conducted only on exons; Default TRUE.}
 
 \item{effective_gc}{whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.}
 }
