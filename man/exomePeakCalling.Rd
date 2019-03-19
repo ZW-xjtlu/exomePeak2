@@ -27,9 +27,11 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
   logFC_cutoff = 0, parallel = FALSE, background = c("mclust",
   "m6Aseq_prior", "manual", "all"), glm_type = c("DESeq2", "poisson", "NB"),
-  shrinkage_method = c("apeglm", "ashr", "normal", "none"),
+  LFC_shrinkage = c("apeglm", "ashr", "Gaussian", "none"),
   export_results = TRUE, export_format = c("tsv", "BED", "RDS"),
-  table_style = c("bed", "granges"), save_dir = "exomePeak2_output")
+  table_style = c("bed", "granges"), save_plot_GC = TRUE,
+  save_plot_analysis = FALSE, save_plot_name = "ep2",
+  save_dir = "exomePeak2_output")
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
   txdb = NULL, bsgenome = NULL, glm_type = c("DESeq2", "NB", "poisson"),
@@ -75,7 +77,13 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
 
 \item{parallel}{a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.}
 
-\item{save_dir}{The name of the file being saved; Default "exomePeak2_output".
+\item{save_plot_GC}{a logical indicating whether to generate and save the plots of GC content bias assessment; default TRUE.}
+
+\item{save_plot_analysis}{a logical indicating whether to generate and save the plots of genomic analysis on modification sites; default FALSE.}
+
+\item{save_plot_name}{a character for the name of the plots being saved; Default "ep2".}
+
+\item{save_dir}{a character for the name of the directory being saved; Default "exomePeak2_output".
 Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 
 The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
@@ -129,23 +137,23 @@ This function perform a default exomePeak2 analysis with the following steps:
 
  1. scan MeRIP-seq BAM files: \code{\link{scanMeripBAM}}.
 
- 2. call methylation peaks on exons: \code{\link{exomePeakCalling}}.
+ 2. call modification peaks on exons: \code{\link{exomePeakCalling}}.
 
  3. gc correction based on non-modification background regions: \code{\link{normalizeGC}}.
 
- 4. inference and quantify modification / differential modification with Negative Binomial GLM:  \code{\link{glmMeth}}; \code{\link{glmDM}}
+ 4. inference and quantify modification / differential modification with Negative Binomial GLM:  \code{\link{glmM}}; \code{\link{glmDM}}
 
  For complete details on each step, please check the manual pages for the corresponding functions.
 
   call RNA modification peaks and quantify the RNA modification levels on the exon regions.
 If the treatment samples are provided, differential modification analysis will be conducted to infer the dynamics of RNA modification upon treatment condiftions.
 
-\code{exomePeakCalling} call RNA methylation peaks on exome regions with statistical tests that account for the biological variabilities between samples.
+\code{exomePeakCalling} call RNA modification peaks on exome regions with statistical tests that account for the biological variabilities between samples.
 }
 \details{
 \code{exomePeak2} call peaks on exonic regions while adjust for GC content biases.
 A GFF file or a TxDB object should be provided for transcript annotation.
-Additionally, a BSgenome object is required to perform the GC content adjustment on the methylation peaks.
+Additionally, a BSgenome object is required to perform the GC content adjustment on the modification peaks.
 
 The function conduct exome level peak calling based on the read alignment results and the transcript annotations.
 }

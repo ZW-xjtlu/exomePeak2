@@ -7,14 +7,14 @@
 #' @param p_cutoff a numeric value of the p value cutoff used in DESeq inference.
 #' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq2 inference; if provided, values in \code{p_cutoff} will be ignored.
 #' @param count_cutoff an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.
-#' @param logFC_meth a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for methylated peaks (IP > input).
-#' @param min_meth_number a non negative numeric value of the he minimum number of the reported methylated bins.
+#' @param logFC_mod a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).
+#' @param min_mod_number a non negative numeric value of the he minimum number of the reported modification containing bins.
 #' If the bins are filtered less than this number by the p values or effect sizes,
 #' more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(SE_bins)*0.002 ).
 #'
 #' @description \code{GLM_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model in DESeq.
 #'
-#' @return a list of the index for the significant methylated peaks (IP > input) and control peaks (peaks other than methylation peaks).
+#' @return a list of the index for the significant modified peaks (IP > input) and control peaks (peaks other than modification containing peaks).
 #'
 #' @importFrom DESeq2 DESeqDataSet estimateDispersions estimateSizeFactors nbinomWaldTest results
 #'
@@ -25,8 +25,8 @@ GLM_inference <- function(SE_bins,
                           p_cutoff = NULL,
                           p_adj_cutoff = 0.05,
                           count_cutoff = 5,
-                          logFC_meth = 0,
-                          min_meth_number = floor(nrow(SE_bins) * 0.001)) {
+                          logFC_mod = 0,
+                          min_mod_number = floor(nrow(SE_bins) * 0.001)) {
 
   glm_type <- match.arg(glm_type)
 
@@ -46,9 +46,10 @@ GLM_inference <- function(SE_bins,
   if (!is.null(rowData(SE_bins)$gc_contents)) {
     indx_IP <- dds$design_IP == "IP"
 
-    message("estimate GC content size factors for IP samples")
+    message("Estimating GC content correction factors for IP samples...")
 
-    cqnObject_IP <- suppressMessages(
+    cqnObject_IP <- quiet(
+      suppressMessages(
       cqn(
         assay(dds)[, indx_IP],
         lengths = rowData(dds)$region_widths,
@@ -61,10 +62,12 @@ GLM_inference <- function(SE_bins,
         verbose = FALSE
       )
     )
+    )
 
-    message("estimate GC content size factors for input samples")
+    message("Estimating GC content correction factors for input samples...")
 
-    cqnObject_input <- suppressMessages(
+    cqnObject_input <- quiet(
+      suppressMessages(
       cqn(
         assay(dds)[, !indx_IP],
         lengths = rowData(dds)$region_widths,
@@ -76,6 +79,7 @@ GLM_inference <- function(SE_bins,
         sqn = TRUE,
         verbose = FALSE
       )
+    )
     )
 
     glm_off_sets <- matrix(NA, nrow = nrow(dds), ncol = ncol(dds))
@@ -112,10 +116,10 @@ GLM_inference <- function(SE_bins,
   }
 
   if (glm_type == "DESeq2") {
-    dds = estimateDispersions(dds)
+    dds = suppressMessages( estimateDispersions(dds) )
   }
 
-  dds = nbinomWaldTest(dds)
+  dds = suppressMessages( nbinomWaldTest(dds) )
 
   res <- results(dds, altHypothesis = "greater")
 
@@ -125,9 +129,9 @@ GLM_inference <- function(SE_bins,
 
   if (is.null(p_cutoff)) {
     sig_indx <-
-      res$padj < p_adj_cutoff & res$log2FoldChange > logFC_meth
+      res$padj < p_adj_cutoff & res$log2FoldChange > logFC_mod
 
-    if (sum(sig_indx) < min_meth_number) {
+    if (sum(sig_indx) < min_mod_number) {
       warning(
         "The number of positive bins is too small using DESeq2 under current filter,
         the filter is changed into p value < 0.05 and log2FC > 0, please consider using poisson GLM.",
@@ -137,7 +141,7 @@ GLM_inference <- function(SE_bins,
 
       sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
 
-      if (sum(sig_indx) < min_meth_number) {
+      if (sum(sig_indx) < min_mod_number) {
         stop(
           "The bins are not informative to conduct meaningful peak calling, please check the raw data quality."
         )
@@ -146,9 +150,9 @@ GLM_inference <- function(SE_bins,
     }
 
   } else {
-    sig_indx <- res$pvalue < p_cutoff & res$log2FoldChange > logFC_meth
+    sig_indx <- res$pvalue < p_cutoff & res$log2FoldChange > logFC_mod
 
-    if (sum(sig_indx) < min_meth_number) {
+    if (sum(sig_indx) < min_mod_number) {
       warning(
         'The number of positive bins is smaller than the underlimit using DESeq2 method under current filter,
         the filter is changed into p value < 0.05 & log2FC > 0, please consider set glm_type = "poisson"',
@@ -158,7 +162,7 @@ GLM_inference <- function(SE_bins,
 
       sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
 
-      if (sum(sig_indx) < min_meth_number) {
+      if (sum(sig_indx) < min_mod_number) {
         stop(
           "The bins are not informative to conduct meaningful peak calling, please check the raw data quality."
         )
@@ -168,9 +172,9 @@ GLM_inference <- function(SE_bins,
 
   }
 
-  sig_peak_meth <- as.numeric(rownames(res)[sig_indx])
+  sig_peak_mod <- as.numeric(rownames(res)[sig_indx])
 
 
-  return(sig_peak_meth)
+  return(sig_peak_mod)
 
 }

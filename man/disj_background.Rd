@@ -4,18 +4,18 @@
 \alias{disj_background}
 \title{Find the background of the user provided mod_gration.}
 \usage{
-disj_background(mod_gr, txdb, cut_off_num = 2000, background_bins = NULL,
+disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
   background_types = c("mclust", "m6Aseq_prior", "manual", "all"),
-  control_width = 50, rename_meth = FALSE)
+  control_width = 50, rename_mod = FALSE)
 }
 \arguments{
 \item{mod_gr}{A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).}
 
 \item{txdb}{A \code{TxDb} object that define the transcript mod_gration.}
 
-\item{cut_off_num}{A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 2000.}
+\item{cut_off_num}{A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.}
 
-\item{rename_meth}{Whether to rename the returned methylation sites, default = FALSE.}
+\item{rename_mod}{Whether to rename the returned modification sites, default = FALSE.}
 
 \item{m6Aseq_background}{A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.}
 

@@ -5,7 +5,7 @@
 #'
 #' @details \code{call_peaks_with_GLM} will performe exome level peak calling using DESeq2 model,
 #'
-#' The significant bins will be merged into methylation peaks.
+#' The significant bins will be merged into modification peaks.
 #'
 #' The insignificant bins (pass the row means filtering) will also be merged into control peaks.
 #'
@@ -24,7 +24,7 @@
 #'
 #' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
 #'
-#' @return This function will return a list of \code{GRangesList} object storing peaks for both methylation and control.
+#' @return This function will return a list of \code{GRangesList} object storing peaks for both modification and control.
 #'
 #' @import SummarizedExperiment
 #'
@@ -48,21 +48,21 @@ call_peaks_with_GLM <- function(SE_bins,
 
   rm(design_IP_temp)
 
-  index_meth <- GLM_inference(
+  index_mod <- GLM_inference(
     SE_bins = SE_bins,
     glm_type = glm_type,
     p_cutoff = p_cutoff,
     p_adj_cutoff = p_adj_cutoff,
     count_cutoff = count_cutoff,
-    logFC_meth = logFC_cutoff
+    logFC_mod = logFC_cutoff
   )
 
-  gr_meth <-
+  gr_mod <-
     reduce_peaks(
-      peaks_grl = rowRanges(SE_bins)[as.numeric(rownames(SE_bins)) %in% index_meth],
+      peaks_grl = rowRanges(SE_bins)[as.numeric(rownames(SE_bins)) %in% index_mod],
       txdb = txdb
     )
 
-  return(split(gr_meth, names(gr_meth)))
+  return(split(gr_mod, names(gr_mod)))
 
 }

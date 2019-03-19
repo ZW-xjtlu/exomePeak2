@@ -2,10 +2,10 @@
 #'
 #' @param mod_gr A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).
 #' @param txdb A \code{TxDb} object that define the transcript mod_gration.
-#' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 2000.
+#' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.
 #' @param m6Aseq_background A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
 #' @param distance_5p A numeric value of the length of the transcript starting region; default 200.
-#' @param rename_meth Whether to rename the returned methylation sites, default = FALSE.
+#' @param rename_mod Whether to rename the returned modification sites, default = FALSE.
 #' @return A \code{GRangesList} object.
 #' The first portion is the exons regions that is not overlapped with \code{annoation}.
 #'
@@ -21,11 +21,11 @@
 
 disj_background <- function(mod_gr,
                             txdb,
-                            cut_off_num = 2000,
+                            cut_off_num = 30,
                             background_bins = NULL,
                             background_types = c("mclust", "m6Aseq_prior", "manual", "all"),
                             control_width = 50,
-                            rename_meth = FALSE) {
+                            rename_mod = FALSE) {
 
   background_types <- match.arg(background_types)
 
@@ -115,7 +115,7 @@ disj_background <- function(mod_gr,
 
     #Return background control as total exons
 
-    warning("Not enough exon regions as control, the background used is the total exon.",
+    warning("Not enough exon regions as control, the background used is the total exon.\n",
             call. = FALSE)
 
     control_ranges = unlist(exbyug)
@@ -133,7 +133,7 @@ disj_background <- function(mod_gr,
 
   }
 
-  #organize the mod_grations
+  #organize the granges
 
   mod_gr$gene_id = NA
   fol <- findOverlaps(mod_gr, exbyug)
@@ -142,9 +142,9 @@ disj_background <- function(mod_gr,
   names(mod_gr) <- NULL
   mod_grl <- split(mod_gr, split_index)
 
-  if(rename_meth == TRUE)  names(mod_grl) <- seq_along(mod_grl)
+  if(rename_mod == TRUE)  names(mod_grl) <- seq_along(mod_grl)
 
-  names(mod_grl) <- paste0("meth_", names(mod_grl))
+  names(mod_grl) <- paste0("mod_", names(mod_grl))
 
   return(c(mod_grl, control_ranges))
 

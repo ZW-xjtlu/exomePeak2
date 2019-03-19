@@ -7,10 +7,10 @@
 \title{Plot the exon length distribution of the peaks}
 \usage{
 plotExonLength(sep, txdb = NULL, save_pdf_prefix = NULL,
-  include_control_regions = TRUE)
+  include_control_regions = TRUE, save_dir = ".")
 
 \S4method{plotExonLength}{SummarizedExomePeak}(sep, txdb = NULL,
-  save_pdf_prefix = NULL, include_control_regions = TRUE)
+  save_pdf_prefix = NULL, include_control_regions = TRUE, save_dir = ".")
 }
 \arguments{
 \item{sep}{a SummarizedExomePeaks object.}
@@ -20,6 +20,8 @@ plotExonLength(sep, txdb = NULL, save_pdf_prefix = NULL,
 \item{save_pdf_prefix}{if provided, a pdf file with the given name will be saved under the current working directory.}
 
 \item{include_control_regions}{a logical indicating whether to include the control regions or not.}
+
+\item{save_dir}{a character indicating the directory to save the plot; default ".".}
 }
 \value{
 a ggplot object
@@ -28,9 +30,9 @@ a ggplot object
 This function plot the distribution of the exon length for peaks containing exons.
 }
 \details{
-If the SummarizedExomePeaks object contains quantification results for methylation, the significantly methylated peaks
+If the SummarizedExomePeaks object contains quantification results for modification, the significantly modified peaks
 with IP to input log2FC > 0 and DESeq2 Wald test padj < .05 will be plotted .
 
-If the SummarizedExomePeaks object contains quantification results for differential methylation, both the hyper methylation
-and hypo methylation peaks with DESeq2 Wald test p values < .05 will be plotted.
+If the SummarizedExomePeaks object contains quantification results for differential modification, both the hyper modification
+and hypo modification peaks with DESeq2 Wald test p values < .05 will be plotted.
 }

@@ -1,4 +1,4 @@
-#' @title Export the methylation / differential methylation sites
+#' @title Export the modification / differential modification sites
 #' @param sep A SummarizedExomePeak object.
 #' @param format A character string of one of the c("tsv", "BED", "RDS"), indicating the exported format.
 #'
@@ -18,13 +18,13 @@
 #'
 #' only sites with log2 IP/input fold change bigger than this value are kept; Default 0.
 #'
-#' For differential methylation analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.
+#' For differential modification analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.
 #'
 #' @param min_num_of_positive The minimum number of reported sites.
 #' If the sites is filtered less than this number by its p values or effect sizes,
 #' more sites will be reported by the order of the p value until it reaches this number.
 #'
-#' @param expected_direction The expected differential methylation direction, could be "hyper", "hypo", or "both".
+#' @param expected_direction The expected differential modification direction, could be "hyper", "hypo", or "both".
 #' This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; Default "both".
 #'
 #' @param inhibit_filter Remove all the filters on the result, this is desired for user provided modification annotation; Default FALSE.
@@ -47,26 +47,24 @@
 
 setMethod("exportResults",
           "SummarizedExomePeak",
-          function(
-                  sep,
-                  format = c("tsv","BED","RDS"),
-                  save_dir = "exomePeak2_output",
-                  cut_off_pvalue = NULL,
-                  cut_off_padj = 0.05,
-                  cut_off_log2FC = 0,
-                  min_num_of_positive = 2000,
-                  expected_direction = "both",
-                  inhibit_filter = FALSE,
-                  table_style = c("bed","granges")
-){
-
-            if(!dir.exists(save_dir)) {
+          function(sep,
+                   format = c("tsv", "BED", "RDS"),
+                   save_dir = "exomePeak2_output",
+                   cut_off_pvalue = NULL,
+                   cut_off_padj = 0.05,
+                   cut_off_log2FC = 0,
+                   min_num_of_positive = 30,
+                   expected_direction = "both",
+                   inhibit_filter = FALSE,
+                   table_style = c("bed", "granges")) {
+            if (!dir.exists(save_dir)) {
               dir.create(save_dir)
             }
+
             if (!any(sep$design_Treatment)) {
-              file_name <- "meth"
+              file_name <- "mod"
             } else{
-              file_name <- "diff_meth"
+              file_name <- "diff_mod"
             }
 
             if (!inhibit_filter)
@@ -76,9 +74,9 @@ setMethod("exportResults",
             #In case of users have not run inference on the sep.
             if (is.null(DESeq2Results(sep))) {
               if (any(sep$design_Treatment)) {
-                sep <- glm_dm(sep)
+                sep <- glmDM(sep)
               } else{
-                sep <- glm_meth(sep)
+                sep <- glmM(sep)
               }
             }
 
@@ -88,10 +86,14 @@ setMethod("exportResults",
             format <- match.arg(format)
             table_style <- match.arg(table_style)
 
-            #Decision for methylation
+            #Decision for modification
+
+            if (inhibit_filter) {
+              index_keep <- rep(T, sum(grepl("mod_", rownames(sep))))
+            } else {
 
             if (!any(sep$design_Treatment)) {
-              decision_meth <- decision_deseq2(
+              decision_mod <- decision_deseq2(
                 Inf_RES = DESeq2Results(sep),
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
@@ -103,7 +105,7 @@ setMethod("exportResults",
 
               index_keep <-
                 which(
-                  (DESeq2Results(sep)[[decision_meth$Cut_By_expected]] < decision_meth$Cut_Val_expected) &
+                  (DESeq2Results(sep)[[decision_mod$Cut_By_expected]] < decision_mod$Cut_Val_expected) &
                     (DESeq2Results(sep)$log2FoldChange > cut_off_log2FC)
                 )
 
@@ -137,33 +139,29 @@ setMethod("exportResults",
                   "No sites could be left using the current filter, please change into a less rigorous one."
                 )
               }
-
-              if (inhibit_filter)
-                index_keep <- rep(T, sum(grepl("meth_", rownames(sep))))
-
+            }
             }
             #now, create the final result summary that contain GRangesList with metadata collumns.
-            result_grl <- rowRanges(sep)[grepl("meth_", rownames(sep))][index_keep]
-            result_stat <- DESeq2Results(sep)[index_keep, ]
+            result_grl <-
+              rowRanges(sep)[grepl("mod_", rownames(sep))][index_keep]
+            result_stat <- DESeq2Results(sep)[index_keep,]
 
 
             #Make some clarifications on the final output results:
             #1. remove the .x in gene ids.
             #2. group names should be changed into mod names mod + id that is corresponding to the original table.
-            #3. change log2FoldChange into log2 Odds ratio for differential methylation.
+            #3. change log2FoldChange into log2 Odds ratio for differential modification.
             result_gr <- unlist(result_grl)
-            result_gr$gene_id <- gsub("\\.[0-9]*$", "", result_gr$gene_id)
+            result_gr$gene_id <-
+              gsub("\\.[0-9]*$", "", result_gr$gene_id)
             names(result_gr) <- gsub("\\..*$", "", names(result_gr))
-            names(result_gr) <- gsub("meth", "mod", names(result_gr))
 
             if (!any(sep$design_Treatment)) {
-              colnames(result_stat)[colnames(result_stat) == "log2FoldChange"] = "log2BetaValue"
-              colnames(result_stat)[colnames(result_stat) == "lfcSE"] = "lbvSE"
+              colnames(result_stat)[colnames(result_stat) == "log2FoldChange"] = "mod.log2.fc"
               rownames(result_stat) = NULL
 
             } else {
-              colnames(result_stat)[colnames(result_stat) == "log2FoldChange"] = "log2OddsRatio"
-              colnames(result_stat)[colnames(result_stat) == "lfcSE"] = "lorSE"
+              colnames(result_stat)[colnames(result_stat) == "log2FoldChange"] = "diff.log2.fc"
               rownames(result_stat) = NULL
 
             }
@@ -172,24 +170,27 @@ setMethod("exportResults",
             mcols(result_grl) <- result_stat
 
             if (format == "RDS") {
-              result_se <- sep[grepl("meth_", rownames(sep))][index_keep]
+              result_se <- sep[grepl("mod_", rownames(sep))][index_keep]
               rowRanges(result_se) <- result_grl
 
-              id_num <- as.numeric(gsub("^.*_", "", rownames(result_se)))
+              id_num <-
+                as.numeric(gsub("^.*_", "", rownames(result_se)))
               id_index <- order(id_num)
               renamed_id <-
                 paste0("mod_", rep(seq_along(id_num), table(id_num[id_index])))
-              result_se <- result_se[id_index, ]
+              result_se <- result_se[id_index,]
               rownames(result_se) <- renamed_id
 
-              saveRDS(result_se, paste0(save_dir, "/", file_name, ".rds"))
+
+              saveRDS(result_se, file.path(save_dir, paste0(file_name, ".rds")))
+
 
             } else{
               id_num <- as.numeric(gsub("^.*_", "", names(result_grl)))
               id_index <- order(id_num)
               renamed_id <-
                 paste0("mod_", rep(seq_along(id_num), table(id_num[id_index])))
-              result_grl <- result_grl[id_index, ]
+              result_grl <- result_grl[id_index,]
               names(result_grl) <- renamed_id
 
               #sort grl
@@ -197,10 +198,11 @@ setMethod("exportResults",
               if (format == "tsv") {
                 if (table_style == "granges") {
                   result_df <- as.data.frame(result_grl)
-                  result_df <- result_df[, colnames(result_df) != "group"]
+                  result_df <-
+                    result_df[, colnames(result_df) != "group"]
                   colnames(result_df)[colnames(result_df) == "group_name"] = "mod_name"
                   result_df <-
-                    cbind(result_df, as.data.frame(mcols(result_grl))[rep(seq_along(result_grl), elementNROWS(result_grl)), ])
+                    cbind(result_df, as.data.frame(mcols(result_grl))[rep(seq_along(result_grl), elementNROWS(result_grl)),])
 
                 } else {
                   scores <- -1 * log2(mcols(result_grl)$padj)
@@ -209,14 +211,15 @@ setMethod("exportResults",
 
                   mcols(result_grl)$score <- scores
 
+
                   export(
                     object = result_grl,
-                    con = paste0(save_dir, "/", file_name, ".bed"),
+                    con = file.path(save_dir, paste0(file_name, ".bed")),
                     format = "BED"
                   )
 
                   result_df <-
-                    read.table(paste0(save_dir, "/", file_name, ".bed"),
+                    read.table(file.path(save_dir, paste0(file_name, ".bed")),
                                header = F,
                                sep = "\t")
 
@@ -235,17 +238,20 @@ setMethod("exportResults",
                     "blockStarts"
                   )
 
-                  mcols(result_grl) <-
-                    mcols(result_grl)[, !colnames(mcols(result_grl)) %in% "score"]
+                  result_df$geneID <- result_gr$gene_id
 
-                  result_df <- cbind(result_df , as.data.frame(mcols(result_grl)))
+                  mcols(result_grl) <-
+                    mcols(result_grl)[,!colnames(mcols(result_grl)) %in% "score"]
+
+                  result_df <-
+                    cbind(result_df , as.data.frame(mcols(result_grl)))
 
                 }
 
 
                 write.table(
                   result_df,
-                  file = paste0(save_dir, "/", file_name, ".txt"),
+                  file = file.path(save_dir, paste0(file_name, ".txt")),
                   sep = "\t",
                   row.names = FALSE,
                   col.names = TRUE
@@ -260,11 +266,10 @@ setMethod("exportResults",
 
                 export(
                   object = result_grl,
-                  con = paste0(save_dir, ".", tolower(format)),
+                  con = file.path(save_dir, paste0(file_name, ".",  tolower(format))),
                   format = format
                 )
 
               }
             }
-          }
-)
+          })

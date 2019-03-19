@@ -25,7 +25,7 @@ The DESeq2 method is only recommended for high power experiments with more than 
 \item{logFC_cutoff}{a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.}
 }
 \value{
-This function will return a list of \code{GRangesList} object storing peaks for both methylation and control.
+This function will return a list of \code{GRangesList} object storing peaks for both modification and control.
 }
 \description{
 \code{call_peaks_with_GLM} conduct inference on every exome bins using negative binomial model,
@@ -34,7 +34,7 @@ the significant bins will be the merged into peaks.
 \details{
 \code{call_peaks_with_GLM} will performe exome level peak calling using DESeq2 model,
 
-The significant bins will be merged into methylation peaks.
+The significant bins will be merged into modification peaks.
 
 The insignificant bins (pass the row means filtering) will also be merged into control peaks.
 }

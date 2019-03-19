@@ -8,11 +8,12 @@
 \usage{
 plotReadsGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
   fragment_length = 100, binding_length = 25, effective_GC = FALSE,
-  pool_replicates = FALSE)
+  pool_replicates = FALSE, save_dir = ".")
 
 \S4method{plotReadsGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
   txdb = NULL, save_pdf_prefix = NULL, fragment_length = 100,
-  binding_length = 25, effective_GC = FALSE, pool_replicates = FALSE)
+  binding_length = 25, effective_GC = FALSE, pool_replicates = FALSE,
+  save_dir = ".")
 }
 \arguments{
 \item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
@@ -26,6 +27,8 @@ plotReadsGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
 \item{binding_length}{the expected antibody binding length of IP; Default 25.}
 
 \item{pool_replicates}{a logical indicating whether to pool the replicates in the local regression fit; default FALSE.}
+
+\item{save_dir}{a character indicating the directory to save the plot; default ".".}
 
 \item{effective_gc}{whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.}
 }

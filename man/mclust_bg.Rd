@@ -22,7 +22,7 @@ This function will do the following jobs:
 
 1. Filter the rows (modification sites) by average count.
 
-2. Fit multivariate gaussian mixture model with 2 mixing component to differentiate background and biological signal.
+2. Fit multivariate Gaussian mixture model with 2 mixing component to differentiate background and biological signal.
 
 - depend on whether the bsgenome is provided, the values GC content will be used as one of the dimention of the clustering.
 

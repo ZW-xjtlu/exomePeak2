@@ -1,6 +1,6 @@
 #' @title Exome peak calling on MeRIP-seq datasets while considering the biological variabilities.
 #'
-#' @description \code{exomePeakCalling} call RNA methylation peaks on exome regions with statistical tests that account for the biological variabilities between samples.
+#' @description \code{exomePeakCalling} call RNA modification peaks on exome regions with statistical tests that account for the biological variabilities between samples.
 #'
 #' @details The function conduct exome level peak calling based on the read alignment results and the transcript annotations.
 #'
@@ -98,9 +98,13 @@ setMethod("exomePeakCalling",
 
             stopifnot(gc_count_cutoff >= 0)
 
+            if(!is.null(mod_annot)){
+            stopifnot(is(mod_annot,"GRanges")|is(mod_annot,"GRangesList"))
+            }
+
             if (is.null(bsgenome)) {
               warning(
-                "Missing bsgenome argument, peak calling without GC correction.",
+                "Missing bsgenome argument, peak calling without GC content correction.",
                 call. = FALSE,
                 immediate. = TRUE
               )
@@ -118,7 +122,7 @@ setMethod("exomePeakCalling",
               }
             }
 
-              message("Extract bins on exons")
+              message("Generating bins on exons...")
 
 
               ######################################################
@@ -132,7 +136,7 @@ setMethod("exomePeakCalling",
                 step_size = step_length
               )
 
-              message("Count reads on bins")
+              message("Counting reads on bins...")
 
 
               ######################################################
@@ -211,13 +215,19 @@ setMethod("exomePeakCalling",
               m6A_prior = F
 
               if (background == "mclust") {
-                message("find background with mclust")
+                message("Identifying background with Gaussian mixture model...")
+
+                #suppress output...
+                tc <- textConnection(NULL, "w")
+                sink(tc)
                 rowData(SE_Peak_counts)$indx_bg <- mclust_bg(se_peak_counts = SE_Peak_counts)
+                sink()
+                close(tc)
 
                 if (sum(rowData(SE_Peak_counts)$indx_gc_est &
-                        rowData(SE_Peak_counts)$indx_bg) < 2000) {
+                        rowData(SE_Peak_counts)$indx_bg) < 30) {
                   warning(
-                    "background bin # < 2000 using mclust, search background with m6A-seq prior.",
+                    "Background bin # < 30 using mclust, search background with m6A-seq prior...\n",
                     call. = FALSE,
                     immediate. = TRUE
                   )
@@ -260,9 +270,9 @@ setMethod("exomePeakCalling",
 
               #Check for minimum background #
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
-                      rowData(SE_Peak_counts)$indx_bg) < 2000) {
+                      rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
-                  "Insufficient background, peak calling without background.",
+                  "background bin # < 30 using m6A-seq prior, peak calling without background...",
                   call. = FALSE,
                   immediate. = TRUE
                 )
@@ -287,11 +297,11 @@ setMethod("exomePeakCalling",
               rm(exome_bins_grl,rowData_tmp)
 
               if (glm_type == "poisson") {
-                message("peak calling with poisson GLM")
+                message("Peak calling with poisson GLM...")
               }
 
               if (glm_type == "NB") {
-                message("peak calling with NB GLM")
+                message("Peak calling with NB GLM...")
               }
 
               if (glm_type == "DESeq2") {
@@ -303,11 +313,11 @@ setMethod("exomePeakCalling",
                   )
                   glm_type = "poisson"
                 } else{
-                  message("peak calling with DESeq2")
+                  message("Peak calling with DESeq2...")
                 }
               }
 
-              grl_meth <- call_peaks_with_GLM(
+              grl_mod <- call_peaks_with_GLM(
                 SE_bins = SE_Peak_counts,
                 glm_type = glm_type,
                 count_cutoff = pc_count_cutoff,
@@ -318,11 +328,7 @@ setMethod("exomePeakCalling",
               )
 
               #Filter peak by width
-              grl_meth <- grl_meth[sum(width(grl_meth)) >= peak_width]
-
-
-              #Guitar::GuitarPlot(list(x = unlist(grl_meth)),GuitarCoordsFromTxDb = readRDS("/Users/zhenwei/Datasets/Gtcoords/Gtcoord_hg19.rds"))
-
+              grl_mod <- grl_mod[sum(width(grl_mod)) >= peak_width]
 
               ######################################################
               #                 Round 2 reads count                #
@@ -330,8 +336,8 @@ setMethod("exomePeakCalling",
 
               #Flank the peaks
 
-              gr_meth_flanked <- flank_on_exons(
-                grl = grl_meth,
+              gr_mod_flanked <- flank_on_exons(
+                grl = grl_mod,
                 flank_length = fragment_length - binding_length,
                 txdb = txdb,
                 index_flank = FALSE
@@ -340,17 +346,17 @@ setMethod("exomePeakCalling",
               #Set control regions with background disjoint by peaks
 
               count_row_features <- disj_background(
-                mod_gr = gr_meth_flanked,
+                mod_gr = gr_mod_flanked,
                 txdb = txdb,
-                cut_off_num = 2000,
+                cut_off_num = 30,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background,
                 control_width = peak_width
               )
 
-              rm(SE_Peak_counts, gr_meth_flanked)
+              rm(SE_Peak_counts, gr_mod_flanked)
 
-              message("count reads on the merged peaks and the control regions")
+              message("Counting reads on the merged peaks and the control regions...")
 
               if (!parallel) {
                 register(SerialParam(), default = FALSE)
@@ -377,11 +383,11 @@ setMethod("exomePeakCalling",
 
               #retrieve the set of unflanked modification sites to replace the row ranges.
 
-              names(grl_meth) <- paste0("meth_", names(grl_meth))
+              names(grl_mod) <- paste0("mod_", names(grl_mod))
 
-              rowRanges(SummarizedExomePeaks)[seq_along(grl_meth)] <- grl_meth
+              rowRanges(SummarizedExomePeaks)[seq_along(grl_mod)] <- grl_mod
 
-              rm(count_row_features, grl_meth)
+              rm(count_row_features, grl_mod)
 
               colData(SummarizedExomePeaks) <- DataFrame(metadata(merip_bams))
 
@@ -418,7 +424,7 @@ setMethod("exomePeakCalling",
               mod_annot_count <- disj_background(
                 mod_gr = mod_annot_flanked,
                 txdb = txdb,
-                cut_off_num = 2000,
+                cut_off_num = 30,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background,
                 control_width = peak_width
@@ -426,7 +432,7 @@ setMethod("exomePeakCalling",
 
               rm(SE_Peak_counts,mod_annot_flanked)
 
-              message("count reads using single base annotation on exons")
+              message("Counting reads using single based annotation on exons...")
 
               if (!parallel) {
                 register(SerialParam())
@@ -451,21 +457,21 @@ setMethod("exomePeakCalling",
               )
 
               #Replace the rowRanges with the single based GRangesList.
-              index_meth <- grepl("meth_", rownames(SE_temp))
+              index_mod <- grepl("mod_", rownames(SE_temp))
 
               index_sb_annot <-
-                as.numeric(gsub("meth_", "", rownames(SE_temp)[index_meth]))
+                as.numeric(gsub("mod_", "", rownames(SE_temp)[index_mod]))
 
-              meth_count <-
-                assay(SE_temp)[index_meth, ][match(as.numeric(names(mod_annot)), index_sb_annot), ]
+              mod_count <-
+                assay(SE_temp)[index_mod, ][match(as.numeric(names(mod_annot)), index_sb_annot), ]
 
-              rownames(meth_count) <-
-                paste0("meth_", seq_len(nrow(meth_count)))
+              rownames(mod_count) <-
+                paste0("mod_", seq_len(nrow(mod_count)))
 
-              #Fill the rows that are not on exons with zero counts.
-              meth_count[is.na(meth_count)] <- 0
+              #Fill the rows that are not on exons with zero counts.(what it for?)
+              mod_count[is.na(mod_count)] <- 0
 
-              control_count <- assay(SE_temp)[!index_meth, ]
+              control_count <- assay(SE_temp)[!index_mod, ]
 
               #replace the metadata collumn with gene_ids
               mod_annot_gr <- unlist(mod_annot)
@@ -481,13 +487,13 @@ setMethod("exomePeakCalling",
               mod_annot <-
                 mod_annot[order(as.numeric(names(mod_annot)))]
 
-              names(mod_annot) <- paste0("meth_", names(mod_annot))
+              names(mod_annot) <- paste0("mod_", names(mod_annot))
 
               SummarizedExomePeaks <- SummarizedExperiment(
-                assay = rbind(meth_count, control_count),
+                assay = rbind(mod_count, control_count),
 
                 rowRanges = c(mod_annot,
-                              rowRanges(SE_temp)[!index_meth]),
+                              rowRanges(SE_temp)[!index_mod]),
 
                 colData = DataFrame(metadata(merip_bams))
 

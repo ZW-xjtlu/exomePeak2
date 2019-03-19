@@ -31,16 +31,16 @@ stopifnot(is(grl,"GRangesList"))
 
 stopifnot(fragment_length > 0)
 
-grl_meth <- grl[grepl("meth_",names(grl))]
+grl_mod <- grl[grepl("mod_",names(grl))]
 
-all_sb <- all(sum(width(grl_meth)) == 1) & all(elementNROWS(grl_meth) == 1)
+all_sb <- all(sum(width(grl_mod)) == 1) & all(elementNROWS(grl_mod) == 1)
 
 if(effective_GC & !all_sb) {
   stop("The effective GC content cannot be calculated on data that is not counted using single based annotation.")
 }
 
 if(all_sb) {
-  message("Detect single based modification annotations,\nThe flanking size is adjusted to floor( fragment_length - binding_length/2 )")
+  message("Single based modification annotations detected, the flanking lengths are adjusted to floor( fragment_length - binding_length/2).")
 }
 
 if(!effective_GC){
@@ -50,19 +50,19 @@ flank_length <- ifelse( all_sb,
                         floor( fragment_length - binding_length / 2 ),
                         fragment_length - binding_length )
 
-flanked_meth_gr <- flank_on_exons( grl = grl_meth,
+flanked_mod_gr <- flank_on_exons( grl = grl_mod,
                                   flank_length = flank_length,
                                   txdb = txdb,
                                   index_flank = FALSE )
 
-flanked_meth_grl <- split( flanked_meth_gr, names( flanked_meth_gr ) )
+flanked_mod_grl <- split( flanked_mod_gr, names( flanked_mod_gr ) )
 
-rm(flanked_meth_gr)
+rm(flanked_mod_gr)
 
-flanked_grl <- c( flanked_meth_grl,
+flanked_grl <- c( flanked_mod_grl,
                   grl[ grepl("control_", names(grl)) ] )
 
-rm(flanked_meth_grl)
+rm(flanked_mod_grl)
 
 flanked_gr <- unlist( flanked_grl )
 
@@ -94,15 +94,15 @@ rm(flanked_gr,flanked_grl)
 
 flank <- fragment_length - binding_length
 
-gcpos <- startIndex( vmatchPattern("S", DNAStringSet( Views(bsgenome, unlist(grl_meth) + (flank + floor(binding_length/2))) ), fixed = "subject") )
+gcpos <- startIndex( vmatchPattern("S", DNAStringSet( Views(bsgenome, unlist(grl_mod) + (flank + floor(binding_length/2))) ), fixed = "subject") )
 
 weight <- c(seq_len(flank), rep(flank + 1, binding_length), rev(seq_len(flank)))
 
 weight <- weight/sum(weight)
 
-GC_meth <- round(sapply(gcpos, function(x) sum(weight[x])), 3)
+GC_mod <- round(sapply(gcpos, function(x) sum(weight[x])), 3)
 
-names(GC_meth) <- names(grl_meth)
+names(GC_mod) <- names(grl_mod)
 
 #Calculate the background GC content using ordinary method without flanking.
 
@@ -113,11 +113,11 @@ GC_return <- rep(NA,length(grl))
 
 names(GC_return) <- names(grl)
 
-GC_return[match(names(c(GC_meth,GC_control)), names(grl))] <- c(GC_meth,GC_control)
+GC_return[match(names(c(GC_mod,GC_control)), names(grl))] <- c(GC_mod,GC_control)
 
 Width_return <- sum( width( grl ) )
 
-Width_return[grepl("meth_", names(grl))] <- 1 + 2*floor( fragment_length - binding_length / 2 )
+Width_return[grepl("mod_", names(grl))] <- 1 + 2*floor( fragment_length - binding_length / 2 )
 
 }
 

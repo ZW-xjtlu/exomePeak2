@@ -4,11 +4,11 @@
 #'
 #'  1. scan MeRIP-seq BAM files: \code{\link{scanMeripBAM}}.
 #'
-#'  2. call methylation peaks on exons: \code{\link{exomePeakCalling}}.
+#'  2. call modification peaks on exons: \code{\link{exomePeakCalling}}.
 #'
 #'  3. gc correction based on non-modification background regions: \code{\link{normalizeGC}}.
 #'
-#'  4. inference and quantify modification / differential modification with Negative Binomial GLM:  \code{\link{glmMeth}}; \code{\link{glmDM}}
+#'  4. inference and quantify modification / differential modification with Negative Binomial GLM:  \code{\link{glmM}}; \code{\link{glmDM}}
 #'
 #'  For complete details on each step, please check the manual pages for the corresponding functions.
 #'
@@ -17,7 +17,7 @@
 #'
 #' @details \code{exomePeak2} call peaks on exonic regions while adjust for GC content biases.
 #' A GFF file or a TxDB object should be provided for transcript annotation.
-#' Additionally, a BSgenome object is required to perform the GC content adjustment on the methylation peaks.
+#' Additionally, a BSgenome object is required to perform the GC content adjustment on the modification peaks.
 #'
 #' @param merip_bams a \code{MeripBamFileList} object.
 #' @param txdb a txdb object, it could be a single character string that can be recognized by \code{\link{makeTxDbFromUCSC}}; Default "hg19".
@@ -32,7 +32,10 @@
 #' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
 #' @param mod_annot a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
 #' @param glm_type a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
-#' @param save_dir The name of the file being saved; Default "exomePeak2_output".
+#' @param save_plot_GC a logical indicating whether to generate and save the plots of GC content bias assessment; default TRUE.
+#' @param save_plot_analysis a logical indicating whether to generate and save the plots of genomic analysis on modification sites; default FALSE.
+#' @param save_plot_name a character for the name of the plots being saved; Default "ep2".
+#' @param save_dir a character for the name of the directory being saved; Default "exomePeak2_output".
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
@@ -79,14 +82,17 @@ exomePeak2 <- function(bam_ip = NULL,
                        parallel = FALSE,
                        background = c("mclust", "m6Aseq_prior", "manual", "all"),
                        glm_type = c("DESeq2","poisson","NB"),
-                       shrinkage_method = c("apeglm","ashr","normal","none"),
+                       LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),
                        export_results = TRUE,
                        export_format = c("tsv","BED","RDS"),
                        table_style = c("bed","granges"),
+                       save_plot_GC = TRUE,
+                       save_plot_analysis = FALSE,
+                       save_plot_name = "ep2",
                        save_dir = "exomePeak2_output"
                       ){
 
-shrinkage_method <- match.arg(shrinkage_method)
+LFC_shrinkage <- match.arg(LFC_shrinkage)
 
 export_format <- match.arg(export_format)
 
@@ -96,8 +102,8 @@ background <- match.arg(background)
 
 glm_type <- match.arg(glm_type)
 
-if(!is.null(bam_treated_ip) & shrinkage_method == "normal"){
-  stop("normal prior is not applicable for differential methylation analysis")
+if(!is.null(bam_treated_ip) & LFC_shrinkage == "Gaussian"){
+  stop("Gaussian prior is not applicable for differential modification analysis.")
 }
 
 stopifnot(fragment_length > 0)
@@ -119,7 +125,7 @@ if(!is.null(gene_annot)) {
   txdb <- makeTxDbFromGFF(gene_annot)
 } else {
   if (is.null(txdb)) {
-    stop("required argument of txdb or gene_annot for transcript annotation")
+    stop("Require argument of txdb or gene_annot for transcript annotation.")
   }
 
   if (!is(txdb, "TxDb")) {
@@ -131,6 +137,12 @@ if(!is.null(gene_annot)) {
 
 if(!is.null(bsgenome)) {
   bsgenome <- getBSgenome(bsgenome)
+} else {
+  warning(
+    "Missing bsgenome argument, peak calling and quantification without GC content correction.",
+    call. = FALSE,
+    immediate. = TRUE
+  )
 }
 
 #Check the completeness of the genome annotation
@@ -164,37 +176,58 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
 
 sep <- estimateSeqDepth(sep)
 
-message("calculate GC content effects on background")
-
 if(!is.null(bsgenome)) {
+  message("Evaluating GC content biases on the background...")
   sep <- normalizeGC(sep)
 }
 
 if(any(sep$design_Treatment)){
-  message("differential methylation analysis with interactive GLM")
-  sep <- glmDM(sep, shrinkage_method = shrinkage_method)
+  message("Differential modification analysis with interactive GLM...")
+  sep <- glmDM(sep, LFC_shrinkage = LFC_shrinkage)
 } else {
-  message("peak refinement with updated GLM offsets")
-  sep <- glmMeth(sep, shrinkage_method = shrinkage_method)
+  message("Peak refinement with updated GLM offsets...")
+  sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage)
 }
 
-if(!is.null(bsgenome)) {
+if( !is.null(bsgenome) & save_plot_GC ) {
+message("Generating plots for GC content bias assessments...")
+plotLfcGC(sep = sep,
+          save_pdf_prefix = save_plot_name,
+          save_dir = save_dir)
+}
+
+
+if (save_plot_analysis) {
+  message("Generating plots for RNA modification analysis...")
+
+  if (!require(Guitar)) {
+    warning(
+      "the 'Guitar' package is not installed, skipping the distribution plot on travis coordinate."
+    )
+  } else {
+    message("Generating the distribution plot on travis coordinate...")
+    plotGuitar(
+      sep,
+      txdb = txdb,
+      save_pdf_prefix = save_plot_name,
+      save_dir = save_dir
+    )
+  }
+
+  plotExonLength(sep,
+                 txdb = txdb,
+                 save_pdf_prefix = save_plot_name,
+                 save_dir = save_dir)
+
 plotReadsGC(sep = sep,
-            save_pdf_prefix = "ep2")
-
-plotEffectGC(sep = sep,
-           save_pdf_prefix = "ep2")
+            save_pdf_prefix = save_plot_name,
+            save_dir = save_dir)
 }
-
-plotGuitar(sep,
-           txdb = txdb,
-           save_pdf_prefix = "ep2")
-
-plotExonLength(sep,
-               txdb = txdb,
-               save_pdf_prefix = "ep2")
 
 if( export_results ) {
+
+message("Saving results in tabular format...")
+
 exportResults(sep,
               format = export_format,
               inhibit_filter = !is.null( mod_annot ),
@@ -203,4 +236,5 @@ exportResults(sep,
 }
 
 return(sep)
+
 }

@@ -6,9 +6,9 @@
 #' @details The function takes the input of a summarizedExomePeak object, and it estimates the size factors based on the count information contained within it.
 #'
 #' @param sep a summarizedExomePeak object.
-#' @param from Determine which group the size factor is estimated from, can be one of the "Control", "Methylation", and "Both".
+#' @param from Determine which group the size factor is estimated from, can be one of the "Control", "Modification", and "Both".
 #'
-#' By default, the size factors are estimated from the merged control peaks, that correspond to the exonic regions other than the methylated peaks.
+#' By default, the size factors are estimated from the merged control peaks, that correspond to the exonic regions other than the modification containing peaks.
 #'
 #' @param ... inherited from \code{\link{estimateSizeFactorsForMatrix}}.
 #'
@@ -27,23 +27,23 @@
 setMethod("estimateSeqDepth",
           "SummarizedExomePeak",
                        function(sep,
-                                from = c("Control","Methylation","Both"),
+                                from = c("Control","Modification","Both"),
                                 ...){
   from <- match.arg(from)
 
   if(from == "Control") {
     control_peaks_indx <- grepl("control", rownames(sep))
     if(sum(control_peaks_indx) == 0) {
-    warning("cannot find control peaks, the size factors are estimated using the methylation peaks.", call. = F,immediate. = T)
+    warning("Cannot find control peaks, the size factors are estimated using the modification containing peaks.", call. = F,immediate. = T)
     sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep ) )
     } else {
     sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[control_peaks_indx,] ))
     }
 
   }
-  if(from == "Methylation"){
-    meth_peaks_indx <- grepl("meth", rownames(sep))
-    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[meth_peaks_indx,] ) )
+  if(from == "Modification"){
+    mod_peaks_indx <- grepl("mod", rownames(sep))
+    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[mod_peaks_indx,] ) )
   }
 
   if(from == "Both"){

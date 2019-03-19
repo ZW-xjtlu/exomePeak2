@@ -7,11 +7,12 @@
 \title{Plot the transcript distribution of the peaks}
 \usage{
 plotGuitar(sep, txdb = NULL, save_pdf_prefix = NULL,
-  include_control_regions = TRUE, guitar_coordinate = NULL)
+  include_control_regions = TRUE, guitar_coordinate = NULL,
+  save_dir = ".")
 
 \S4method{plotGuitar}{SummarizedExomePeak}(sep, txdb = NULL,
   save_pdf_prefix = NULL, include_control_regions = TRUE,
-  guitar_coordinate = NULL)
+  guitar_coordinate = NULL, save_dir = ".")
 }
 \arguments{
 \item{sep}{a SummarizedExomePeaks object.}
@@ -23,6 +24,8 @@ plotGuitar(sep, txdb = NULL, save_pdf_prefix = NULL,
 \item{include_control_regions}{a logical indicating whether to include the control regions or not.}
 
 \item{guitar_coordinate}{optional, the guitar coordinate of the transcript annotation.}
+
+\item{save_dir}{a character indicating the directory to save the plot; default ".".}
 }
 \value{
 a ggplot object
@@ -31,9 +34,9 @@ a ggplot object
 This function plot the transcript topology of RNA modification based on the provided SummarizedExomePeaks object.
 }
 \details{
-If the SummarizedExomePeaks object contains quantification results for methylation, the significantly methylated peaks
+If the SummarizedExomePeaks object contains quantification results for modification, the significantly modified peaks
 with IP to input log2FC > 0 and DESeq2 Wald test padj < 0.05 will be plotted.
 
-If the SummarizedExomePeaks object contains quantification results for differential methylation, both the hyper methylation
-and hypo methylation peaks with DESeq2 Wald test p values < 0.05 will be plotted.
+If the SummarizedExomePeaks object contains quantification results for differential modification, both the hyper modification
+and hypo modification peaks with DESeq2 Wald test p values < 0.05 will be plotted.
 }

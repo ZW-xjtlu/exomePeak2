@@ -1,4 +1,4 @@
-#' @title Quantification and inference of the RNA differential methylation values based on the generalized linear models of negative binomial distribution.
+#' @title Quantification and inference of the RNA differential modification values based on the generalized linear models of negative binomial distribution.
 #'
 #' @param sep is a summarizedExomePeak object.
 #'
@@ -7,20 +7,20 @@
 #' Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples.
 #' The poisson GLM will be applied otherwise.
 #'
-#' @param shrinkage_method a character indicating the method for emperical bayes shrinkage, can be one in "apeglm" and "ashr".
+#' @param LFC_shrinkage a character indicating the method for emperical bayes shrinkage on the log2 fold change estimates, can be one in "apeglm" and "ashr".
 #' Please check \code{\link{lfcShrink}} for more information.
 #'
 #' @param ... Optional arguments passed to \code{\link{DESeq}}
 #'
-#' @description This function conducts a second round of RNA differential methylation inference based on an interactive generalized linear model of negative binomial distribution.
+#' @description This function conducts a second round of RNA differential modification inference based on an interactive generalized linear model of negative binomial distribution.
 #'
-#' The differential methylation analysis is performed using the following design:
+#' The differential modification analysis is performed using the following design:
 #'
 #' log2(Q) = intercept + I(Treatment) + I(IP) + I(IP):I(Treatment).
 #'
 #' The statistics returned is calculated based on the coefficient estimate of the interactive term I(IP):I(Treated).
 #'
-#' The resulting RNA differential methyltion level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
+#' The resulting RNA differential modification level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
 #'
 #' By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in \link{apeglm}.
 #'
@@ -40,10 +40,10 @@ setMethod("glmDM",
           "SummarizedExomePeak",
            function(sep,
                     glm_type = c("auto","poisson", "NB", "DESeq2"),
-                    shrinkage_method = c("apeglm","ashr","none"),
+                    LFC_shrinkage = c("apeglm","ashr","none"),
                     ...) {
 
-  shrinkage_method = match.arg(shrinkage_method)
+  LFC_shrinkage = match.arg(LFC_shrinkage)
 
   glm_type = match.arg(glm_type)
 
@@ -58,15 +58,15 @@ setMethod("glmDM",
   }
 
   if(glm_type == "poisson") {
-    message("differential modification analysis with poisson GLM")
+    message("Differential modification analysis with poisson GLM...")
   }
 
   if(glm_type == "NB") {
-    message("differential modification analysis with NB GLM")
+    message("Differential modification analysis with NB GLM...")
   }
 
   if(glm_type == "DESeq2") {
-    message("differential modification analysis with DESeq2 NB GLM")
+    message("Differential modification analysis with DESeq2...")
   }
 
   if(is.null(colData( sep )$sizeFactor)) {
@@ -75,7 +75,7 @@ setMethod("glmDM",
 
   }
 
-  indx_meth <- grepl("meth", rownames( sep ) )
+  indx_mod <- grepl("mod", rownames( sep ) )
 
   SE_M <- sep
 
@@ -97,9 +97,9 @@ setMethod("glmDM",
 
     Cov = ~ Perturbation + IPinput + Perturbation:IPinput
 
-    dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_meth,], design = Cov) )
+    dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_mod,], design = Cov) )
 
-    glm_off_sets <- GCsizeFactors(sep)[(!gc_na_indx) & indx_meth,]
+    glm_off_sets <- GCsizeFactors(sep)[(!gc_na_indx) & indx_mod,]
 
     #Normalization to make the row geometric means = 0 (since DESeq2 only cares about the difference)
     #and this norm factor is still under the original scale (not log scale glm off set).
@@ -114,7 +114,7 @@ setMethod("glmDM",
 
     Cov = ~ Perturbation + IPinput + Perturbation:IPinput
 
-    dds = suppressMessages( DESeqDataSet(se = SE_M[indx_meth,], design = Cov) )
+    dds = suppressMessages( DESeqDataSet(se = SE_M[indx_mod,], design = Cov) )
 
   }
 
@@ -127,53 +127,53 @@ setMethod("glmDM",
   }
 
   if(glm_type == "NB"){
-    dds = estimateDispersions( dds, fitType = "mean" )
+    dds =  suppressMessages( estimateDispersions( dds, fitType = "mean" ) )
   }
 
   if(glm_type == "DESeq2"){
-    dds = estimateDispersions( dds )
+    dds = suppressMessages( estimateDispersions( dds ) )
   }
 
 
-  dds = nbinomWaldTest( dds )
+  dds = suppressMessages( nbinomWaldTest( dds ) )
 
   #Generation of the DESeq2 report.
 
   if (!is.null(GCsizeFactors( sep ))) {
 
-   if(shrinkage_method == "none") {
+   if(LFC_shrinkage == "none") {
 
-     DS_result <- results(dds)
+     DS_result <- suppressMessages( results(dds) )
 
    } else {
 
-     DS_result  <- lfcShrink(dds = dds, coef = 4, type = shrinkage_method)
+     DS_result  <- suppressMessages( lfcShrink(dds = dds, coef = 4, type = LFC_shrinkage) )
 
    }
 
-    quantification_rst <- matrix( NA, nrow = nrow(SE_M[indx_meth,]), ncol = ncol(DS_result) )
+    quantification_rst <- matrix( NA, nrow = nrow(SE_M[indx_mod,]), ncol = ncol(DS_result) )
 
     colnames(quantification_rst) <- colnames(DS_result)
 
     quantification_rst <- as.data.frame(quantification_rst)
 
-    quantification_rst[(!gc_na_indx)[indx_meth],] <- as.data.frame( DS_result )
+    quantification_rst[(!gc_na_indx)[indx_mod],] <- as.data.frame( DS_result )
 
   } else {
 
-    if(shrinkage_method == "none") {
+    if(LFC_shrinkage == "none") {
 
     quantification_rst  <- as.data.frame( results(dds) )
 
     } else {
 
-    suppressWarnings( quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type = shrinkage_method) ) )
+    suppressWarnings( quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type = LFC_shrinkage) ) )
 
     }
 
   }
 
-  rownames( quantification_rst ) = rownames( SE_M )[indx_meth]
+  rownames( quantification_rst ) = rownames( SE_M )[indx_mod]
 
   DESeq2Results( sep ) = as.data.frame( quantification_rst )
 

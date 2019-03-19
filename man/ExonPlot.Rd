@@ -4,7 +4,7 @@
 \alias{exonPlot}
 \title{plot the distribution for the length of the overlapped exons.}
 \usage{
-exonPlot(gfeatures, txdb, save_pdf_prefix = NULL)
+exonPlot(gfeatures, txdb, save_pdf_prefix = NULL, save_dir = ".")
 }
 \arguments{
 \item{gfeatures}{a list of GRanges or GRangesList.}
@@ -12,4 +12,6 @@ exonPlot(gfeatures, txdb, save_pdf_prefix = NULL)
 \item{txdb}{a txdb object.}
 
 \item{save_pdf_prefix}{provided to save a pdf file.}
+
+\item{save_dir}{a character indicating the directory to save the plot; default ".".}
 }

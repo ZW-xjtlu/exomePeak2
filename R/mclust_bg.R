@@ -7,7 +7,7 @@
 #'
 #'1. Filter the rows (modification sites) by average count.
 #'
-#'2. Fit multivariate gaussian mixture model with 2 mixing component to differentiate background and biological signal.
+#'2. Fit multivariate Gaussian mixture model with 2 mixing component to differentiate background and biological signal.
 #'
 #'- depend on whether the bsgenome is provided, the values GC content will be used as one of the dimention of the clustering.
 #'
@@ -69,13 +69,13 @@ rm(M_value_control)
 
 rm(mean_input_control, IP_control, indx_IP_treated, indx_input_treated)
 
-#2. Apply multivariate gaussian mixture model on all M levels and the GC contents.
+#2. Apply multivariate Gaussian mixture model on all M levels and the GC contents.
 
 model_matrix <- as.data.frame(model_matrix)
 colnames(model_matrix) <- paste0("sample_",1:ncol(model_matrix))
 if(!is.null(rowData(se_peak_counts)$gc_contents)) model_matrix$GC <- rowData(se_peak_counts)$gc_contents[rowData(se_peak_counts)$indx_gc_est]
 
-#Apply univariate gaussian mixture if there is only one column.
+#Apply univariate Gaussian mixture if there is only one column.
 #Classify the bins using bayesian classifier
 if(ncol(model_matrix) == 1){
 

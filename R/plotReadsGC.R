@@ -24,6 +24,8 @@
 #'
 #'@param pool_replicates a logical indicating whether to pool the replicates in the local regression fit; default FALSE.
 #'
+#'@param save_dir a character indicating the directory to save the plot; default ".".
+#'
 #'@return a ggplot object
 #'
 #'@import ggplot2
@@ -47,7 +49,8 @@ setMethod("plotReadsGC",
                         fragment_length = 100,
                         binding_length = 25,
                         effective_GC = FALSE,
-                        pool_replicates = FALSE) {
+                        pool_replicates = FALSE,
+                        save_dir = ".") {
 
 if(is.null(colData( sep )$sizeFactor)){
     sep <- estimateSeqDepth( sep )
@@ -121,7 +124,7 @@ Plot_df$Treatment = rep(Treatment, each = nrow(sep))
 
 group <- rep("background",nrow(sep))
 
-group[grepl("meth",rownames( sep ))] <- "methylated"
+group[grepl("mod",rownames( sep ))] <- "modification"
 
 Plot_df$group <- rep(group,  ncol(sep))
 
@@ -208,7 +211,12 @@ p1 = p1 +
 
 if(!is.null(save_pdf_prefix)) {
 
-suppressMessages( ggsave(paste0(save_pdf_prefix,"_ab_GC.pdf"), p1, width = figwidth, height = figheight) )
+  if(!dir.exists(save_dir)) {
+    dir.create(save_dir)
+  }
+
+  suppressMessages( ggsave(file.path(save_dir, paste0(save_pdf_prefix, "_ab_GC.pdf")),
+                           p1, width = figwidth, height = figheight) )
 
 }
 

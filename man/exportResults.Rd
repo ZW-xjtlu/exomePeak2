@@ -4,17 +4,17 @@
 \name{exportResults}
 \alias{exportResults}
 \alias{exportResults}
-\title{Export the methylation / differential methylation sites}
+\title{Export the modification / differential modification sites}
 \usage{
 exportResults(sep, format = c("txt", "BED", "RDS"),
   save_dir = "exomepeaks_result", cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 2000,
+  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
 
 \S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv", "BED",
   "RDS"), save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 2000,
+  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
 }
@@ -39,13 +39,13 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 
 only sites with log2 IP/input fold change bigger than this value are kept; Default 0.
 
-For differential methylation analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.}
+For differential modification analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.}
 
 \item{min_num_of_positive}{The minimum number of reported sites.
 If the sites is filtered less than this number by its p values or effect sizes,
 more sites will be reported by the order of the p value until it reaches this number.}
 
-\item{expected_direction}{The expected differential methylation direction, could be "hyper", "hypo", or "both".
+\item{expected_direction}{The expected differential modification direction, could be "hyper", "hypo", or "both".
 This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; Default "both".}
 
 \item{inhibit_filter}{Remove all the filters on the result, this is desired for user provided modification annotation; Default FALSE.}

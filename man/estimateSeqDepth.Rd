@@ -6,17 +6,17 @@
 \alias{estimateSeqDepth}
 \title{Estimation of the size factors used in peaks quantification.}
 \usage{
-estimateSeqDepth(sep, from = c("Control", "Methylation", "Both"), ...)
+estimateSeqDepth(sep, from = c("Control", "Modification", "Both"), ...)
 
 \S4method{estimateSeqDepth}{SummarizedExomePeak}(sep, from = c("Control",
-  "Methylation", "Both"), ...)
+  "Modification", "Both"), ...)
 }
 \arguments{
 \item{sep}{a summarizedExomePeak object.}
 
-\item{from}{Determine which group the size factor is estimated from, can be one of the "Control", "Methylation", and "Both".
+\item{from}{Determine which group the size factor is estimated from, can be one of the "Control", "Modification", and "Both".
 
-By default, the size factors are estimated from the merged control peaks, that correspond to the exonic regions other than the methylated peaks.}
+By default, the size factors are estimated from the merged control peaks, that correspond to the exonic regions other than the modification containing peaks.}
 
 \item{...}{inherited from \code{\link{estimateSizeFactorsForMatrix}}.}
 }

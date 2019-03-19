@@ -71,7 +71,7 @@ if(any(is.null(elementMetadata( sep )$GC_content),
           is.null(elementMetadata( sep )$feature_length))) {
 
 if(is.null(bsgenome)) {
-stop("require BSgenome objects in GC size factor estimaton.")
+stop("Require BSgenome objects in GC size factor estimaton.")
 }
 
 if(!is.null(gene_annot)) {
@@ -117,14 +117,14 @@ if(feature == "all"){
 
 if(!qtnorm) {
 
-cqnObject <- suppressMessages( cqn(assay(sep)[!GC_na_index,],
+cqnObject <- quiet( suppressMessages( cqn(assay(sep)[!GC_na_index,],
                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                      lengthMethod = "fixed",
                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
                                      subindex = Subindex,
                                      sizeFactors = sep$sizeFactor,
                                      sqn = qtnorm,
-                                     verbose = FALSE) )
+                                     verbose = FALSE) ) )
 
 GC_size_factors[!GC_na_index,] <- cqnObject$glm.offset
 
@@ -132,23 +132,23 @@ assays(sep)$GCsizeFactors <- GC_size_factors
 
 } else {
 
-cqnObject_IP <- suppressMessages( cqn(assay(sep)[!GC_na_index, sep$design_IP],
+cqnObject_IP <- quiet(  suppressMessages( cqn(assay(sep)[!GC_na_index, sep$design_IP],
                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                      lengthMethod = "fixed",
                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
                                      subindex = Subindex,
                                      sizeFactors = sep$sizeFactor[sep$design_IP],
                                      sqn = qtnorm,
-                                     verbose = FALSE) )
+                                     verbose = FALSE) ) )
 
-cqnObject_input <- suppressMessages( cqn(assay(sep)[!GC_na_index, !sep$design_IP],
+cqnObject_input <-  quiet( suppressMessages( cqn(assay(sep)[!GC_na_index, !sep$design_IP],
                                       lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                       lengthMethod = "fixed",
                                       x = elementMetadata( sep )$GC_content[!GC_na_index],
                                       subindex = Subindex,
                                       sizeFactors = sep$sizeFactor[!sep$design_IP],
                                       sqn = qtnorm,
-                                      verbose = FALSE) )
+                                      verbose = FALSE) ) )
 
 GC_size_factors[!GC_na_index,sep$design_IP] <- cqnObject_IP$glm.offset
 

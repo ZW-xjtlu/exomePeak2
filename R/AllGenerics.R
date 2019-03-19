@@ -31,7 +31,7 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
 #' @rdname estimateSeqDepth
 #' @export
 setGeneric("estimateSeqDepth", function(sep,
-                                        from = c("Control","Methylation","Both"),
+                                        from = c("Control","Modification","Both"),
                                         ...) {standardGeneric("estimateSeqDepth")})
 
 #' @rdname plotSizeFactors
@@ -67,18 +67,18 @@ setGeneric("normalizeGC", function(sep,
                                        effective_GC = FALSE) {standardGeneric("normalizeGC")})
 
 
-#' @rdname glmMeth
+#' @rdname glmM
 #' @export
-setGeneric("glmMeth", function(sep,
+setGeneric("glmM", function(sep,
                                glm_type = c("auto","poisson", "NB", "DESeq2"),
-                               shrinkage_method = c("apeglm","normal","ashr"),
-                               ...) {standardGeneric("glmMeth")})
+                               LFC_shrinkage = c("apeglm","Gaussian","ashr"),
+                               ...) {standardGeneric("glmM")})
 
 #' @rdname glmDM
 #' @export
 setGeneric("glmDM", function(sep,
                              glm_type = c("auto","poisson", "NB", "DESeq2"),
-                             shrinkage_method = c("apeglm","ashr"),
+                             LFC_shrinkage = c("apeglm","ashr"),
                              ...) {standardGeneric("glmDM")})
 
 
@@ -88,14 +88,16 @@ setGeneric("plotGuitar", function(sep,
                                   txdb = NULL,
                                   save_pdf_prefix = NULL,
                                   include_control_regions = TRUE,
-                                  guitar_coordinate = NULL) {standardGeneric("plotGuitar")})
+                                  guitar_coordinate = NULL,
+                                  save_dir = ".") {standardGeneric("plotGuitar")})
 
 #' @rdname plotExonLength
 #' @export
 setGeneric("plotExonLength", function(sep,
                                       txdb = NULL,
                                       save_pdf_prefix = NULL,
-                                      include_control_regions = TRUE) {standardGeneric("plotExonLength")})
+                                      include_control_regions = TRUE,
+                                      save_dir = ".") {standardGeneric("plotExonLength")})
 
 #' @rdname plotReadsGC
 #' @export
@@ -106,17 +108,19 @@ setGeneric("plotReadsGC", function(sep,
                                    fragment_length = 100,
                                    binding_length = 25,
                                    effective_GC = FALSE,
-                                   pool_replicates = FALSE) {standardGeneric("plotReadsGC")})
+                                   pool_replicates = FALSE,
+                                   save_dir = ".") {standardGeneric("plotReadsGC")})
 
-#' @rdname plotBetaGC
+#' @rdname plotLfcGC
 #' @export
-setGeneric("plotEffectGC", function(sep,
+setGeneric("plotLfcGC", function(sep,
                                   bsgenome = NULL,
                                   txdb = NULL,
                                   save_pdf_prefix = NULL,
                                   fragment_length = 100,
                                   binding_length = 25,
-                                  effective_GC = FALSE) {standardGeneric("plotEffectGC")})
+                                  effective_GC = FALSE,
+                                  save_dir = ".") {standardGeneric("plotLfcGC")})
 
 #' @rdname exportResults
 #' @export
@@ -126,7 +130,7 @@ setGeneric("exportResults", function(sep,
                                      cut_off_pvalue = NULL,
                                      cut_off_padj = 0.05,
                                      cut_off_log2FC = 0,
-                                     min_num_of_positive = 2000,
+                                     min_num_of_positive = 30,
                                      expected_direction = "both",
                                      inhibit_filter = FALSE,
                                      table_style = c("bed","granges")) {standardGeneric("exportResults")})
@@ -137,7 +141,7 @@ setGeneric("Results", function(sep,
                                cut_off_pvalue = NULL,
                                cut_off_padj = 0.05,
                                cut_off_log2FC = 0,
-                               min_num_of_positive = 2000,
+                               min_num_of_positive = 30,
                                expected_direction = "both",
                                inhibit_filter = FALSE,
                                table_style = c("bed","granges")) {standardGeneric("Results")})

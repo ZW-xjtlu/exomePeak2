@@ -2,6 +2,7 @@
 #' @param gfeatures a list of GRanges or GRangesList.
 #' @param txdb a txdb object.
 #' @param save_pdf_prefix provided to save a pdf file.
+#' @param save_dir a character indicating the directory to save the plot; default ".".
 #' @importFrom GenomicFeatures exons
 #' @importFrom IRanges subsetByOverlaps
 #' @import ggplot2
@@ -11,7 +12,8 @@
 exonPlot <- function(
   gfeatures,
   txdb,
-  save_pdf_prefix = NULL
+  save_pdf_prefix = NULL,
+  save_dir = "."
 ) {
 
   ex_txdb <- exons(txdb)
@@ -44,7 +46,16 @@ exonPlot <- function(
                                     vjust = 1)) +
     scale_fill_brewer(palette = "Dark2")
 
-  if(!is.null(save_pdf_prefix)) ggsave( paste0(save_pdf_prefix, "_exl.pdf"), p1, width = 5, height = 3)
+ if(!is.null(save_pdf_prefix)) {
+
+    if(!dir.exists(save_dir)) {
+      dir.create(save_dir)
+    }
+
+    ggsave( file.path( save_dir, paste0(save_pdf_prefix, "_exl.pdf")),
+                                        p1, width = 5, height = 3)
+
+  }
 
   return(p1)
 }

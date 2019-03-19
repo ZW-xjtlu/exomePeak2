@@ -1,4 +1,4 @@
-#' @title Quantification of RNA methylation beta values based on the generalized linear models of negative binomial distribution.
+#' @title Quantification of RNA modification log2 fold change values based on the generalized linear models of negative binomial distribution.
 #'
 #' @param sep is a summarizedExomePeak object.
 #'
@@ -7,15 +7,15 @@
 #' Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples of the treatment and control.
 #' The poisson GLM will be applied in the other cases.
 #'
-#' @param shrinkage_method a character indicating the method for emperical bayes shrinkage, can be one in "apeglm","normal", "ashr", or "none".
+#' @param LFC_shrinkage a character indicating the method for emperical bayes shrinkage on the log2 fold change estimates, can be one in "apeglm", "Gaussian", "ashr", or "none".
 #' Please check \code{\link{lfcShrink}} for more information.
 #'
 #' @param ... Optional arguments passed to \code{\link{DESeq}}
 #'
-#' @description This function conduct a second round of RNA methylation level quantification using generalized linear model estimates of the
-#' neative binomial distribution. The RNA methyltion level is quantified as the log2 beta-value (log2 IP to input ratio).
+#' @description This function conduct a second round of RNA modification level quantification using generalized linear model estimates of the
+#' neative binomial distribution. The RNA modification level is quantified as the log2 IP to input fold change.
 #'
-#' By default, the methylation level estimates will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in the package \link{apeglm}.
+#' By default, the modification level estimates will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in the package \link{apeglm}.
 #'
 #' @import SummarizedExperiment
 #'
@@ -23,20 +23,20 @@
 #'
 #' @docType methods
 #'
-#' @name glmMeth
+#' @name glmM
 #'
-#' @rdname glmMeth
+#' @rdname glmM
 #'
 #' @export
 #'
-setMethod("glmMeth",
+setMethod("glmM",
           "SummarizedExomePeak",
            function(sep,
                     glm_type = c("auto","poisson", "NB", "DESeq2"),
-                    shrinkage_method = c("apeglm", "normal", "ashr", "none"),
+                    LFC_shrinkage = c("apeglm", "Gaussian", "ashr", "none"),
                     ...) {
 
-  shrinkage_method = match.arg(shrinkage_method)
+  LFC_shrinkage = match.arg(LFC_shrinkage)
 
   glm_type = match.arg(glm_type)
 
@@ -49,15 +49,15 @@ setMethod("glmMeth",
   }
 
   if(glm_type == "poisson") {
-    message("peak refinement with poisson GLM")
+    message("Peak refinement using poisson GLM...")
   }
 
   if(glm_type == "NB") {
-    message("peak refinement with NB GLM")
+    message("Peak refinement using NB GLM...")
   }
 
   if(glm_type == "DESeq2") {
-    message("peak refinement with DESeq2 NB GLM")
+    message("Peak refinement using DESeq2...")
   }
 
 
@@ -69,7 +69,7 @@ setMethod("glmMeth",
 
   }
 
-  indx_meth <- grepl("meth", rownames( sep ) )
+  indx_mod <- grepl("mod", rownames( sep ) )
 
   SE_M <- sep
 
@@ -86,9 +86,9 @@ setMethod("glmMeth",
       #Need to deal with the missing values in GC content size factor.
       Cov = ~ IPinput
 
-      dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_meth,], design = Cov) )
+      dds = suppressMessages( DESeqDataSet(se = SE_M[(!gc_na_indx) & indx_mod,], design = Cov) )
 
-      glm_off_sets <- GCsizeFactors(sep)[(!gc_na_indx) & indx_meth,]
+      glm_off_sets <- GCsizeFactors(sep)[(!gc_na_indx) & indx_mod,]
 
       #normalization to make the row geometric means = 0 (since DESeq2 only cares about the difference).
       #and this norm factor is still under the original scale (not log scale glm off set).
@@ -105,7 +105,7 @@ setMethod("glmMeth",
 
       Cov = ~ IPinput
 
-      dds = suppressMessages( DESeqDataSet(se = SE_M[indx_meth,], design = Cov) )
+      dds = suppressMessages( DESeqDataSet(se = SE_M[indx_mod,], design = Cov) )
 
       dds$IPinput <- relevel( dds$IPinput, "input" )
 
@@ -116,52 +116,52 @@ setMethod("glmMeth",
     }
 
     if(glm_type == "NB"){
-      dds = estimateDispersions( dds, fitType = "mean" )
+      dds = suppressMessages( estimateDispersions( dds, fitType = "mean" ) )
     }
 
     if(glm_type == "DESeq2"){
-      dds = estimateDispersions( dds )
+      dds = suppressMessages( estimateDispersions( dds ) )
     }
 
-      dds = nbinomWaldTest( dds )
+      dds = suppressMessages( nbinomWaldTest( dds ) )
 
    #Generation of the DESeq2 report.
 
     if (!is.null(GCsizeFactors( sep ))) {
 
-      if(shrinkage_method == "none") {
+      if(LFC_shrinkage == "none") {
 
-        DS_result <- results( dds, altHypothesis = "greater" )
+        DS_result <- suppressMessages( results( dds, altHypothesis = "greater" ) )
 
       } else {
 
-        DS_result <- lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  )
+        DS_result <- suppressMessages( lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = LFC_shrinkage  ) )
 
       }
 
-      quantification_rst <- matrix(NA,nrow = nrow(SE_M[indx_meth,]), ncol = ncol(DS_result))
+      quantification_rst <- matrix(NA,nrow = nrow(SE_M[indx_mod,]), ncol = ncol(DS_result))
 
       colnames(quantification_rst) <- colnames(DS_result)
 
       quantification_rst <- as.data.frame(quantification_rst)
 
-      quantification_rst[(!gc_na_indx)[indx_meth],] <- as.data.frame( DS_result )
+      quantification_rst[(!gc_na_indx)[indx_mod],] <- as.data.frame( DS_result )
 
     } else {
 
-      if(shrinkage_method == "none") {
+      if(LFC_shrinkage == "none") {
 
-      quantification_rst <- as.data.frame( results( dds, altHypothesis = "greater" ) )
+      quantification_rst <- suppressMessages( as.data.frame( results( dds, altHypothesis = "greater" ) ) )
 
       } else {
 
-      quantification_rst <- as.data.frame( lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = shrinkage_method  ) )
+      quantification_rst <- suppressMessages( as.data.frame( lfcShrink( dds=dds, res = results( dds, altHypothesis = "greater" ), coef=2, type = LFC_shrinkage  ) ) )
 
       }
 
     }
 
-  rownames(quantification_rst) = rownames(SE_M)[indx_meth]
+  rownames(quantification_rst) = rownames(SE_M)[indx_mod]
 
   DESeq2Results( sep ) = as.data.frame( quantification_rst )
 

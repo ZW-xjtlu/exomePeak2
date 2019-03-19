@@ -1,9 +1,9 @@
-#'@title Plot the relationship between the effect sizes (GLM log2FC estimates) and GC content.
-#'@description This function plot the scatter plot between GC content and the methylation / differential methylation levels of the modification sites.
+#'@title Plot the relationship between the GLM log2FC estimates and GC content.
+#'@description This function plot the scatter plot between GC content and the modification / differential modification levels of the modification sites.
 #'
 #'@details By default, this function will generate the countour of the scatter plot, and a linear regression line indicating the trend between
 #'GC content and log2 fold change or log2 odds ratio returned by DESeq2.
-#'The significant changed methylation sites will be grouped and lebeled in different colours.
+#'The significant changed modification sites will be grouped and lebeled in different colours.
 #'
 #'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
 #'
@@ -17,6 +17,8 @@
 #'
 #'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
 #'
+#'@param save_dir a character indicating the directory to save the plot; default ".".
+#'
 #'@return a ggplot object.
 #'
 #'@import ggplot2
@@ -24,12 +26,12 @@
 #'
 #'@docType methods
 #'
-#'@name plotBetaGC
+#'@name plotLfcGC
 #'
-#'@rdname plotBetaGC
+#'@rdname plotLfcGC
 #'
 #'@export
-setMethod("plotEffectGC",
+setMethod("plotLfcGC",
           "SummarizedExomePeak",
                 function(sep,
                          bsgenome = NULL,
@@ -37,7 +39,8 @@ setMethod("plotEffectGC",
                          save_pdf_prefix = NULL,
                          fragment_length = 100,
                          binding_length = 25,
-                         effective_GC = FALSE) {
+                         effective_GC = FALSE,
+                         save_dir = ".") {
 
 if(is.null(colData( sep )$sizeFactor)){
     sep <- estimateSeqDepth(sep)
@@ -47,7 +50,7 @@ if(is.null(DESeq2Results(sep))) {
   if(any(sep$design_Treatment)) {
     sep <- glmDM(sep)
    } else {
-    sep <- glmMeth(sep)
+    sep <- glmM(sep)
   }
 }
 
@@ -78,7 +81,7 @@ if(!any(sep$design_Treatment)) {
 
 indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
-if( length(indx_sig) < floor( sum(grepl("meth_", rownames(sep))) * 0.01 ) ){
+if( length(indx_sig) < floor( sum(grepl("mod_", rownames(sep))) * 0.01 ) ){
 
 indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
@@ -93,7 +96,7 @@ Decision[indx_sig] <- "padj < .05"
 } else {
 
   if(length(which(DESeq2Results(sep)$padj < .05)) <
-     floor(sum(grepl("meth_", rownames(sep))) * 0.1)) {
+     floor(sum(grepl("mod_", rownames(sep))) * 0.1)) {
     Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < .05"
 
   } else {
@@ -103,22 +106,22 @@ Decision[indx_sig] <- "padj < .05"
 
 }
 
-GC_content_meth <- elementMetadata(sep)$GC_content[grepl("meth_",rownames(sep))]
+GC_content_mod <- elementMetadata(sep)$GC_content[grepl("mod_",rownames(sep))]
 
-na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_content_meth)
+na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_content_mod)
 
 plot_df = data.frame(
   Log2FC = DESeq2Results(sep)$log2FoldChange[!na_idx],
-  GC_idx = GC_content_meth[!na_idx],
+  GC_idx = GC_content_mod[!na_idx],
   Label = Decision[!na_idx]
 )
 
 if(!any(sep$design_Treatment)) {
-  ylabel <- "log2 IP/input Fold Change"
-  mtitle <- "GC Content Against log2 Fold Change Estimate"
+  ylabel <- "IP/input log2 Fold Change"
+  mtitle <- "GC Content Against log2 Fold Change Estimates"
 } else {
-  ylabel <- "log2 Risk Ratio"
-  mtitle <- "GC Content Against log2 Risk Ratio Estimate"
+  ylabel <- "Differential log2 Fold Cange"
+  mtitle <- "GC Content Against log2 Fold Change Estimates"
 }
 
 plot_df$GC_idx <- as.numeric(plot_df$GC_idx)
@@ -140,14 +143,18 @@ p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
 
 if(!is.null( save_pdf_prefix )){
 
+  if(!dir.exists(save_dir)) {
+    dir.create(save_dir)
+  }
+
 suppressMessages( ggsave(
-                  paste0(save_pdf_prefix,
-                        "_bt_GC.pdf"),
+                         file.path(save_dir, paste0(save_pdf_prefix, "_lfc_GC.pdf")),
                          p1,
                          width = 4.5,
                          height = 3) )
 
 }
+
 
 return(p1)
 

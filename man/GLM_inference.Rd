@@ -5,8 +5,8 @@
 \title{Statistical Inference with DESeq2 on IP over input fold change.}
 \usage{
 GLM_inference(SE_bins, glm_type = c("poisson", "NB", "DESeq2"),
-  p_cutoff = NULL, p_adj_cutoff = 0.05, count_cutoff = 5,
-  logFC_meth = 0, min_meth_number = floor(nrow(SE_bins) * 0.001))
+  p_cutoff = NULL, p_adj_cutoff = 0.05, count_cutoff = 5, logFC_mod = 0,
+  min_mod_number = floor(nrow(SE_bins) * 0.001))
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,
@@ -21,14 +21,14 @@ The DESeq2 method is only recommended for high power experiments with more than 
 
 \item{count_cutoff}{an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
 
-\item{logFC_meth}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for methylated peaks (IP > input).}
+\item{logFC_mod}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).}
 
-\item{min_meth_number}{a non negative numeric value of the he minimum number of the reported methylated bins.
+\item{min_mod_number}{a non negative numeric value of the he minimum number of the reported modification containing bins.
 If the bins are filtered less than this number by the p values or effect sizes,
 more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(SE_bins)*0.002 ).}
 }
 \value{
-a list of the index for the significant methylated peaks (IP > input) and control peaks (peaks other than methylation peaks).
+a list of the index for the significant modified peaks (IP > input) and control peaks (peaks other than modification containing peaks).
 }
 \description{
 \code{GLM_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model in DESeq.

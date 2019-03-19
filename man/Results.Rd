@@ -4,17 +4,17 @@
 \name{Results}
 \alias{Results}
 \alias{Results}
-\title{Export the methylation / differential methylation sites}
+\title{Export the modification / differential modification sites}
 \usage{
 Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
-  cut_off_log2FC = 0, min_num_of_positive = 2000,
+  cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
-  table_style = c("bed", "granges"))
+  table_style = c("bed", "granges"), return_grl = FALSE)
 
 \S4method{Results}{SummarizedExomePeak}(sep, cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 2000,
+  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = TRUE,
-  table_style = c("bed", "granges"))
+  table_style = c("bed", "granges"), return_grl = FALSE)
 }
 \arguments{
 \item{sep}{A SummarizedExomePeak object.}
@@ -26,18 +26,20 @@ Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
 \item{cut_off_log2FC}{A non negative number indicating the log2 fold change cutoff of the exported result,
 only sites with log2 IP/input fold change bigger than this value are kept; Default 0.
 
-For differential methylation analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.}
+For differential modification analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.}
 
 \item{min_num_of_positive}{The minimum number of reported sites.
 If the sites is filtered less than this number by its p values or effect sizes,
 more sites will be reported by the order of the p value until it reaches this number.}
 
-\item{expected_direction}{The expected differential methylation direction, could be "hyper", "hypo", or "both".
-This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; Default "both".}
+\item{expected_direction}{The expected differential modification direction, could be "hyper", "hypo", or "both".
+This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; default "both".}
 
 \item{inhibit_filter}{Remove all the filters upon on the result; Default TRUE.}
 
 \item{table_style}{Determine the style of the tsv table being returned, could be one of "bed" and "granges", the later would index the site containing multiple ranges with an id.}
+
+\item{return_grl}{TRUE to return \code{GRangesList} object rather than tables; default FALSE.}
 }
 \value{
 a data.frame containing the modification site genomic location, gene ids, statistics, and effect sizes will be returned.

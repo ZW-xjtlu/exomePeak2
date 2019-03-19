@@ -4,13 +4,13 @@
 \name{glmDM}
 \alias{glmDM}
 \alias{glmDM}
-\title{Quantification and inference of the RNA differential methylation values based on the generalized linear models of negative binomial distribution.}
+\title{Quantification and inference of the RNA differential modification values based on the generalized linear models of negative binomial distribution.}
 \usage{
 glmDM(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
-  shrinkage_method = c("apeglm", "ashr"), ...)
+  LFC_shrinkage = c("apeglm", "ashr"), ...)
 
 \S4method{glmDM}{SummarizedExomePeak}(sep, glm_type = c("auto", "poisson",
-  "NB", "DESeq2"), shrinkage_method = c("apeglm", "ashr", "none"), ...)
+  "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "ashr", "none"), ...)
 }
 \arguments{
 \item{sep}{is a summarizedExomePeak object.}
@@ -20,21 +20,21 @@ glmDM(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
 Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples.
 The poisson GLM will be applied otherwise.}
 
-\item{shrinkage_method}{a character indicating the method for emperical bayes shrinkage, can be one in "apeglm" and "ashr".
+\item{LFC_shrinkage}{a character indicating the method for emperical bayes shrinkage on the log2 fold change estimates, can be one in "apeglm" and "ashr".
 Please check \code{\link{lfcShrink}} for more information.}
 
 \item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
 \description{
-This function conducts a second round of RNA differential methylation inference based on an interactive generalized linear model of negative binomial distribution.
+This function conducts a second round of RNA differential modification inference based on an interactive generalized linear model of negative binomial distribution.
 
-The differential methylation analysis is performed using the following design:
+The differential modification analysis is performed using the following design:
 
 log2(Q) = intercept + I(Treatment) + I(IP) + I(IP):I(Treatment).
 
 The statistics returned is calculated based on the coefficient estimate of the interactive term I(IP):I(Treated).
 
-The resulting RNA differential methyltion level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
+The resulting RNA differential modification level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
 
 By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in \link{apeglm}.
 }
