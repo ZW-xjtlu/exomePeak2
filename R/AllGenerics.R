@@ -2,9 +2,9 @@
 #' @export
 setGeneric("Parameter", function(x) {standardGeneric("Parameter")})
 
-#' @rdname RandomPrimer
+#' @rdname LibraryType
 #' @export
-setGeneric("RandomPrimer", function(x) standardGeneric("RandomPrimer"))
+setGeneric("LibraryType", function(x) standardGeneric("LibraryType"))
 
 #' @rdname exomePeakCalling
 #' @export
@@ -12,7 +12,7 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         txdb = NULL,
                                         bsgenome = NULL,
                                         glm_type = c("DESeq2", "NB", "poisson"),
-                                        background = c("mclust", "m6Aseq_prior", "manual", "all"),
+                                        background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                                         manual_background = NULL,
                                         gene_annot = NULL,
                                         mod_annot = NULL,

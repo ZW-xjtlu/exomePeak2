@@ -14,7 +14,7 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 
 \S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv", "BED",
   "RDS"), save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
+  cut_off_padj = 0.2, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
 }
@@ -33,7 +33,7 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 
 \item{cut_off_pvalue}{A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.}
 
-\item{cut_off_padj}{A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.05.}
+\item{cut_off_padj}{A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.2.}
 
 \item{cut_off_log2FC}{A non negative number indicating the log2 fold change cutoff of the exported result,
 

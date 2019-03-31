@@ -5,7 +5,7 @@
 \title{Find the background of the user provided mod_gration.}
 \usage{
 disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
-  background_types = c("mclust", "m6Aseq_prior", "manual", "all"),
+  background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   control_width = 50, rename_mod = FALSE)
 }
 \arguments{
@@ -15,9 +15,11 @@ disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
 
 \item{cut_off_num}{A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.}
 
-\item{rename_mod}{Whether to rename the returned modification sites, default = FALSE.}
+\item{background_bins}{A Granges object for background binds.}
 
-\item{m6Aseq_background}{A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.}
+\item{background_types}{A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.}
+
+\item{rename_mod}{Whether to rename the returned modification sites, default = FALSE.}
 
 \item{distance_5p}{A numeric value of the length of the transcript starting region; default 200.}
 }

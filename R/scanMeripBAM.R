@@ -14,7 +14,14 @@
 #' If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{BAM_ip} and \code{BAM_input} arguments.
 #'
 #' @param paired_end a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.
-#' @param random_primer a logical value indicating whether the library used is strand specific, default to be FALSE.
+#' @param library_type The library type for the RNA-seq protocal, can be one in "unstranded", "1st_strand", and "2nd_strand"; default "unstranded".
+#'
+#' unstranded: The RNA-seq library is not strand specific, i.e. both the strands generated during the first and the second strand sythesis are sequenced; example: Standard Illumina.
+#'
+#' 1st_strand: The first strand specific RNA-seq library, only the strand generated during the first strand sythesis is sequenced; example: dUTP, NSR, NNSR.
+#'
+#' 2nd_strand: The second strand specific RNA-seq library, only the strand generated during the second strand sythesis is sequenced; example: Ligation, Standard SOLiD.
+#'
 #' @param index_bam a logical value indicating whether to sort and index BAM automatically if the bam index is not found; default TRUE.
 #'
 #' The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.
@@ -71,7 +78,7 @@ scanMeripBAM <- function(bam_ip = NULL,
                          bam_treated_ip = NULL,
                          bam_treated_input = NULL,
                          paired_end = FALSE,
-                         random_primer = TRUE,
+                         library_type = c("unstranded","1st_strand","2nd_strand"),
                          index_bam = TRUE,
                          bam_files = NULL,
                          design_ip = NULL,
@@ -84,6 +91,9 @@ scanMeripBAM <- function(bam_ip = NULL,
                          isProperPair = NA,
                          hasUnmappedMate = NA,
                          ...) {
+
+  library_type <- match.arg(library_type)
+
   #Create bamfile list
   if (is.null(bam_files)) {
     bam_files <- c(bam_ip,
@@ -227,7 +237,7 @@ scanMeripBAM <- function(bam_ip = NULL,
         flag = bam_flag,
         mapqFilter = mapq
       ),
-      RandomPrimer = random_primer
+      LibraryType = library_type
     )
 
   )

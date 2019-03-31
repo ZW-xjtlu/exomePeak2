@@ -9,12 +9,12 @@
 Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
   cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
-  table_style = c("bed", "granges"), return_grl = FALSE)
+  table_style = c("bed", "granges"))
 
 \S4method{Results}{SummarizedExomePeak}(sep, cut_off_pvalue = NULL,
   cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = TRUE,
-  table_style = c("bed", "granges"), return_grl = FALSE)
+  table_style = c("bed", "granges"))
 }
 \arguments{
 \item{sep}{A SummarizedExomePeak object.}
@@ -38,8 +38,6 @@ This argument is useful when the treated group involves the perturbation of a wr
 \item{inhibit_filter}{Remove all the filters upon on the result; Default TRUE.}
 
 \item{table_style}{Determine the style of the tsv table being returned, could be one of "bed" and "granges", the later would index the site containing multiple ranges with an id.}
-
-\item{return_grl}{TRUE to return \code{GRangesList} object rather than tables; default FALSE.}
 }
 \value{
 a data.frame containing the modification site genomic location, gene ids, statistics, and effect sizes will be returned.

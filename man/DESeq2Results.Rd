@@ -4,15 +4,22 @@
 \name{DESeq2Results}
 \alias{DESeq2Results}
 \alias{DESeq2Results}
+\alias{DESeq2Results}
 \title{Accessor to the slot \code{DESeq2Results} for the object \code{SummarizedExomePeak}.}
 \usage{
 DESeq2Results(x)
 
 \S4method{DESeq2Results}{SummarizedExomePeak}(x)
+
+\S4method{DESeq2Results}{SummarizedExomePeak}(x) <- value
 }
 \arguments{
 \item{x}{A \code{SummarizedExomePeak} object.}
+
+\item{x}{A \code{SummarizedExomePeak} object.}
 }
 \value{
+A data.frame.
+
 A data.frame.
 }

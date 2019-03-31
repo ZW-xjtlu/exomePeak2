@@ -5,6 +5,10 @@
 #' @details The function conduct exome level peak calling based on the read alignment results and the transcript annotations.
 #'
 #' @param merip_bams a \code{MeripBamFileList} object.
+#' @param mode a character for the scope of peak calling on genome, can be one in "exon", "full_transcript", and "whole_genome".
+#'
+#' If mode == "whole_genome", the size of the genome is recommended to be less than 1e7.
+#'
 #' @param txdb a \code{TxDb} object, it can also be a single character string such as "hg19" which is processed by \code{\link{makeTxDbFromUCSC}}.
 #' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence, alternatively it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
 #' @param gene_anno a string, which specifies a gene annotation GFF/GTF file if available, default: NA.
@@ -42,7 +46,7 @@
 #'
 #'
 #' @seealso \code{\link{exomePeakCalling}}
-#' @importFrom GenomicAlignments summarizeOverlaps
+#' @import GenomicAlignments
 #' @importFrom Rsamtools asMates
 #' @import GenomicRanges
 #' @import BiocParallel
@@ -61,7 +65,7 @@ setMethod("exomePeakCalling",
                    txdb = NULL,
                    bsgenome = NULL,
                    glm_type = c("DESeq2", "NB", "poisson"),
-                   background = c("mclust", "m6Aseq_prior", "manual", "all"),
+                   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                    manual_background = NULL,
                    gene_annot = NULL,
                    mod_annot = NULL,
@@ -77,7 +81,6 @@ setMethod("exomePeakCalling",
                    parallel = FALSE,
                    bp_param = NULL
           ) {
-
 
             ######################################################
             #                  Parameter check                   #
@@ -104,7 +107,7 @@ setMethod("exomePeakCalling",
 
             if (is.null(bsgenome)) {
               warning(
-                "Missing bsgenome argument, peak calling without GC content correction.",
+                "Missing bsgenome argument, peak calling without GC content correction...",
                 call. = FALSE,
                 immediate. = TRUE
               )
@@ -114,7 +117,7 @@ setMethod("exomePeakCalling",
               txdb <- makeTxDbFromGFF(gene_annot)
             } else {
               if (is.null(txdb)) {
-                stop("Missing transcript annotation, please provide TxDb object or GFF/GTF file.")
+                stop("Missing transcript annotation, please provide TxDb object or GFF/GTF file...")
               }
 
               if (!is(txdb, "TxDb")) {
@@ -166,9 +169,9 @@ setMethod("exomePeakCalling",
                 param = Parameter(merip_bams),
                 mode = "Union",
                 inter.feature = FALSE,
-                preprocess.reads = reads_five_POS,
+                preprocess.reads = ifelse((LibraryType(merip_bams) == "1st_strand"), reads_five_POS_rev, reads_five_POS),
                 singleEnd = !any(asMates(merip_bams)),
-                ignore.strand = RandomPrimer(merip_bams),
+                ignore.strand = (LibraryType(merip_bams) == "unstranded"),
                 fragments = any(asMates(merip_bams))
               ) )
 
@@ -214,7 +217,7 @@ setMethod("exomePeakCalling",
 
               m6A_prior = F
 
-              if (background == "mclust") {
+              if (background == "Gaussian_mixture") {
                 message("Identifying background with Gaussian mixture model...")
 
                 #suppress output...
@@ -227,9 +230,9 @@ setMethod("exomePeakCalling",
                 if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                         rowData(SE_Peak_counts)$indx_bg) < 30) {
                   warning(
-                    "Background bin # < 30 using mclust, search background with m6A-seq prior...\n",
+                    "Background bin # < 30 using mclust, search background with m6A-seq prior",
                     call. = FALSE,
-                    immediate. = TRUE
+                    immediate. = FALSE
                   )
                    m6A_prior = T
                 }
@@ -272,9 +275,9 @@ setMethod("exomePeakCalling",
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                       rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
-                  "background bin # < 30 using m6A-seq prior, peak calling without background...",
+                  "background bin # < 30 using m6A-seq prior, peak calling without background",
                   call. = FALSE,
-                  immediate. = TRUE
+                  immediate. = FALSE
                 )
                 rowData(SE_Peak_counts)$indx_bg = T
               }
@@ -374,10 +377,9 @@ setMethod("exomePeakCalling",
                 param = Parameter(merip_bams),
                 mode = "Union",
                 inter.feature = FALSE,
-                preprocess.reads = reads_five_POS,
-                #The reads are counted by the 5' POS
+                preprocess.reads = ifelse((LibraryType(merip_bams) == "1st_strand"), reads_five_POS_rev, reads_five_POS),
                 singleEnd = !any(asMates(merip_bams)),
-                ignore.strand = RandomPrimer(merip_bams),
+                ignore.strand = (LibraryType(merip_bams) == "unstranded"),
                 fragments = any(asMates(merip_bams))
               ) )
 
@@ -450,9 +452,9 @@ setMethod("exomePeakCalling",
                 param = Parameter(merip_bams),
                 mode = "Union",
                 inter.feature = FALSE,
-                preprocess.reads = reads_five_POS,
+                preprocess.reads = ifelse((LibraryType(merip_bams) == "1st_strand"), reads_five_POS_rev, reads_five_POS),
                 singleEnd = !any(asMates(merip_bams)),
-                ignore.strand = RandomPrimer(merip_bams),
+                ignore.strand = (LibraryType(merip_bams) == "unstranded"),
                 fragments = any(asMates(merip_bams))
               )
 

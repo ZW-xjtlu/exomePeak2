@@ -10,32 +10,32 @@
 \title{Exome peak calling and quatification of MeRIP-seq datasets.}
 \usage{
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
-  glm_type = c("DESeq2", "NB", "poisson"), background = c("mclust",
-  "m6Aseq_prior", "manual", "all"), manual_background = NULL,
-  gene_annot = NULL, mod_annot = NULL, fragment_length = 100,
-  binding_length = 25, step_length = binding_length, pc_count_cutoff = 5,
-  gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
-  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
-  bp_param = NULL)
+  glm_type = c("DESeq2", "NB", "poisson"),
+  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  manual_background = NULL, gene_annot = NULL, mod_annot = NULL,
+  fragment_length = 100, binding_length = 25,
+  step_length = binding_length, pc_count_cutoff = 5, gc_count_cutoff = 50,
+  p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0,
+  peak_width = fragment_length/2, parallel = FALSE, bp_param = NULL)
 
 exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   bam_treated_input = NULL, txdb = NULL, bsgenome = NULL,
   genome_assembly = NA, gene_annot = NULL, mod_annot = NULL,
-  paired_end = FALSE, random_primer = TRUE, fragment_length = 100,
-  binding_length = 25, step_length = binding_length,
-  peak_width = fragment_length/2, pc_count_cutoff = 5,
-  gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
-  logFC_cutoff = 0, parallel = FALSE, background = c("mclust",
-  "m6Aseq_prior", "manual", "all"), glm_type = c("DESeq2", "poisson", "NB"),
-  LFC_shrinkage = c("apeglm", "ashr", "Gaussian", "none"),
-  export_results = TRUE, export_format = c("tsv", "BED", "RDS"),
-  table_style = c("bed", "granges"), save_plot_GC = TRUE,
-  save_plot_analysis = FALSE, save_plot_name = "ep2",
+  paired_end = FALSE, library_type = c("unstranded", "1st_strand",
+  "2nd_strand"), fragment_length = 100, binding_length = 25,
+  step_length = binding_length, peak_width = fragment_length/2,
+  pc_count_cutoff = 5, gc_count_cutoff = 50, p_cutoff = NULL,
+  p_adj_cutoff = 0.05, logFC_cutoff = 0, parallel = FALSE,
+  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  glm_type = c("DESeq2", "poisson", "NB"), LFC_shrinkage = c("apeglm",
+  "ashr", "Gaussian", "none"), export_results = TRUE,
+  export_format = c("tsv", "BED", "RDS"), table_style = c("bed", "granges"),
+  save_plot_GC = TRUE, save_plot_analysis = FALSE, save_plot_name = "ep2",
   save_dir = "exomePeak2_output")
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
   txdb = NULL, bsgenome = NULL, glm_type = c("DESeq2", "NB", "poisson"),
-  background = c("mclust", "m6Aseq_prior", "manual", "all"),
+  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL, gene_annot = NULL, mod_annot = NULL,
   fragment_length = 100, binding_length = 25,
   step_length = binding_length, pc_count_cutoff = 5, gc_count_cutoff = 50,
@@ -91,6 +91,10 @@ The background regions used in this senario will be the disjoint exon regions of
 \item{width_cutoff}{a positive integer of the minimum width for the merged peaks; default \code{fragment_length} .}
 
 \item{merip_bams}{a \code{MeripBamFileList} object.}
+
+\item{mode}{a character for the scope of peak calling on genome, can be one in "exon", "full_transcript", and "whole_genome".
+
+If mode == "whole_genome", the size of the genome is recommended to be less than 1e7.}
 
 \item{txdb}{a \code{TxDb} object, it can also be a single character string such as "hg19" which is processed by \code{\link{makeTxDbFromUCSC}}.}
 

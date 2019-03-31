@@ -5,7 +5,8 @@
 \title{Scan the BAM files of a MeRIP-seq experiment.}
 \usage{
 scanMeripBAM(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
-  bam_treated_input = NULL, paired_end = FALSE, random_primer = TRUE,
+  bam_treated_input = NULL, paired_end = FALSE,
+  library_type = c("unstranded", "1st_strand", "2nd_strand"),
   index_bam = TRUE, bam_files = NULL, design_ip = NULL,
   design_treatment = NULL, mapq = 30L, isSecondaryAlignment = FALSE,
   isNotPassingQualityControls = FALSE, isDuplicate = FALSE, isPaired = NA,
@@ -24,7 +25,13 @@ If the dataset does not contain the extra design of treatment (such as the pertu
 
 \item{paired_end}{a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.}
 
-\item{random_primer}{a logical value indicating whether the library used is strand specific, default to be FALSE.}
+\item{library_type}{The library type for the RNA-seq protocal, can be one in "unstranded", "1st_strand", and "2nd_strand"; default "unstranded".
+
+unstranded: The RNA-seq library is not strand specific, i.e. both the strands generated during the first and the second strand sythesis are sequenced; example: Standard Illumina.
+
+1st_strand: The first strand specific RNA-seq library, only the strand generated during the first strand sythesis is sequenced; example: dUTP, NSR, NNSR.
+
+2nd_strand: The second strand specific RNA-seq library, only the strand generated during the second strand sythesis is sequenced; example: Ligation, Standard SOLiD.}
 
 \item{index_bam}{a logical value indicating whether to sort and index BAM automatically if the bam index is not found; default TRUE.
 

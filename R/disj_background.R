@@ -3,7 +3,8 @@
 #' @param mod_gr A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).
 #' @param txdb A \code{TxDb} object that define the transcript mod_gration.
 #' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.
-#' @param m6Aseq_background A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
+#' @param background_bins A Granges object for background binds.
+#' @param background_types A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
 #' @param distance_5p A numeric value of the length of the transcript starting region; default 200.
 #' @param rename_mod Whether to rename the returned modification sites, default = FALSE.
 #' @return A \code{GRangesList} object.
@@ -23,7 +24,7 @@ disj_background <- function(mod_gr,
                             txdb,
                             cut_off_num = 30,
                             background_bins = NULL,
-                            background_types = c("mclust", "m6Aseq_prior", "manual", "all"),
+                            background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                             control_width = 50,
                             rename_mod = FALSE) {
 
@@ -115,7 +116,7 @@ disj_background <- function(mod_gr,
 
     #Return background control as total exons
 
-    warning("Not enough exon regions as control, the background used is the total exon.\n",
+    warning("Not enough control regions, use total exon as background",
             call. = FALSE)
 
     control_ranges = unlist(exbyug)

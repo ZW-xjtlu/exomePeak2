@@ -12,7 +12,7 @@
 #'
 #' @param cut_off_pvalue A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.
 #'
-#' @param cut_off_padj A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.05.
+#' @param cut_off_padj A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.2.
 #'
 #' @param cut_off_log2FC A non negative number indicating the log2 fold change cutoff of the exported result,
 #'
@@ -51,12 +51,13 @@ setMethod("exportResults",
                    format = c("tsv", "BED", "RDS"),
                    save_dir = "exomePeak2_output",
                    cut_off_pvalue = NULL,
-                   cut_off_padj = 0.05,
+                   cut_off_padj = 0.2,
                    cut_off_log2FC = 0,
                    min_num_of_positive = 30,
                    expected_direction = "both",
                    inhibit_filter = FALSE,
                    table_style = c("bed", "granges")) {
+
             if (!dir.exists(save_dir)) {
               dir.create(save_dir)
             }
@@ -98,7 +99,7 @@ setMethod("exportResults",
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
                 Padj_cut = cut_off_padj,
-                Min_mod = min_num_of_positive
+                Min_mod = min(min_num_of_positive, nrow(DESeq2Results(sep)))
               )
 
               #In case of no sites are reported, export all the p values that are not NA
@@ -238,7 +239,7 @@ setMethod("exportResults",
                     "blockStarts"
                   )
 
-                  result_df$geneID <- result_gr$gene_id
+                  result_df$geneID <- sapply( result_grl, function(x) x$gene_id[1] )
 
                   mcols(result_grl) <-
                     mcols(result_grl)[,!colnames(mcols(result_grl)) %in% "score"]

@@ -28,7 +28,7 @@ Please check \code{\link{lfcShrink}} for more information.}
 \description{
 This function conducts a second round of RNA differential modification inference based on an interactive generalized linear model of negative binomial distribution.
 
-The differential modification analysis is performed using the following design:
+The differential modification analysis is performed with the following design:
 
 log2(Q) = intercept + I(Treatment) + I(IP) + I(IP):I(Treatment).
 
@@ -36,5 +36,5 @@ The statistics returned is calculated based on the coefficient estimate of the i
 
 The resulting RNA differential modification level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
 
-By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in \link{apeglm}.
+By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage with a Couchey prior, which is defined in \link{apeglm}.
 }

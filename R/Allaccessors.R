@@ -18,7 +18,7 @@ setMethod("Parameter",
             return(x@Parameter)
           })
 
-#' @title Accessor to the slot \code{RandomPrimer} for the object \code{MeripBamFileList}.
+#' @title Accessor to the slot \code{LibraryType} for the object \code{MeripBamFileList}.
 #'
 #' @param x a \code{MeripBamFileList} object.
 #'
@@ -26,16 +26,16 @@ setMethod("Parameter",
 #'
 #' @docType methods
 #'
-#' @name RandomPrimer
+#' @name LibraryType
 #'
-#' @rdname RandomPrimer
+#' @rdname LibraryType
 #'
 #' @export
 #'
-setMethod("RandomPrimer",
+setMethod("LibraryType",
           "MeripBamFileList",
           function(x) {
-            return(x@RandomPrimer)
+            return(x@LibraryType)
           })
 
 
@@ -67,9 +67,9 @@ setMethod("GCsizeFactors",
 #'
 #' @docType methods
 #'
-#' @name GCsizeFactors<-
+#' @name GCsizeFactors
 #'
-#' @rdname GCsizeFactors<-
+#' @rdname GCsizeFactors
 #'
 #' @export
 #'
@@ -108,9 +108,9 @@ setMethod("DESeq2Results",
 #'
 #' @docType methods
 #'
-#' @name DESeq2Results<-
+#' @name DESeq2Results
 #'
-#' @rdname DESeq2Results<-
+#' @rdname DESeq2Results
 #'
 #' @export
 #'

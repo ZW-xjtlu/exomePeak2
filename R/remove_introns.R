@@ -46,20 +46,29 @@ remove_introns <- function(gr_bins, grl_exbg){
 
   #for some reason, disjoin is slow for huge granges list.
 
-  chunk_num = 1e5
-  index_start = 1
-  for(i in 1: ceiling( length(bins_contain_introns)/chunk_num )) {
-  Indx <- index_start: min(i*chunk_num, length(bins_contain_introns))
-  bins_contain_introns[Indx] <- disjoin(bins_contain_introns[Indx])
-  index_start = i*chunk_num + 1
-  }
+  if(length(bins_contain_introns) == 0) {
 
-  #Remove the introns from those GRanges list.
-  bins_contain_introns <- unlist(bins_contain_introns)
-  bins_contain_introns <- subsetByOverlaps(bins_contain_introns,
-                                           introns_granges,
-                                           type = "equal",invert = TRUE)
-  indx_non_introns <- which( !1:length(gr_bins) %in% indx_Hitted_bins )
+    bins_intron_removed <- gr_bins
+    mcols(bins_intron_removed) <- NULL
+    bins_intron_removed$gene_id <- names(grl_exbg)[gr_bins$transcriptsHits]
+    return(bins_intron_removed)
+
+  }else{
+    chunk_num = 1e5
+    index_start = 1
+    for(i in seq_len(ceiling( length(bins_contain_introns)/chunk_num ))) {
+      Indx <- index_start: min(i*chunk_num, length(bins_contain_introns))
+      bins_contain_introns[Indx] <- disjoin(bins_contain_introns[Indx])
+      index_start = i*chunk_num + 1
+    }
+
+    #Remove the introns from those GRanges list.
+    bins_contain_introns <- unlist(bins_contain_introns)
+    bins_contain_introns <- subsetByOverlaps(bins_contain_introns,
+                                             introns_granges,
+                                             type = "equal",invert = TRUE)
+    indx_non_introns <- which( !seq_along(gr_bins) %in% indx_Hitted_bins )
+
   bins_without_granges <- gr_bins[indx_non_introns]
   mcols(bins_without_granges) <- NULL
   names(bins_without_granges) <- indx_non_introns
@@ -77,4 +86,5 @@ remove_introns <- function(gr_bins, grl_exbg){
   names(bins_intron_removed) <- names(gr_bins)[as.integer( names(bins_intron_removed) )]
 
   return(bins_intron_removed)
+  }
 }

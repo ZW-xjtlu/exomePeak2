@@ -4,15 +4,22 @@
 \name{GCsizeFactors}
 \alias{GCsizeFactors}
 \alias{GCsizeFactors}
+\alias{GCsizeFactors}
 \title{Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.}
 \usage{
 GCsizeFactors(x)
 
 \S4method{GCsizeFactors}{SummarizedExomePeak}(x)
+
+\S4method{GCsizeFactors}{SummarizedExomePeak}(x) <- value
 }
 \arguments{
 \item{x}{A \code{SummarizedExomePeak} object.}
+
+\item{x}{A \code{SummarizedExomePeak} object.}
 }
 \value{
+A matrix.
+
 A matrix.
 }

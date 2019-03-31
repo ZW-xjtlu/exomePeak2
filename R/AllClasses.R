@@ -9,7 +9,7 @@
 setClass(
   Class = "MeripBamFileList",
   slots = list(Parameter = "ScanBamParam",
-               RandomPrimer = "logical"),
+               LibraryType = "character"),
   contains = "BamFileList"
 )
 

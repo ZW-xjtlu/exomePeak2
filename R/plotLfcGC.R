@@ -141,20 +141,19 @@ p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
                  subtitle = save_pdf_prefix) +
             xlim(c(0.2,0.9))
 
-if(!is.null( save_pdf_prefix )){
+if(!is.null( save_pdf_prefix )) {
 
   if(!dir.exists(save_dir)) {
     dir.create(save_dir)
   }
 
-suppressMessages( ggsave(
-                         file.path(save_dir, paste0(save_pdf_prefix, "_lfc_GC.pdf")),
-                         p1,
-                         width = 4.5,
-                         height = 3) )
+ggsave(file.path(save_dir,
+                 paste0(save_pdf_prefix, "_lfc_GC.pdf")),
+                 p1,
+                 width = 4.5,
+                height = 3)
 
 }
-
 
 return(p1)
 

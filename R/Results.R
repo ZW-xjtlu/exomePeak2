@@ -95,7 +95,7 @@ setMethod("Results",
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
                 Padj_cut = cut_off_padj,
-                Min_mod = min_num_of_positive,
+                Min_mod = min(min_num_of_positive,nrow(DESeq2Results(sep))),
                 Exp_dir = expected_direction
               )
 
@@ -201,7 +201,7 @@ setMethod("Results",
                 "blockStarts"
               )
 
-              result_df$geneID <- result_gr$gene_id
+              result_df$geneID <- sapply( result_grl , function(x) x$gene_id[1] )
 
               mcols(result_grl) <-
                 mcols(result_grl)[, !colnames(mcols(result_grl)) %in% "score"]

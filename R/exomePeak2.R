@@ -69,7 +69,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        gene_annot = NULL,
                        mod_annot = NULL,
                        paired_end = FALSE,
-                       random_primer = TRUE,
+                       library_type = c("unstranded", "1st_strand", "2nd_strand"),
                        fragment_length = 100,
                        binding_length = 25,
                        step_length = binding_length,
@@ -80,7 +80,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        p_adj_cutoff = 0.05,
                        logFC_cutoff = 0,
                        parallel = FALSE,
-                       background = c("mclust", "m6Aseq_prior", "manual", "all"),
+                       background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                        glm_type = c("DESeq2","poisson","NB"),
                        LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),
                        export_results = TRUE,
@@ -137,12 +137,6 @@ if(!is.null(gene_annot)) {
 
 if(!is.null(bsgenome)) {
   bsgenome <- getBSgenome(bsgenome)
-} else {
-  warning(
-    "Missing bsgenome argument, peak calling and quantification without GC content correction.",
-    call. = FALSE,
-    immediate. = TRUE
-  )
 }
 
 #Check the completeness of the genome annotation
@@ -153,7 +147,7 @@ bam_input = bam_input,
 bam_treated_ip = bam_treated_ip,
 bam_treated_input = bam_treated_input,
 paired_end = paired_end,
-random_primer = random_primer
+library_type = library_type
 )
 
 sep <- exomePeakCalling(merip_bams = merip_bam_lst,
@@ -185,15 +179,30 @@ if(any(sep$design_Treatment)){
   message("Differential modification analysis with interactive GLM...")
   sep <- glmDM(sep, LFC_shrinkage = LFC_shrinkage)
 } else {
-  message("Peak refinement with updated GLM offsets...")
+  message("Calculating peak statistics with updated GLM offsets...")
   sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage)
 }
 
+if( export_results ) {
+
+  message("Saving peak statistics in tabular format...")
+
+  exportResults(sep,
+                format = export_format,
+                inhibit_filter = !is.null( mod_annot ),
+                table_style = table_style,
+                save_dir = save_dir)
+}
+
 if( !is.null(bsgenome) & save_plot_GC ) {
-message("Generating plots for GC content bias assessments...")
+message("Saving plots for GC content bias assessments...")
+
+suppressMessages(
 plotLfcGC(sep = sep,
           save_pdf_prefix = save_plot_name,
           save_dir = save_dir)
+)
+
 }
 
 
@@ -222,17 +231,6 @@ if (save_plot_analysis) {
 plotReadsGC(sep = sep,
             save_pdf_prefix = save_plot_name,
             save_dir = save_dir)
-}
-
-if( export_results ) {
-
-message("Saving results in tabular format...")
-
-exportResults(sep,
-              format = export_format,
-              inhibit_filter = !is.null( mod_annot ),
-              table_style = table_style,
-              save_dir = save_dir)
 }
 
 return(sep)

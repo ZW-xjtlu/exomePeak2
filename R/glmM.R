@@ -12,10 +12,10 @@
 #'
 #' @param ... Optional arguments passed to \code{\link{DESeq}}
 #'
-#' @description This function conduct a second round of RNA modification level quantification using generalized linear model estimates of the
+#' @description This function conduct a second round of RNA modification level quantification with generalized linear model estimates of the
 #' neative binomial distribution. The RNA modification level is quantified as the log2 IP to input fold change.
 #'
-#' By default, the modification level estimates will undergoes emperical Bayes shrinkage using a Couchey prior, which is defined in the package \link{apeglm}.
+#' By default, the modification level estimates will undergoes emperical Bayes shrinkage with a Couchey prior, which is defined in the package \link{apeglm}.
 #'
 #' @import SummarizedExperiment
 #'
@@ -49,15 +49,15 @@ setMethod("glmM",
   }
 
   if(glm_type == "poisson") {
-    message("Peak refinement using poisson GLM...")
+    message("Calculating peak statistics with poisson GLM...")
   }
 
   if(glm_type == "NB") {
-    message("Peak refinement using NB GLM...")
+    message("Calculating peak statistics with NB GLM...")
   }
 
   if(glm_type == "DESeq2") {
-    message("Peak refinement using DESeq2...")
+    message("Calculating peak statistics with DESeq2...")
   }
 
 
