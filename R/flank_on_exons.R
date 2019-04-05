@@ -68,7 +68,7 @@ flank_on_exons <- function(grl,
 
   rm(bins_on_tx)
 
-  bins_on_genome <- remove_introns(bins_on_genome,exBygene)
+  bins_on_genome <- trim( remove_introns(bins_on_genome,exBygene) )
 
   return(bins_on_genome)
 

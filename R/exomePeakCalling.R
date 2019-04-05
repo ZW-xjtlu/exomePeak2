@@ -275,7 +275,7 @@ setMethod("exomePeakCalling",
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                       rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
-                  "background bin # < 30 using m6A-seq prior, peak calling without background",
+                  "Background bin # < 30 using m6A-seq prior, peak calling without background",
                   call. = FALSE,
                   immediate. = FALSE
                 )
@@ -339,12 +339,12 @@ setMethod("exomePeakCalling",
 
               #Flank the peaks
 
-              gr_mod_flanked <- flank_on_exons(
+              gr_mod_flanked <- suppressWarnings( flank_on_exons(
                 grl = grl_mod,
                 flank_length = fragment_length - binding_length,
                 txdb = txdb,
                 index_flank = FALSE
-              )
+              ) )
 
               #Set control regions with background disjoint by peaks
 

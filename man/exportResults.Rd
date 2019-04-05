@@ -3,7 +3,6 @@
 \docType{methods}
 \name{exportResults}
 \alias{exportResults}
-\alias{exportResults}
 \title{Export the modification / differential modification sites}
 \usage{
 exportResults(sep, format = c("txt", "BED", "RDS"),
@@ -12,8 +11,8 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
 
-\S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv", "BED",
-  "RDS"), save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
+\S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv",
+  "BED", "RDS"), save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
   cut_off_padj = 0.2, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
@@ -54,4 +53,7 @@ This argument is useful when the treated group involves the perturbation of a wr
 }
 \value{
 a file containing the modification site genomic location, gene ids, statistics, and effect sizes will be created under the current working directory.
+}
+\description{
+Export the modification / differential modification sites
 }

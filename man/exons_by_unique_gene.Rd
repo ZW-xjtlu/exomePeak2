@@ -13,3 +13,6 @@ exons_by_unique_gene(txdb)
 A \code{GRangesList} object, each element in it corresponds to GRanges of the reduced exons of an unique gene,
 the name corresponds to the original gene with .integer indexed if they have exons on different strands and chromosomes.
 }
+\description{
+Extracting exons by the corresponding genes that are on the same chromosomes and strand.
+}

@@ -3,7 +3,6 @@
 \docType{methods}
 \name{LibraryType}
 \alias{LibraryType}
-\alias{LibraryType}
 \title{Accessor to the slot \code{LibraryType} for the object \code{MeripBamFileList}.}
 \usage{
 LibraryType(x)
@@ -15,4 +14,7 @@ LibraryType(x)
 }
 \value{
 a logical vector.
+}
+\description{
+Accessor to the slot \code{LibraryType} for the object \code{MeripBamFileList}.
 }

@@ -9,8 +9,8 @@ scanMeripBAM(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   library_type = c("unstranded", "1st_strand", "2nd_strand"),
   index_bam = TRUE, bam_files = NULL, design_ip = NULL,
   design_treatment = NULL, mapq = 30L, isSecondaryAlignment = FALSE,
-  isNotPassingQualityControls = FALSE, isDuplicate = FALSE, isPaired = NA,
-  isProperPair = NA, hasUnmappedMate = NA, ...)
+  isNotPassingQualityControls = FALSE, isDuplicate = FALSE,
+  isPaired = NA, isProperPair = NA, hasUnmappedMate = NA, ...)
 }
 \arguments{
 \item{bam_ip}{a character vector of the BAM file directories for the IP samples.}

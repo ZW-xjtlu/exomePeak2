@@ -3,17 +3,17 @@
 \docType{methods}
 \name{normalizeGC}
 \alias{normalizeGC}
-\alias{normalizeGC}
 \title{Estimation of the GC content normalization factors.}
 \usage{
 normalizeGC(sep, bsgenome = "hg19", txdb = "hg19", gene_annot = NULL,
-  fragment_length = 100, binding_length = 25, feature = c("background",
-  "all"), qtnorm = FALSE, effective_GC = FALSE)
+  fragment_length = 100, binding_length = 25,
+  feature = c("background", "all"), qtnorm = FALSE,
+  effective_GC = FALSE)
 
 \S4method{normalizeGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
   txdb = NULL, gene_annot = NULL, fragment_length = 100,
-  binding_length = 25, feature = c("background", "all"), qtnorm = TRUE,
-  effective_GC = FALSE)
+  binding_length = 25, feature = c("background", "all"),
+  qtnorm = TRUE, effective_GC = FALSE)
 }
 \arguments{
 \item{sep}{a \code{summarizedExomePeak} object.}

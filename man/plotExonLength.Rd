@@ -3,14 +3,14 @@
 \docType{methods}
 \name{plotExonLength}
 \alias{plotExonLength}
-\alias{plotExonLength}
 \title{Plot the exon length distribution of the peaks}
 \usage{
 plotExonLength(sep, txdb = NULL, save_pdf_prefix = NULL,
   include_control_regions = TRUE, save_dir = ".")
 
 \S4method{plotExonLength}{SummarizedExomePeak}(sep, txdb = NULL,
-  save_pdf_prefix = NULL, include_control_regions = TRUE, save_dir = ".")
+  save_pdf_prefix = NULL, include_control_regions = TRUE,
+  save_dir = ".")
 }
 \arguments{
 \item{sep}{a SummarizedExomePeaks object.}

@@ -4,9 +4,7 @@
 \docType{methods}
 \name{exomePeakCalling}
 \alias{exomePeakCalling}
-\alias{exomePeakCalling}
 \alias{exomePeak2}
-\alias{exomePeakCalling}
 \title{Exome peak calling and quatification of MeRIP-seq datasets.}
 \usage{
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
@@ -14,9 +12,10 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL, gene_annot = NULL, mod_annot = NULL,
   fragment_length = 100, binding_length = 25,
-  step_length = binding_length, pc_count_cutoff = 5, gc_count_cutoff = 50,
-  p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0,
-  peak_width = fragment_length/2, parallel = FALSE, bp_param = NULL)
+  step_length = binding_length, pc_count_cutoff = 5,
+  gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
+  bp_param = NULL)
 
 exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   bam_treated_input = NULL, txdb = NULL, bsgenome = NULL,
@@ -29,18 +28,20 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   glm_type = c("DESeq2", "poisson", "NB"), LFC_shrinkage = c("apeglm",
   "ashr", "Gaussian", "none"), export_results = TRUE,
-  export_format = c("tsv", "BED", "RDS"), table_style = c("bed", "granges"),
-  save_plot_GC = TRUE, save_plot_analysis = FALSE, save_plot_name = "ep2",
-  save_dir = "exomePeak2_output")
+  export_format = c("tsv", "BED", "RDS"), table_style = c("bed",
+  "granges"), save_plot_GC = TRUE, save_plot_analysis = FALSE,
+  save_plot_name = "ep2", save_dir = "exomePeak2_output",
+  peak_calling_mode = c("exon", "full_tx", "whole_genome"))
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
-  txdb = NULL, bsgenome = NULL, glm_type = c("DESeq2", "NB", "poisson"),
-  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, gene_annot = NULL, mod_annot = NULL,
-  fragment_length = 100, binding_length = 25,
-  step_length = binding_length, pc_count_cutoff = 5, gc_count_cutoff = 50,
-  p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0,
-  peak_width = fragment_length/2, parallel = FALSE, bp_param = NULL)
+  txdb = NULL, bsgenome = NULL, glm_type = c("DESeq2", "NB",
+  "poisson"), background = c("Gaussian_mixture", "m6Aseq_prior",
+  "manual", "all"), manual_background = NULL, gene_annot = NULL,
+  mod_annot = NULL, fragment_length = 100, binding_length = 25,
+  step_length = binding_length, pc_count_cutoff = 5,
+  gc_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
+  bp_param = NULL)
 }
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object.}
@@ -84,7 +85,11 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
 \item{save_plot_name}{a character for the name of the plots being saved; Default "ep2".}
 
 \item{save_dir}{a character for the name of the directory being saved; Default "exomePeak2_output".
-Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
+Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).}
+
+\item{peak_calling_mode}{a character, which can be one in "exon", "full_tx", and "whole_genome"; default "exon".
+
+The choice "full_tx" and "whole_genome" requires large memories for large genome size.
 
 The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.}
 

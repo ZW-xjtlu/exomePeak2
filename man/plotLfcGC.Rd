@@ -3,16 +3,15 @@
 \docType{methods}
 \name{plotLfcGC}
 \alias{plotLfcGC}
-\alias{plotLfcGC}
 \title{Plot the relationship between the GLM log2FC estimates and GC content.}
 \usage{
 plotLfcGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
   fragment_length = 100, binding_length = 25, effective_GC = FALSE,
   save_dir = ".")
 
-\S4method{plotLfcGC}{SummarizedExomePeak}(sep, bsgenome = NULL, txdb = NULL,
-  save_pdf_prefix = NULL, fragment_length = 100, binding_length = 25,
-  effective_GC = FALSE, save_dir = ".")
+\S4method{plotLfcGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
+  txdb = NULL, save_pdf_prefix = NULL, fragment_length = 100,
+  binding_length = 25, effective_GC = FALSE, save_dir = ".")
 }
 \arguments{
 \item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}

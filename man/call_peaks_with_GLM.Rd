@@ -4,8 +4,8 @@
 \alias{call_peaks_with_GLM}
 \title{Statistical Inference with DESeq package based on the provided reads count for exomic bins.}
 \usage{
-call_peaks_with_GLM(SE_bins, glm_type = c("poisson", "NB", "DESeq2"), txdb,
-  count_cutoff = 5, p_cutoff = NULL, p_adj_cutoff = 0.05,
+call_peaks_with_GLM(SE_bins, glm_type = c("poisson", "NB", "DESeq2"),
+  txdb, count_cutoff = 5, p_cutoff = NULL, p_adj_cutoff = 0.05,
   logFC_cutoff = 0)
 }
 \arguments{

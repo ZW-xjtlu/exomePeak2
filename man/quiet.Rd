@@ -9,3 +9,6 @@ quiet(x)
 \arguments{
 \item{x}{any R expression.}
 }
+\description{
+Silencing unwanted function output.
+}

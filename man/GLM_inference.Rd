@@ -5,8 +5,8 @@
 \title{Statistical Inference with DESeq2 on IP over input fold change.}
 \usage{
 GLM_inference(SE_bins, glm_type = c("poisson", "NB", "DESeq2"),
-  p_cutoff = NULL, p_adj_cutoff = 0.05, count_cutoff = 5, logFC_mod = 0,
-  min_mod_number = floor(nrow(SE_bins) * 0.001))
+  p_cutoff = NULL, p_adj_cutoff = 0.05, count_cutoff = 5,
+  logFC_mod = 0, min_mod_number = floor(nrow(SE_bins) * 0.001))
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,

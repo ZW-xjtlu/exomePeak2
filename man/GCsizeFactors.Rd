@@ -3,8 +3,6 @@
 \docType{methods}
 \name{GCsizeFactors}
 \alias{GCsizeFactors}
-\alias{GCsizeFactors}
-\alias{GCsizeFactors}
 \title{Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.}
 \usage{
 GCsizeFactors(x)
@@ -22,4 +20,9 @@ GCsizeFactors(x)
 A matrix.
 
 A matrix.
+}
+\description{
+Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
+
+Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
 }

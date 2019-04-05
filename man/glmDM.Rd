@@ -3,14 +3,14 @@
 \docType{methods}
 \name{glmDM}
 \alias{glmDM}
-\alias{glmDM}
 \title{Quantification and inference of the RNA differential modification values based on the generalized linear models of negative binomial distribution.}
 \usage{
 glmDM(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
   LFC_shrinkage = c("apeglm", "ashr"), ...)
 
-\S4method{glmDM}{SummarizedExomePeak}(sep, glm_type = c("auto", "poisson",
-  "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "ashr", "none"), ...)
+\S4method{glmDM}{SummarizedExomePeak}(sep, glm_type = c("auto",
+  "poisson", "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "ashr",
+  "none"), ...)
 }
 \arguments{
 \item{sep}{is a summarizedExomePeak object.}

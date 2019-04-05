@@ -3,7 +3,6 @@
 \docType{methods}
 \name{estimateSeqDepth}
 \alias{estimateSeqDepth}
-\alias{estimateSeqDepth}
 \title{Estimation of the size factors used in peaks quantification.}
 \usage{
 estimateSeqDepth(sep, from = c("Control", "Modification", "Both"), ...)

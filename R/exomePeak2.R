@@ -37,6 +37,9 @@
 #' @param save_plot_name a character for the name of the plots being saved; Default "ep2".
 #' @param save_dir a character for the name of the directory being saved; Default "exomePeak2_output".
 #' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
+#' @param peak_calling_mode a character, which can be one in "exon", "full_tx", and "whole_genome"; default "exon".
+#'
+#' The choice "full_tx" and "whole_genome" requires large memories for large genome size.
 #'
 #' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
 #'
@@ -89,8 +92,9 @@ exomePeak2 <- function(bam_ip = NULL,
                        save_plot_GC = TRUE,
                        save_plot_analysis = FALSE,
                        save_plot_name = "ep2",
-                       save_dir = "exomePeak2_output"
-                      ){
+                       save_dir = "exomePeak2_output",
+                       peak_calling_mode = c("exon", "full_tx", "whole_genome")
+                      ) {
 
 LFC_shrinkage <- match.arg(LFC_shrinkage)
 
@@ -101,6 +105,8 @@ table_style <- match.arg(table_style)
 background <- match.arg(background)
 
 glm_type <- match.arg(glm_type)
+
+peak_calling_mode <- match.arg(peak_calling_mode)
 
 if(!is.null(bam_treated_ip) & LFC_shrinkage == "Gaussian"){
   stop("Gaussian prior is not applicable for differential modification analysis.")
@@ -133,6 +139,9 @@ if(!is.null(gene_annot)) {
   }
 }
 
+if( peak_calling_mode != "exon") {
+   txdb <- convertTxDb(txdb, type = peak_calling_mode)
+}
 
 
 if(!is.null(bsgenome)) {

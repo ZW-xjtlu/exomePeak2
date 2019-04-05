@@ -50,10 +50,10 @@ flank_length <- ifelse( all_sb,
                         floor( fragment_length - binding_length / 2 ),
                         fragment_length - binding_length )
 
-flanked_mod_gr <- flank_on_exons( grl = grl_mod,
-                                  flank_length = flank_length,
-                                  txdb = txdb,
-                                  index_flank = FALSE )
+flanked_mod_gr <-  suppressWarnings( flank_on_exons( grl = grl_mod,
+                                                     flank_length = flank_length,
+                                                     txdb = txdb,
+                                                     index_flank = FALSE ) )
 
 flanked_mod_grl <- split( flanked_mod_gr, names( flanked_mod_gr ) )
 

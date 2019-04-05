@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plotGuitar}
 \alias{plotGuitar}
-\alias{plotGuitar}
 \title{Plot the transcript distribution of the peaks}
 \usage{
 plotGuitar(sep, txdb = NULL, save_pdf_prefix = NULL,

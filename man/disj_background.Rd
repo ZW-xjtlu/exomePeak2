@@ -5,8 +5,8 @@
 \title{Find the background of the user provided mod_gration.}
 \usage{
 disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
-  background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  control_width = 50, rename_mod = FALSE)
+  background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual",
+  "all"), control_width = 50, rename_mod = FALSE)
 }
 \arguments{
 \item{mod_gr}{A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).}
@@ -31,4 +31,7 @@ If the resulting ranges have less number and width compared with what defined in
 the exon regions of txdb will be returned as the background.
 
 The second portion is the restructed user provided mod_gration with gene id mod_grated.
+}
+\description{
+Find the background of the user provided mod_gration.
 }

@@ -70,7 +70,7 @@
 #'identical(MeRIP_Seq_Alignment, MeRIP_Seq_Alignment2)
 #'
 #' @seealso \code{\link{merip_peak_calling}}
-#' @importFrom Rsamtools BamFileList ScanBamParam scanBamFlag path indexBam sortBam index<-
+#' @import Rsamtools
 #' @export
 
 scanMeripBAM <- function(bam_ip = NULL,

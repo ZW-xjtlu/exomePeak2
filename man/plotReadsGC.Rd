@@ -3,12 +3,11 @@
 \docType{methods}
 \name{plotReadsGC}
 \alias{plotReadsGC}
-\alias{plotReadsGC}
 \title{Plot the relationship between GC content and reads abundance.}
 \usage{
-plotReadsGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
-  fragment_length = 100, binding_length = 25, effective_GC = FALSE,
-  pool_replicates = FALSE, save_dir = ".")
+plotReadsGC(sep, bsgenome = NULL, txdb = NULL,
+  save_pdf_prefix = NULL, fragment_length = 100, binding_length = 25,
+  effective_GC = FALSE, pool_replicates = FALSE, save_dir = ".")
 
 \S4method{plotReadsGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
   txdb = NULL, save_pdf_prefix = NULL, fragment_length = 100,

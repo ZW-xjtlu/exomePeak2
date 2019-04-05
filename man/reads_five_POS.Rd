@@ -9,3 +9,6 @@ reads_five_POS(reads, width = 1, fix = "start", ...)
 \arguments{
 \item{reads}{a GAlignmentList object.}
 }
+\description{
+extract reads five prime POS.
+}

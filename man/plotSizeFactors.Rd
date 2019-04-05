@@ -3,10 +3,12 @@
 \docType{methods}
 \name{plotSizeFactors}
 \alias{plotSizeFactors}
-\alias{plotSizeFactors}
 \title{plot the size factors using different strategies.}
 \usage{
 plotSizeFactors(sep)
 
 \S4method{plotSizeFactors}{SummarizedExomePeak}(sep)
+}
+\description{
+plot the size factors using different strategies.
 }

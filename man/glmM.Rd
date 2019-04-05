@@ -3,15 +3,14 @@
 \docType{methods}
 \name{glmM}
 \alias{glmM}
-\alias{glmM}
 \title{Quantification of RNA modification log2 fold change values based on the generalized linear models of negative binomial distribution.}
 \usage{
 glmM(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
   LFC_shrinkage = c("apeglm", "Gaussian", "ashr"), ...)
 
 \S4method{glmM}{SummarizedExomePeak}(sep, glm_type = c("auto", "poisson",
-  "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "Gaussian", "ashr", "none"),
-  ...)
+  "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "Gaussian", "ashr",
+  "none"), ...)
 }
 \arguments{
 \item{sep}{is a summarizedExomePeak object.}

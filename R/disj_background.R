@@ -35,7 +35,7 @@ disj_background <- function(mod_gr,
 
   mcols(mod_gr) <- NULL
 
-  mod_gr_tmp <- unlist(mod_gr)
+  mod_gr_tmp <- mod_gr
 
   ######################################################
   #              Prior background of m6A               #

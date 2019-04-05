@@ -3,7 +3,6 @@
 \docType{methods}
 \name{Results}
 \alias{Results}
-\alias{Results}
 \title{Export the modification / differential modification sites}
 \usage{
 Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
@@ -41,4 +40,7 @@ This argument is useful when the treated group involves the perturbation of a wr
 }
 \value{
 a data.frame containing the modification site genomic location, gene ids, statistics, and effect sizes will be returned.
+}
+\description{
+Export the modification / differential modification sites
 }

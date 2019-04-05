@@ -3,8 +3,6 @@
 \docType{methods}
 \name{DESeq2Results}
 \alias{DESeq2Results}
-\alias{DESeq2Results}
-\alias{DESeq2Results}
 \title{Accessor to the slot \code{DESeq2Results} for the object \code{SummarizedExomePeak}.}
 \usage{
 DESeq2Results(x)
@@ -22,4 +20,9 @@ DESeq2Results(x)
 A data.frame.
 
 A data.frame.
+}
+\description{
+Accessor to the slot \code{DESeq2Results} for the object \code{SummarizedExomePeak}.
+
+Accessor to the slot \code{DESeq2Results} for the object \code{SummarizedExomePeak}.
 }

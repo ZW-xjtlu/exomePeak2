@@ -22,3 +22,6 @@ the exon regions of txdb will be returned as the background.
 
 The second portion is the restructed user provided annotation with gene id annotated.
 }
+\description{
+Replace the control regions with user provided background.
+}

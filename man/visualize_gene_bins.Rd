@@ -16,3 +16,6 @@ visualize_gene_bins(gene_id, gr_bins, grl_gene)
 \value{
 A Gvis diagram.
 }
+\description{
+A convenient function to help you quickly visualize the exome bins on a gene.
+}

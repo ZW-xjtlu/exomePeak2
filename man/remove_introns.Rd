@@ -14,3 +14,6 @@ remove_introns(gr_bins, grl_exbg)
 \value{
 A \code{GRangesList} object with the same length of \code{gr_bins}, each list element corresponds to the original GRanges after the removal of introns.
 }
+\description{
+Removing introns from a provided GRanges object.
+}

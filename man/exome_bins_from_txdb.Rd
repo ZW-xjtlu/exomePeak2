@@ -18,3 +18,6 @@ A \code{GRanges} object of exonic bins with the names corresponding to the index
 A metadata colomn named gene_id is attached to indicate its gene ID, which is provided by the txdb object.
 The gene IDs are divided into multiple ones if the gene contains exons that belong to different chromosomes and strands.
 }
+\description{
+extract exome bins for peak calling given a txdb object
+}
