@@ -114,7 +114,7 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 
 The results include the bed file and tsv table including modification statistics, and they will be saved under the folder named `exomePeak2_output`.
 
-### 3. Peak Calling and Visualization in Multiple Steps
+### 5. Peak Calling and Visualization in Multiple Steps
 
 The exomePeak2 package can achieve peak calling and statistic calculation using multiple functions.
 
