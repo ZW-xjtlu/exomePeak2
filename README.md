@@ -2,7 +2,6 @@ ExomePeak2 Usage Guide
 ========================
 
 ### 1. Package Installation
------------------------
 
 First, install the exomePeak2 package using the following command.
 
@@ -44,7 +43,6 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 ```
 
 ### 2. Peak Calling with ExomePeak2
--------------------------------
 
 The code below could conduct peak calling on exon regions defined by the `TxDb` object.
 
@@ -66,7 +64,6 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 The results including the bed and tsv table for modification peaks will be saved automatically under a folder named by `exomePeak2_output`.
 
 ### 3. Differential Modification Analysis with ExomePeak2
------------------------------------------------------
 
 The code below could conduct differential modification analysis on exon regions defined by the `TxDb` object.
 
@@ -94,7 +91,6 @@ exomePeak2(bam_ip = c("IP_control_rep1.bam",
 The results include a bed file and a tsv file including the (differential) modification peaks, the files will be saved automatically under a folder named by `exomePeak2_output`.
 
 ### 4. Quantification and Statistical Analysis with Single Based Modification Annotation
-------------------------------------------------------------------------------------
 
 exomePeak2 supports the modification quantification and differential modification analysis with single based modification annotation. The single based resolution data can usually provide a more accurate mapping on modification locations compared with the peaks called directly from MeRIP-seq data sets.
 
@@ -119,7 +115,6 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 The results include the same bed file and tsv table including modification statistics, and they will be saved under the folder named `exomePeak2_output`.
 
 ### 3. Peak Calling and Visualization in Multiple Steps
----------------------------------------------------
 
 The exomePeak2 package can achieve peak calling and statistic calculation using multiple functions.
 
@@ -157,31 +152,31 @@ SummarizedExomePeaks <- normalizeGC(SummarizedExomePeaks)
 SummarizedExomePeaks <- glmM(SummarizedExomePeaks) 
 ```
 
-4.  Alternatively, If the treated IP and input bam files are provided above, `glmDM` function could be used to generate differential modification analysis on modification Peaks with interactive GLM.
+Alternatively, If the treated IP and input bam files are provided above, `glmDM` function could be used to generate differential modification analysis on modification Peaks with interactive GLM.
 
 ``` r
 SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 ```
 
-5.  Generate plots for the relationship between GC content and reads abundence.
+4.  Generate plots for the relationship between GC content and reads abundence.
 
 ``` r
 plotReadsGC(SummarizedExomePeaks)
 ```
 
-6.  Generate plots for the relationship between GC content and log2 Fold Change.
+5.  Generate plots for the relationship between GC content and log2 Fold Change.
 
 ``` r
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-7.  Export the modification peaks and their statistics with user defined format.
+6.  Export the modification peaks and their statistics with user defined format.
 
 ``` r
 exportResults(SummarizedExomePeaks, format = "BED") 
 ```
 
-8.  Generate other plots of the genomic features analysis
+7.  Generate other plots of the genomic features analysis
 
 Plot the densities exons lengths mapped to modification peaks.
 
@@ -196,7 +191,6 @@ plotGuitar(SummarizedExomePeaks, txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
 ```
 
 ### Contact
----------------------
 
 Please contact the maintainer of exomePeak2 if you encounter any problems:
 
@@ -207,7 +201,6 @@ Please visit the github page of exomePeak2:
 <https://github.com/ZhenWei10/exomePeak2>
 
 ### Session Info
----------------------
 
 ``` r
 sessionInfo()
