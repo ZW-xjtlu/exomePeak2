@@ -192,11 +192,11 @@ plotGuitar(SummarizedExomePeaks, txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 ### Contact
 
-Please contact the maintainer of exomePeak2 if you encounter any problems:
+Contact the maintainer of exomePeak2 if you encounter any problems:
 
 **ZhenWei**: <zhen.wei@xjtlu.edu.cn>
 
-Please visit the github page of exomePeak2:
+Visit the github page of exomePeak2 for source code information:
 
 <https://github.com/ZhenWei10/exomePeak2>
 
