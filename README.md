@@ -112,7 +112,7 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
            mod_annot = SBm6A_hg19_gr)
 ```
 
-The results include the same bed file and tsv table including modification statistics, and they will be saved under the folder named `exomePeak2_output`.
+The results include the bed file and tsv table including modification statistics, and they will be saved under the folder named `exomePeak2_output`.
 
 ### 3. Peak Calling and Visualization in Multiple Steps
 
@@ -176,7 +176,7 @@ plotLfcGC(SummarizedExomePeaks)
 exportResults(SummarizedExomePeaks, format = "BED") 
 ```
 
-7.  Generate other plots of the genomic features analysis
+7.  Generate other plots of the genomic features analysis.
 
 Plot the densities exons lengths mapped to modification peaks.
 
