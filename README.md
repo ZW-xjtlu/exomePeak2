@@ -132,7 +132,7 @@ MeRIP_Seq_Alignment <- scan_merip_bams(
   ) 
 ```
 
-1.  Conduct peak calling analysis on exons using the provided bam files.
+2.  Conduct peak calling analysis on exons using the provided bam files.
 
 ``` r
 SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment,
@@ -140,13 +140,13 @@ SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment,
                                          bsgenome = Hsapiens) 
 ```
 
-2.  Estimate size factors that are required for GC content bias correction.
+3.  Estimate size factors that are required for GC content bias correction.
 
 ``` r
 SummarizedExomePeaks <- normalizeGC(SummarizedExomePeaks)
 ```
 
-3.  Report statistics of modification Peaks using Generalized Linear Model (GLM).
+4.  Report statistics of modification Peaks using Generalized Linear Model (GLM).
 
 ``` r
 SummarizedExomePeaks <- glmM(SummarizedExomePeaks) 
@@ -158,25 +158,25 @@ Alternatively, If the treated IP and input bam files are provided above, `glmDM`
 SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 ```
 
-4.  Generate plots for the relationship between GC content and reads abundence.
+5.  Generate plots for the relationship between GC content and reads abundence.
 
 ``` r
 plotReadsGC(SummarizedExomePeaks)
 ```
 
-5.  Generate plots for the relationship between GC content and log2 Fold Change.
+6.  Generate plots for the relationship between GC content and log2 Fold Change.
 
 ``` r
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-6.  Export the modification peaks and their statistics with user defined format.
+7.  Export the modification peaks and their statistics with user defined format.
 
 ``` r
 exportResults(SummarizedExomePeaks, format = "BED") 
 ```
 
-7.  Generate other plots of the genomic features analysis.
+8.  Generate other plots of the genomic features analysis.
 
 Plot the densities exons lengths mapped to modification peaks.
 
