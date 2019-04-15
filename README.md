@@ -2,7 +2,7 @@ ExomePeak2 Usage Guide
 ========================
 
 1. Package Installation
----------------------
+-----------------------
 
 First, install the exomePeak2 package using the following command.
 
@@ -44,7 +44,7 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 ```
 
 2. Peak Calling with ExomePeak2
----------------------
+-------------------------------
 
 The code below could conduct peak calling on exon regions defined by the `TxDb` object.
 
@@ -66,7 +66,7 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 The results including the bed and tsv table for modification peaks will be saved automatically under a folder named by `exomePeak2_output`.
 
 3. Differential Modification Analysis with ExomePeak2
----------------------
+-----------------------------------------------------
 
 The code below could conduct differential modification analysis on exon regions defined by the `TxDb` object.
 
@@ -94,7 +94,7 @@ exomePeak2(bam_ip = c("IP_control_rep1.bam",
 The results include a bed file and a tsv file including the (differential) modification peaks, the files will be saved automatically under a folder named by `exomePeak2_output`.
 
 4. Quantification and Statistical Analysis with Single Based Modification Annotation
----------------------
+------------------------------------------------------------------------------------
 
 exomePeak2 supports the modification quantification and differential modification analysis with single based modification annotation. The single based resolution data can usually provide a more accurate mapping on modification locations compared with the peaks called directly from MeRIP-seq data sets.
 
@@ -119,7 +119,7 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 The results include the same bed file and tsv table including modification statistics, and they will be saved under the folder named `exomePeak2_output`.
 
 3. Peak Calling and Visualization in Multiple Steps
----------------------
+---------------------------------------------------
 
 The exomePeak2 package can achieve peak calling and statistic calculation using multiple functions.
 
