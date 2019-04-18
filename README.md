@@ -1,7 +1,7 @@
 ExomePeak2 Usage Guide
 ================
 
-###1. Package Installation
+### 1. Package Installation
 
 First, install the exomePeak2 package with the following command.
 
@@ -42,7 +42,7 @@ library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(BSgenome.Hsapiens.UCSC.hg19)
 ```
 
-###2. Peak Calling with ExomePeak2
+### 2. Peak Calling with ExomePeak2
 
 The code below could conduct peak calling on exon regions defined by the `TxDb` object.
 
@@ -63,7 +63,7 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 
 The results include a BED file and a TSV table for the modification peaks, the files will be saved automatically under a folder named by `exomePeak2_output`.
 
-###3. Differential Modification Analysis with ExomePeak2
+### 3. Differential Modification Analysis with ExomePeak2
 
 The code below could conduct differential modification analysis on exon regions defined by the `TxDb` object.
 
@@ -90,7 +90,7 @@ exomePeak2(bam_ip = c("IP_control_rep1.bam",
 
 The results generated here include a BED file and a TSV table for the differentially modified peaks, the files will also be saved automatically under a folder named by `exomePeak2_output`.
 
-###4. Quantification and Statistical Analysis with Single Based Modification Annotation
+### 4. Quantification and Statistical Analysis with Single Based Modification Annotation
 
 exomePeak2 supports the modification quantification and differential modification analysis on single based modification annotation. The modification sites with single based resolution can provide a more accurate mapping on modification locations compared with the peaks called directly from the MeRIP-seq datasets.
 
@@ -116,7 +116,7 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 
 The results generated here include the BED file and the TSV table with rows correspond to the input annotation sites, the files will also be saved under a folder named by `exomePeak2_output`.
 
-###5. Peak Calling and Visualization in Multiple Steps
+### 5. Peak Calling and Visualization in Multiple Steps
 
 The exomePeak2 package can achieve peak calling and calculation of peak statistics using multiple functions.
 
@@ -221,7 +221,7 @@ Plot the densities of modification peaks on travis coordinate.
 plotGuitar(SummarizedExomePeaks, txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
 ```
 
-###Contact
+### Contact
 
 Please contact the maintainer of exomePeak2 if you encounter any problems:
 
@@ -231,7 +231,7 @@ Please visit the github page of exomePeak2:
 
 <https://github.com/ZhenWei10/exomePeak2>
 
-###Session Info
+### Session Info
 
 ``` r
 sessionInfo()
