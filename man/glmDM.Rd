@@ -3,38 +3,76 @@
 \docType{methods}
 \name{glmDM}
 \alias{glmDM}
-\title{Quantification and inference of the RNA differential modification values based on the generalized linear models of negative binomial distribution.}
+\title{Estimation and Inference on RNA Differential Modification Log2 Fold Changes with Generalized Linear Model.}
 \usage{
-glmDM(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
+glmDM(sep, glm_type = c("auto", "Poisson", "NB", "DESeq2"),
   LFC_shrinkage = c("apeglm", "ashr"), ...)
 
 \S4method{glmDM}{SummarizedExomePeak}(sep, glm_type = c("auto",
-  "poisson", "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "ashr",
+  "Poisson", "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "ashr",
   "none"), ...)
 }
 \arguments{
-\item{sep}{is a summarizedExomePeak object.}
+\item{sep}{a \code{\link{summarizedExomePeak}} object.}
 
-\item{glm_type}{a character, which can be one of the "auto", "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "auto".
+\item{glm_type}{a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 
-Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples.
-The poisson GLM will be applied otherwise.}
+\describe{
+\item{\strong{\code{DESeq2}}}{Fit the GLM defined in the function \code{\link{DESeq}}, which is the NB GLM with regulated estimation of the overdispersion parameters.}
 
-\item{LFC_shrinkage}{a character indicating the method for emperical bayes shrinkage on the log2 fold change estimates, can be one in "apeglm" and "ashr".
-Please check \code{\link{lfcShrink}} for more information.}
+\item{\strong{\code{NB}}}{Fit the Negative Binomial (NB) GLM.}
+
+\item{\strong{\code{Poisson}}}{Fit the Poisson GLM.}
+}
+
+By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.}
+
+\item{LFC_shrinkage}{a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "ashr", "none")}; Default \code{= "apeglm"}.
+
+see \code{\link{lfcShrink}} for more details.}
 
 \item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
 \description{
-This function conducts a second round of RNA differential modification inference based on an interactive generalized linear model of negative binomial distribution.
+\code{glmDM} perform inference and estimation on RNA differential modification log2FC.
 
-The differential modification analysis is performed with the following design:
+GLMs with interactive design between dummy variables of IP/input and Treatment/control are fitted for each peaks/sites:
 
-log2(Q) = intercept + I(Treatment) + I(IP) + I(IP):I(Treatment).
+\deqn{log2(Q) = intercept + I(Treatment) + I(IP) + I(IP)*I(Treatment)}
 
-The statistics returned is calculated based on the coefficient estimate of the interactive term I(IP):I(Treated).
+The log2FC and the associated statistics are based on the coefficient estimate of the interactive term： \eqn{I(IP)*I(Treated)}.
 
-The resulting RNA differential modification level is quantified in form of the log2 Odds ratio; i.e. log2(IP to input ratio in Treatment / IP to input ratio in Control).
+Under default setting, the returned log2FC are the RR estimates with Couchey priors defined in \code{\link{apeglm}}.
+}
+\examples{
 
-By default, the final returned log2 Odds ratio estimate will undergoes emperical Bayes shrinkage with a Couchey prior, which is defined in \link{apeglm}.
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+aln <- scanMeripBAM(
+bam_ip = c("IP_rep1.bam",
+           "IP_rep2.bam",
+           "IP_rep3.bam"),
+bam_input = c("input_rep1.bam",
+              "input_rep2.bam",
+              "input_rep3.bam"),
+bam_treated_ip = c("IP_treated_rep1.bam",
+                   "IP_treated_rep2.bam"),
+bam_treated_input = c("input_treated_rep1.bam",
+                      "input_treated_rep2.bam"),
+paired_end = TRUE
+)
+
+sep <- exomePeakCalling(merip_bams = aln,
+                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+                        bsgenome = Hsapiens)
+
+sep <- normalizeGC(sep)
+
+sep <- glmDM(sep)
+
+
+}
+\seealso{
+\code{\link{glmM}}
 }

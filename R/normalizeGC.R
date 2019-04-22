@@ -1,46 +1,77 @@
-#'@title Estimation of the GC content normalization factors.
-#'@param sep a \code{summarizedExomePeak} object.
+#'@title Estimate Normalization Factors for GC content Bias Correction.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, or it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
+#'@param sep a \code{\link{summarizedExomePeak}} object returned by \code{\link{exomePeak2}} or \code{\link{exomePeakCalling}}.
 #'
-#'@param txdb a \code{\link{TxDb}} object for the transcript annotation, or it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
+#'@param txdb a \code{\link{TxDb}} object for the transcript annotation,
+#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.
 #'
-#'@param fragment_length the expected fragment length of the sequencing library; Default 100.
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence information,
+#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.
 #'
-#'@param binding_length the expected antibody binding length of IP; Default 25.
+#'@param fragment_length a positive integer number for the expected fragment length in nucleotides; default \code{= 100}.
 #'
-#'@param feature the features used in the GC effect estimation, can be "background" and "all".
-#'If "all" is choosed, the GC effect function will be estimated using both the methylated and the background regions,
-#'this choice will force the resulting modification signals independent of GC content, which could be more robust when the background is incorrectly estimated.
-#'However,it is possibably biased if the modification level is biologically dependent on GC content;
-#'Default "background".
+#'@param binding_length a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.
 #'
-#'@param qtnorm A logical indicating wheather perform quantile normalization after the GC effect estimation； default TRUE.
-#'Quantile normalization will be conducted on IP and input samples seperately to account for the biological difference between the marginal distributions of IP and input.
+#'@param feature a \code{character} specifies the region used in the GC effect estimation, can be one in \code{c("background", "all")}; default \code{"background"}.
 #'
-#'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
+#'\describe{
+#'  \item{\strong{\code{background}}}{
+#'  The GC content linear effect and the conditional quantile normalization will be performed only on the background regions.
+#'  }
 #'
-#'@description This function estimates the feature specific size factors in order to correct the GC content artifacts,
-#'the GC content biases can contributed to the following sources of variabilities in MeRIP-seq data:
+#'  \item{\strong{\code{all}}}{ The GC content and quantile correction factors will be estimated on all regions,
+#' this choice will force the resulting modification signals independent on GC content, which could result in the complete removal of the effect of GC content on further analysis.
 #'
-#'1. Technical variablities between replicates.
+#' This method will introduce bias if the modification level is biologically dependent on GC content, but it should be applied when the background is hard to estimate.
+#' }
+#' }
 #'
-#'2. Batch effects between different laboratories.
+#'@param qtnorm a \code{logical} of whether to perform conditional quantile normalization after the GC content linear effect estimation； default \code{= TRUE}.
 #'
-#'Using the default option, the GC normalization estimates the dependency between reads count and GC content only on the not methylated region,
-#'This strategy can avoid the quantification biases for the modifications that biologically favor extream GC content.
+#'Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#'The GC normalization can results in an improvement of accuracy for most published m6A-seq data,
-#'and it is particullarly recommended if you want to compare the data between different laboratory conditions.
+#'@param effective_gc a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.
 #'
-#'@details By default, the sequencing depth factor used is the column size factors obtained by \code{\link{estimateSeqDepth}},
-#' if the column size factors are not provided, it will be estimated using the default method defined in \code{\link{estimateSeqDepth}}.
+#'@description \code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variatio when calculating the modification peak statistics.
 #'
-#'@return a \code{summarizedExomePeak} object containing the feature specific size factors.
+#'
+#'@details
+#'PCR amplication bias related to GC content is a major source of technical variation in RNA-seq.
+#'The GC content biases are usually correlated within the same laboratory environment, and this will result in the batch effect between different studies.
+#'
+#'Under the default condition, the GC content correction factors are estimated on the background regions that have no modification signals.
+#'This strategy can avoid the quantification biases for RNA modifications that are biologically dependent on the GC content of the underlying sequences.
+#'
+#'The GC content normalization can result in an improvement of peak accuracy for most published m6A-seq data,
+#'and it is particullarly recommended if you want to compare the quantifications on methylation levels between different laboratory conditions.
+#'
+#'@return a \code{summarizedExomePeak} object with the updated slot \code{GCsizeFactors}.
+#'
+#'@examples
+#'
+#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#'
+#'aln <- scanMeripBAM(
+#'bam_ip = c("IP_rep1.bam",
+#'           "IP_rep2.bam",
+#'           "IP_rep3.bam"),
+#'bam_input = c("input_rep1.bam",
+#'              "input_rep2.bam",
+#'              "input_rep3.bam"),
+#'paired_end = TRUE
+#')
+#'
+#'sep <- exomePeakCalling(merip_bams = aln,
+#'                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+#'                        bsgenome = Hsapiens)
+#'
+#'sep <- normalizeGC(sep)
 #'
 #'@import SummarizedExperiment
 #'@importFrom BSgenome getBSgenome
 #'@docType methods
+#'@seealso \code{\link{estimateSeqDepth}}
 #'
 #'@name normalizeGC
 #'
@@ -53,7 +84,7 @@ setMethod("normalizeGC",
                         function(sep,
                                  bsgenome = NULL,
                                  txdb = NULL,
-                                 gene_annot = NULL,
+                                 gff_dir = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
                                  feature = c("background", "all"),
@@ -74,8 +105,8 @@ if(is.null(bsgenome)) {
 stop("Require BSgenome objects in GC size factor estimaton.")
 }
 
-if(!is.null(gene_annot)) {
-  txdb <- makeTxDbFromGFF(gene_annot)
+if(!is.null(gff_dir)) {
+  txdb <- makeTxDbFromGFF(gff_dir)
 } else {
   if (is.null(txdb)) {
     stop("require transcript annotation in either GTF/GFF file or txdb object.")

@@ -2,7 +2,7 @@
 #'
 #' @param SE_bins a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,
 #'  which is a character vector with values of "IP" and "input". The column helps to index the design of MeRIP-Seq experiment.
-#' @param glm_type a character, which can be one of  the "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "poisson".
+#' @param glm_type a character, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
 #' The DESeq2 method is only recommended for high power experiments with more than 3 biological replicates for both IP and input.
 #' @param p_cutoff a numeric value of the p value cutoff used in DESeq inference.
 #' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq2 inference; if provided, values in \code{p_cutoff} will be ignored.
@@ -18,10 +18,9 @@
 #'
 #' @importFrom DESeq2 DESeqDataSet estimateDispersions estimateSizeFactors nbinomWaldTest results
 #'
-#' @export
 #'
 GLM_inference <- function(SE_bins,
-                          glm_type = c("poisson", "NB", "DESeq2"),
+                          glm_type = c("Poisson", "NB", "DESeq2"),
                           p_cutoff = NULL,
                           p_adj_cutoff = 0.05,
                           count_cutoff = 5,
@@ -107,7 +106,7 @@ GLM_inference <- function(SE_bins,
   #             Generalized Linear Model               #
   ######################################################
 
-  if (glm_type == "poisson") {
+  if (glm_type == "Poisson") {
     dispersions(dds) = 0
   }
 
@@ -134,7 +133,7 @@ GLM_inference <- function(SE_bins,
     if (sum(sig_indx) < min_mod_number) {
       warning(
         "The number of positive bins is too small using DESeq2 under current filter,
-        the filter is changed into p value < 0.05 and log2FC > 0, please consider using poisson GLM.",
+        the filter is changed into p value < 0.05 and log2FC > 0, please consider using Poisson GLM.",
         call. = FALSE,
         immediate. = TRUE
       )
@@ -155,7 +154,7 @@ GLM_inference <- function(SE_bins,
     if (sum(sig_indx) < min_mod_number) {
       warning(
         'The number of positive bins is smaller than the underlimit using DESeq2 method under current filter,
-        the filter is changed into p value < 0.05 & log2FC > 0, please consider set glm_type = "poisson"',
+        the filter is changed into p value < 0.05 & log2FC > 0, please consider set glm_type = "Poisson"',
         call. = FALSE,
         immediate. = TRUE
       )

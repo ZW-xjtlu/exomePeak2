@@ -3,26 +3,18 @@
 \docType{methods}
 \name{GCsizeFactors}
 \alias{GCsizeFactors}
-\title{Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.}
+\title{Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.}
 \usage{
 GCsizeFactors(x)
 
 \S4method{GCsizeFactors}{SummarizedExomePeak}(x)
-
-\S4method{GCsizeFactors}{SummarizedExomePeak}(x) <- value
 }
 \arguments{
-\item{x}{A \code{SummarizedExomePeak} object.}
-
 \item{x}{A \code{SummarizedExomePeak} object.}
 }
 \value{
 A matrix.
-
-A matrix.
 }
 \description{
-Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
-
-Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
+Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
 }

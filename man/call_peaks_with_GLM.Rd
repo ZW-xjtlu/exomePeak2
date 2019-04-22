@@ -4,14 +4,14 @@
 \alias{call_peaks_with_GLM}
 \title{Statistical Inference with DESeq package based on the provided reads count for exomic bins.}
 \usage{
-call_peaks_with_GLM(SE_bins, glm_type = c("poisson", "NB", "DESeq2"),
+call_peaks_with_GLM(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
   txdb, count_cutoff = 5, p_cutoff = NULL, p_adj_cutoff = 0.05,
   logFC_cutoff = 0)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP/input + treated/control.}
 
-\item{glm_type}{a character, which can be one of  the "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "poisson".
+\item{glm_type}{a character, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
 The DESeq2 method is only recommended for high power experiments with more than 3 biological replicates for both IP and input.}
 
 \item{txdb}{the txdb object that is necessary for the calculation of the merge of the peaks.}

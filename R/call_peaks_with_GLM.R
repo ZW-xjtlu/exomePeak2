@@ -11,7 +11,7 @@
 #'
 #' @param SE_bins a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP/input + treated/control.
 #'
-#' @param glm_type a character, which can be one of  the "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "poisson".
+#' @param glm_type a character, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
 #' The DESeq2 method is only recommended for high power experiments with more than 3 biological replicates for both IP and input.
 #'
 #' @param txdb the txdb object that is necessary for the calculation of the merge of the peaks.
@@ -28,10 +28,9 @@
 #'
 #' @import SummarizedExperiment
 #'
-#' @export
 #'
 call_peaks_with_GLM <- function(SE_bins,
-                                glm_type = c("poisson", "NB", "DESeq2"),
+                                glm_type = c("Poisson", "NB", "DESeq2"),
                                 txdb,
                                 count_cutoff = 5,
                                 p_cutoff = NULL,

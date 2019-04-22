@@ -19,7 +19,6 @@
 #'@import SummarizedExperiment
 #'@import mclust
 #'
-#'@export
 #'
 mclust_bg <- function(se_peak_counts,
                       alpha = 1){

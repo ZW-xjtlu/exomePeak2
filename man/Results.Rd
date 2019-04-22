@@ -3,7 +3,7 @@
 \docType{methods}
 \name{Results}
 \alias{Results}
-\title{Export the modification / differential modification sites}
+\title{Report the (Differential) Modification Peaks/Sites and their associated LFC Statistics}
 \usage{
 Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
   cut_off_log2FC = 0, min_num_of_positive = 30,
@@ -16,31 +16,79 @@ Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
   table_style = c("bed", "granges"))
 }
 \arguments{
-\item{sep}{A SummarizedExomePeak object.}
+\item{sep}{a \code{\link{SummarizedExomePeak}} object.}
 
-\item{cut_off_pvalue}{A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.}
+\item{cut_off_pvalue}{a \code{numeric} value for the p value cutoff in the exported result; Default \code{= NULL}.}
 
-\item{cut_off_padj}{A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.05.}
+\item{cut_off_padj}{a \code{numeric} value for the adjusted p value cutoff in the exported result; Default \code{= 0.05}.}
 
-\item{cut_off_log2FC}{A non negative number indicating the log2 fold change cutoff of the exported result,
-only sites with log2 IP/input fold change bigger than this value are kept; Default 0.
+\item{cut_off_log2FC}{a \code{numeric} value for the log2 fold change (LFC) cutoff of the exported result,
+only the sites with abs(LFC) larger than this value are kept; Default \code{= 0}.}
 
-For differential modification analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.}
+\item{min_num_of_positive}{a \code{numeric} value for the minimum number of reported sites.
+If the number of remaining sites is less than this number after the filter, additional sites will be reported by the increasing order of the p value to meet this number.}
 
-\item{min_num_of_positive}{The minimum number of reported sites.
-If the sites is filtered less than this number by its p values or effect sizes,
-more sites will be reported by the order of the p value until it reaches this number.}
+\item{expected_direction}{a \code{character} for the expected direction of the differential modification, could be one in \code{c("hyper", "hypo", "both")}.
 
-\item{expected_direction}{The expected differential modification direction, could be "hyper", "hypo", or "both".
-This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; default "both".}
+\describe{
+ \item{\strong{\code{hyper}}}{
+ only report the peaks/sites with interactive LFC > 0.
+ }
 
-\item{inhibit_filter}{Remove all the filters upon on the result; Default TRUE.}
+ \item{\strong{\code{hypo}}}{
+ only report the peaks/sites with interactive LFC < 0.
+ }
 
-\item{table_style}{Determine the style of the tsv table being returned, could be one of "bed" and "granges", the later would index the site containing multiple ranges with an id.}
+ \item{\strong{\code{both}}}{
+ report the peaks/sites in both directions.
+ }
+}
+
+This argument is useful when the treated group involves the perturbation of a known writer or eraser protein; Default "both".}
+
+\item{inhibit_filter}{a \code{logical} for whether to remove all the filters, this option is useful when quantification on single based site annotation; Default \code{= FALSE}.}
+
+\item{table_style}{a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+
+\describe{
+ \item{\strong{\code{bed}}}{
+ The genomic locations in the table are represented by BEDgraph style.
+ }
+
+ \item{\strong{\code{granges}}}{
+ The genomic locations in the table are represented by GRanges style.
+ }
+}}
 }
 \value{
-a data.frame containing the modification site genomic location, gene ids, statistics, and effect sizes will be returned.
+a \code{data.frame} containing the genomic locations of modification peaks/sites, gene ids, and their statistics.
 }
 \description{
-Export the modification / differential modification sites
+Report the (Differential) Modification Peaks/Sites and their associated LFC Statistics
+}
+\examples{
+
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+aln <- scanMeripBAM(
+bam_ip = c("IP_rep1.bam",
+           "IP_rep2.bam",
+           "IP_rep3.bam"),
+bam_input = c("input_rep1.bam",
+              "input_rep2.bam",
+              "input_rep3.bam"),
+paired_end = TRUE
+)
+
+sep <- exomePeakCalling(merip_bams = aln,
+                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+                        bsgenome = Hsapiens)
+
+sep <- normalizeGC(sep)
+
+sep <- glmM(sep)
+
+exportResults(sep)
+
 }

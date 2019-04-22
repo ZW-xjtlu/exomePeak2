@@ -3,31 +3,71 @@
 \docType{methods}
 \name{glmM}
 \alias{glmM}
-\title{Quantification of RNA modification log2 fold change values based on the generalized linear models of negative binomial distribution.}
+\title{Estimation and Inference on IP/input Log2 Fold Changes with Generalized Linear Model.}
 \usage{
-glmM(sep, glm_type = c("auto", "poisson", "NB", "DESeq2"),
+glmM(sep, glm_type = c("auto", "Poisson", "NB", "DESeq2"),
   LFC_shrinkage = c("apeglm", "Gaussian", "ashr"), ...)
 
-\S4method{glmM}{SummarizedExomePeak}(sep, glm_type = c("auto", "poisson",
+\S4method{glmM}{SummarizedExomePeak}(sep, glm_type = c("auto", "Poisson",
   "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "Gaussian", "ashr",
   "none"), ...)
 }
 \arguments{
-\item{sep}{is a summarizedExomePeak object.}
+\item{sep}{a \code{summarizedExomePeak} object.}
 
-\item{glm_type}{a character, that specify the type of generalized linear model used in peak calling; The argument can be one of the "auto", "poisson", "NB", and "DESeq2". Default to be "auto".
+\item{glm_type}{a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 
-Under the default setting, the DESeq2 GLM of NB is used on experiments with at least 3 biological replicates for both IP and input samples of the treatment and control.
-The poisson GLM will be applied in the other cases.}
+\describe{
+\item{\strong{\code{DESeq2}}}{Fit the GLM defined in the function \code{\link{DESeq}}, which is the NB GLM with regulated estimation of the overdispersion parameters.}
 
-\item{LFC_shrinkage}{a character indicating the method for emperical bayes shrinkage on the log2 fold change estimates, can be one in "apeglm", "Gaussian", "ashr", or "none".
-Please check \code{\link{lfcShrink}} for more information.}
+\item{\strong{\code{NB}}}{Fit the Negative Binomial (NB) GLM.}
+
+\item{\strong{\code{Poisson}}}{Fit the Poisson GLM.}
+}
+
+By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.}
+
+\item{LFC_shrinkage}{a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "Gaussian", "ashr", "none")}; Default \code{= "apeglm"}.
+
+see \code{\link{lfcShrink}} for more details.}
 
 \item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
 \description{
-This function conduct a second round of RNA modification level quantification with generalized linear model estimates of the
-neative binomial distribution. The RNA modification level is quantified as the log2 IP to input fold change.
+\code{glmM} performs inference and estimation on IP/input log2FC.
 
-By default, the modification level estimates will undergoes emperical Bayes shrinkage with a Couchey prior, which is defined in the package \link{apeglm}.
+GLMs with the design of an indicator of IP samples are fitted for each peaks/sites:
+
+\deqn{log2(Q) = intercept + I(IP)}
+
+The log2FC and the associated statistics are based on the coefficient estimate of the dummy variable term： \eqn{I(IP)}.
+
+Under default setting, the returned log2FC are the RR estimates with Couchey priors defined in \code{\link{apeglm}}.
+}
+\examples{
+
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+aln <- scanMeripBAM(
+bam_ip = c("IP_rep1.bam",
+           "IP_rep2.bam",
+           "IP_rep3.bam"),
+bam_input = c("input_rep1.bam",
+              "input_rep2.bam",
+              "input_rep3.bam"),
+paired_end = TRUE
+)
+
+sep <- exomePeakCalling(merip_bams = aln,
+                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+                        bsgenome = Hsapiens)
+
+sep <- normalizeGC(sep)
+
+sep <- glmDM(sep)
+
+}
+\seealso{
+\code{\link{glmDM}}
 }

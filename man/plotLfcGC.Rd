@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plotLfcGC}
 \alias{plotLfcGC}
-\title{Plot the relationship between the GLM log2FC estimates and GC content.}
+\title{Scatter plot between the GLM log2FC estimates and GC content.}
 \usage{
 plotLfcGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
   fragment_length = 100, binding_length = 25, effective_GC = FALSE,
@@ -14,28 +14,37 @@ plotLfcGC(sep, bsgenome = NULL, txdb = NULL, save_pdf_prefix = NULL,
   binding_length = 25, effective_GC = FALSE, save_dir = ".")
 }
 \arguments{
+\item{sep}{a \code{\link{summarizedExomePeak}} object.}
+
 \item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.}
 
-\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}}
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.}
 
-\item{save_pdf_prefix}{a character, if provided, a pdf file with the given name will be saved under the current directory.}
+\item{save_pdf_prefix}{a \code{character}, if provided, a pdf file with the given name will be saved under the current directory; Default \code{= NULL}.}
 
-\item{fragment_length}{the expected fragment length of the sequencing library; Default 100.}
+\item{fragment_length}{a \code{numeric} value for the expected fragment length in the RNA-seq library; Default \code{= 100}.}
 
-\item{binding_length}{the expected antibody binding length of IP; Default 25.}
+\item{binding_length}{a \code{numeric} value for the expected antibody binding length in IP samples; Default \code{= 25}.}
 
-\item{save_dir}{a character indicating the directory to save the plot; default ".".}
+\item{save_dir}{a \code{character} for the directory to save the plot; default ".".}
 
-\item{effective_gc}{whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.}
+\item{effective_gc}{a \code{logical} value of whether to calculate the weighted GC content by the probability of reads alignment; default \code{= FALSE}.}
 }
 \value{
-a ggplot object.
+a \code{ggplot} object.
 }
 \description{
-This function plot the scatter plot between GC content and the modification / differential modification levels of the modification sites.
+\code{plotLfcGC} plot the scatter plot between GC content and the (differential) modification LFCs.
 }
 \details{
-By default, this function will generate the countour of the scatter plot, and a linear regression line indicating the trend between
-GC content and log2 fold change or log2 odds ratio returned by DESeq2.
-The significant changed modification sites will be grouped and lebeled in different colours.
+By default, this function will generate a scatter plot between GC content and the log2FC value.
+The significant modification sites will be lebeled in different colours.
+}
+\examples{
+
+\dontrun{
+sep #a SummarizedExomePeak object
+plotLfcGC(sep)
+}
+
 }

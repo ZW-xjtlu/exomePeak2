@@ -2,7 +2,7 @@
 % Please edit documentation in R/scanMeripBAM.R
 \name{scanMeripBAM}
 \alias{scanMeripBAM}
-\title{Scan the BAM files of a MeRIP-seq experiment.}
+\title{Organize the BAM Files Information of a MeRIP-seq Data Set.}
 \usage{
 scanMeripBAM(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   bam_treated_input = NULL, paired_end = FALSE,
@@ -13,87 +13,83 @@ scanMeripBAM(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   isPaired = NA, isProperPair = NA, hasUnmappedMate = NA, ...)
 }
 \arguments{
-\item{bam_ip}{a character vector of the BAM file directories for the IP samples.}
+\item{bam_ip}{a \code{character} vector for the BAM file directories of the (control) IP samples.}
 
-\item{bam_input}{a character vector of the BAM file directories for the input samples.}
+\item{bam_input}{a \code{character} vector for the BAM file directories of the (control) input samples.}
 
-\item{bam_treated_ip}{a character vector of the BAM file directories for the IP samples in treated group.}
+\item{bam_treated_ip}{a \code{character} vector for the BAM file directories of the treated IP samples.}
 
-\item{bam_treated_input}{a character vector of the BAM file directories for the input samples in treated group.
+\item{bam_treated_input}{a \code{character} vector for the BAM file directories of the treated input samples.
 
-If the dataset does not contain the extra design of treatment (such as the perturbation of the regulators), please fill only the \code{BAM_ip} and \code{BAM_input} arguments.}
+If the bam files do not contain treatment group, user should only fill the arguments of \code{BAM_ip} and \code{BAM_input}.}
 
-\item{paired_end}{a logical value indicating the library types, TRUE if the read is from paired end library, otherwise it will be treated as the single end reads.}
+\item{paired_end}{a \code{logical} of whether the data comes from the Paired-End Library, \code{TRUE} if the data is Paired-End sequencing; default \code{= FALSE}.}
 
-\item{library_type}{The library type for the RNA-seq protocal, can be one in "unstranded", "1st_strand", and "2nd_strand"; default "unstranded".
+\item{library_type}{a \code{character} specifying the protocal type of the RNA-seq library, can be one in \code{c("unstranded", "1st_strand", "2nd_strand")}; default \code{= "unstranded"}.
 
-unstranded: The RNA-seq library is not strand specific, i.e. both the strands generated during the first and the second strand sythesis are sequenced; example: Standard Illumina.
+\describe{
+\item{\strong{unstranded}}{The randomly primed RNA-seq library type, i.e. both the strands generated during the first and the second strand sythesis are sequenced; example: Standard Illumina.}
+\item{\strong{1st_strand}}{The first strand-specific RNA-seq library, only the strand generated during the first strand sythesis is sequenced; examples: dUTP, NSR, NNSR.}
+\item{\strong{2nd_strand}}{The second strand-specific RNA-seq library, only the strand generated during the second strand sythesis is sequenced; examples: Ligation, Standard SOLiD.}
+}}
 
-1st_strand: The first strand specific RNA-seq library, only the strand generated during the first strand sythesis is sequenced; example: dUTP, NSR, NNSR.
+\item{index_bam}{a \code{logical} value indicating whether to sort and index BAM files automatically if the bam indexes are not found; default \code{= TRUE}.
 
-2nd_strand: The second strand specific RNA-seq library, only the strand generated during the second strand sythesis is sequenced; example: Ligation, Standard SOLiD.}
+The BAM index files will be named by adding ".bai" after the names of the corresponding BAM files.}
 
-\item{index_bam}{a logical value indicating whether to sort and index BAM automatically if the bam index is not found; default TRUE.
+\item{bam_files}{optional, a \code{character} vector for all the BAM file directories, if it is provided, the first 4 arguments above will be ignored.}
 
-The BAM index files will be named by adding ".bai" after the names of corresponding BAM files.}
+\item{design_ip}{optional, a \code{logical} vector indicating the information of IP/input, \code{TRUE} represents IP samples.}
 
-\item{bam_files}{an optional character string of all the BAM files to be analyzed, if it is provided, the first 4 arguments above will be ignored.}
+\item{design_treatment}{optional, a \code{logical} vector indicating the design of treatment/control, \code{TRUE} represents treated samples.}
 
-\item{design_ip}{an optional logical vector indicating the design of IP and input, with TRUE represents for IP.}
+\item{mapq}{a non-negative integer specifying the minimum reads mapping quality. BAM records with mapping qualities less than \code{mapq} are discarded; default \code{= 30L}.}
 
-\item{design_treatment}{an optional logical vector indicating the design of treatment and control, with TRUE represents for treated samples.}
-
-\item{mapq}{A non-negative integer specifying the minimum mapping quality to include. BAM records with mapping qualities less than mapq are discarded; default 30L.}
-
-\item{isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments that determine the sam flag filtering, inherited from \code{\link{ScanBAMParam}}.}
+\item{isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments specifying the filters on SAM FLAG scores, inherited from \code{\link{ScanBAMParam}}.}
 }
 \value{
-This function will return a list with 2 named elements: BAMList and Parameter.
+a \code{MeripBamFileList} object.
 }
 \description{
-\code{scanMeripBAM} is used to check and organize the BAM files in MeRIP-seq data before peak calling,
-the flag parameters for the filtering can be defined at this step.
+\code{scanMeripBAM} check and organize the BAM files in MeRIP-seq data before peak calling using \code{\link{exomePeakCalling}}.
+The library types of the RNA-seq and the filters such as SAM FLAG score are specified in this function.
 }
 \details{
-The function takes the input of MeRIP-seq BAM files directories.
-The provided BAM files are checked, and the design information of IP over input and treated over untreated are stored in the output.
+\code{scanMeripBAM} takes the input of the BAM file directories for the MeRIP-seq datasets.
+It first checks the completeness of the BAM files and the BAM indexes. Then, the design information of IP/input and treated/control are returned as a \code{MeripBamFileList} object.
+If the BAM file indexes are missing, the BAM files will be automatically indexed with the package \code{Rsamtools}.
 }
 \examples{
+
+###For MeRIP-seq experiment without treatment group
+
 MeRIP_Seq_Alignment <- scanMeripBAM(
-                            bam_ip = c("./bam/SRR1182619.bam",
-                                     "./bam/SRR1182621.bam",
-                                     "./bam/SRR1182623.bam"),
-                            bam_input = c("./bam/SRR1182620.bam",
-                                          "./bam/SRR1182622.bam",
-                                          "./bam/SRR1182624.bam"),
-                            bam_treated_ip = c("./bam/SRR1182603.bam",
-                                               "./bam/SRR1182605.bam"),
-                            bam_treated_input = c("./bam/SRR1182604.bam",
-                                                  "./bam/SRR1182606.bam"),
-                            paired_end = TRUE
-                            )
+  bam_ip = c("IP_rep1.bam",
+             "IP_rep2.bam",
+             "IP_rep3.bam"),
+  bam_input = c("input_rep1.bam",
+                "input_rep2.bam",
+                "input_rep3.bam"),
+  paired_end = TRUE
+)
 
-###It will provide identical result with the following arguments:
+###For MeRIP-seq experiment with treatment group
 
-MeRIP_Seq_Alignment2 <- scanMeripBAM(
-                             bam_files = c("./bam/SRR1182619.bam",
-                                           "./bam/SRR1182621.bam",
-                                           "./bam/SRR1182623.bam",
-                                           "./bam/SRR1182620.bam",
-                                           "./bam/SRR1182622.bam",
-                                           "./bam/SRR1182624.bam",
-                                           "./bam/SRR1182603.bam",
-                                           "./bam/SRR1182605.bam",
-                                           "./bam/SRR1182604.bam",
-                                           "./bam/SRR1182606.bam"),
-                             design_ip = metadata(MeRIP_Seq_Alignment[[1]])$design_IP,
-                             design_treatment = metadata(MeRIP_Seq_Alignment[[1]])$design_Treatment,
-                             paired_end = TRUE
-                             )
-
-identical(MeRIP_Seq_Alignment, MeRIP_Seq_Alignment2)
+MeRIP_Seq_Alignment <- scanMeripBAM(
+bam_ip = c("IP_rep1.bam",
+           "IP_rep2.bam",
+           "IP_rep3.bam"),
+bam_input = c("input_rep1.bam",
+              "input_rep2.bam",
+              "input_rep3.bam"),
+bam_treated_ip = c("IP_treated_rep1.bam",
+                   "IP_treated_rep2.bam"),
+bam_treated_input = c("input_treated_rep1.bam",
+                      "input_treated_rep2.bam"),
+paired_end = TRUE
+)
 
 }
 \seealso{
-\code{\link{merip_peak_calling}}
+\code{\link{exomePeakCalling}}
 }

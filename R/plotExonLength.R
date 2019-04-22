@@ -1,18 +1,18 @@
-#' @title Plot the exon length distribution of the peaks
+#' @title Plot the Distribution of the Length of Exons Overlapped by the RNA Modification Peaks/Sites
 #'
 #' @description This function plot the distribution of the exon length for peaks containing exons.
 #' @details
-#' If the SummarizedExomePeaks object contains quantification results for modification, the significantly modified peaks
+#' If the SummarizedExomePeaks object contains LFC statistics, the significantly modified peaks
 #' with IP to input log2FC > 0 and DESeq2 Wald test padj < .05 will be plotted .
 #'
-#' If the SummarizedExomePeaks object contains quantification results for differential modification, both the hyper modification
+#' If the SummarizedExomePeaks object contains interactive LFC statistics, both the hyper modification
 #' and hypo modification peaks with DESeq2 Wald test p values < .05 will be plotted.
 #'
-#' @param sep a SummarizedExomePeaks object.
-#' @param txdb a txdb object containing the transcript annotation.
-#' @param save_pdf_prefix if provided, a pdf file with the given name will be saved under the current working directory.
-#' @param include_control_regions a logical indicating whether to include the control regions or not.
-#' @param save_dir a character indicating the directory to save the plot; default ".".
+#' @param sep a \code{\link{SummarizedExomePeaks}} object.
+#' @param txdb a \code{\link{TxDb}} object containing the transcript annotation.
+#' @param save_pdf_prefix a \code{character} if provided, a pdf file with the given name will be saved under the current working directory.
+#' @param include_control_regions a \code{logical} for whether to include the control regions or not; Default \code{= TRUE}.
+#' @param save_dir a \code{character} for the directory to save the plot; Default \code{= "."}.
 #'
 #' @return a ggplot object
 #'
@@ -23,6 +23,12 @@
 #' @name plotExonLength
 #'
 #' @rdname plotExonLength
+#'
+#'\dontrun{
+#'sep #a SummarizedExomePeak object
+#'txdb #a TxDb object
+#'plotExonLength(sep,txdb)
+#'}
 #'
 #' @export
 #'

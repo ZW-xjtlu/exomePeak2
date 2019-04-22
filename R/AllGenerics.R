@@ -11,16 +11,16 @@ setGeneric("LibraryType", function(x) standardGeneric("LibraryType"))
 setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         txdb = NULL,
                                         bsgenome = NULL,
-                                        glm_type = c("DESeq2", "NB", "poisson"),
+                                        mod_annot = NULL,
+                                        glm_type = c("DESeq2", "NB", "Poisson"),
                                         background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                                         manual_background = NULL,
-                                        gene_annot = NULL,
-                                        mod_annot = NULL,
+                                        gff_dir = NULL,
                                         fragment_length = 100,
                                         binding_length = 25,
                                         step_length = binding_length,
                                         pc_count_cutoff = 5,
-                                        gc_count_cutoff = 50,
+                                        bg_count_cutoff = 50,
                                         p_cutoff = NULL,
                                         p_adj_cutoff = 0.05,
                                         logFC_cutoff = 0,
@@ -59,7 +59,7 @@ setGeneric("DESeq2Results<-", function(x,...,value) {standardGeneric("DESeq2Resu
 setGeneric("normalizeGC", function(sep,
                                        bsgenome = "hg19",
                                        txdb = "hg19",
-                                       gene_annot = NULL,
+                                       gff_dir = NULL,
                                        fragment_length = 100,
                                        binding_length = 25,
                                        feature = c("background","all"),
@@ -70,14 +70,14 @@ setGeneric("normalizeGC", function(sep,
 #' @rdname glmM
 #' @export
 setGeneric("glmM", function(sep,
-                               glm_type = c("auto","poisson", "NB", "DESeq2"),
+                               glm_type = c("auto","Poisson", "NB", "DESeq2"),
                                LFC_shrinkage = c("apeglm","Gaussian","ashr"),
                                ...) {standardGeneric("glmM")})
 
 #' @rdname glmDM
 #' @export
 setGeneric("glmDM", function(sep,
-                             glm_type = c("auto","poisson", "NB", "DESeq2"),
+                             glm_type = c("auto","Poisson", "NB", "DESeq2"),
                              LFC_shrinkage = c("apeglm","ashr"),
                              ...) {standardGeneric("glmDM")})
 

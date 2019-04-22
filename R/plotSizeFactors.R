@@ -9,6 +9,7 @@
 #'@rdname plotSizeFactors
 #'
 #'@export
+#'
 setMethod("plotSizeFactors",
           "SummarizedExomePeak",
                 function(sep){

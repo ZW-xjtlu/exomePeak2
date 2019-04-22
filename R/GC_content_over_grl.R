@@ -19,7 +19,7 @@
 #' @import GenomicRanges
 #' @importFrom S4Vectors DataFrame
 #'
-#' @export
+#'
 GC_content_over_grl <- function(bsgenome,
                                 txdb,
                                 grl,

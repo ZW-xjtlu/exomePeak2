@@ -1,32 +1,41 @@
-#' @title Plot the relationship between GC content and reads abundance.
+#' @title Plot the linear relationships between GC content and reads abundance.
 #'
-#' @description  This function plot the local regression curves of the normalized feature abundance against the local GC content levels.
+#' @description  \code{plotReadsGC} visualizes the local regression curves between the normalized reads abundance and the local GC content.
 #'
 #' @details The read abundances of both the control and the modification site regions are plotted,
 #' the read counts are normalized using the following method:
 #'
-#'  normalized feature abundance = ( ( read_count / size_factor) / region_length ) * 500
+#' \deqn{normalized_feature_abundance = ( ( read_count / size_factor) / region_length ) * 500}
 #'
-#'  By default, it will use the sequencing depth size factor defined in \code{summarizedExomePeak},
-#'  if the size factor is not found, new size factors will be estimated using the default method in \code{estimateSeqDepth}.
+#'  By default, it will use the sequencing depth size factor defined in the \code{\link{summarizedExomePeak}} object,
+#'  if the sequencing depth size factor is not found, new size factors will be estimated with the default method in \code{\link{estimateSeqDepth}}.
+#'
+#'@param sep a \code{\link{summarizedExomePeak}} object.
 #'
 #'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
 #'
 #'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
 #'
-#'@param save_pdf_prefix a character, if provided, a pdf file with the given name will be saved under the current directory.
+#'@param save_pdf_prefix a \code{character}, if provided, a pdf file with the given name will be saved under the current directory; Default \code{= NULL}.
 #'
-#'@param fragment_length the expected fragment length of the sequencing library; Default 100.
+#'@param fragment_length a \code{numeric} value for the expected fragment length in the RNA-seq library; Default \code{= 100}.
 #'
-#'@param binding_length the expected antibody binding length of IP; Default 25.
+#'@param binding_length a \code{numeric} value for the expected antibody binding length in IP samples; Default \code{= 25}.
 #'
-#'@param effective_gc whether to calculate the weighted GC content by the probability of reads alignment; default FALSE.
+#'@param effective_gc a \code{logical} value of whether to calculate the weighted GC content by the probability of reads alignment; default \code{= FALSE}.
 #'
-#'@param pool_replicates a logical indicating whether to pool the replicates in the local regression fit; default FALSE.
+#'@param pool_replicates a \code{logical} value of whether to pool the replicates in the local regression fit; default \code{= FALSE}.
 #'
-#'@param save_dir a character indicating the directory to save the plot; default ".".
+#'@param save_dir a \code{character} for the directory to save the plot; default ".".
 #'
-#'@return a ggplot object
+#'@return a \code{ggplot} object
+#'
+#'@examples
+#'
+#'\dontrun{
+#'sep #a SummarizedExomePeak object
+#'plotReadsGC(sep)
+#'}
 #'
 #'@import ggplot2
 #'@import BSgenome

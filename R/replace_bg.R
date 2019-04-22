@@ -13,7 +13,6 @@
 #'
 #' @import GenomicRanges
 #'
-#' @export
 #'
 
 replace_bg <- function(grl,

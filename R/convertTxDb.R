@@ -15,7 +15,6 @@
 #'
 #' @name convertTxDb
 #'
-#' @export
 
 convertTxDb <- function(txdb,type = c("full_tx", "whole_genome")){
 

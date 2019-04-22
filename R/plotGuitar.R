@@ -1,6 +1,6 @@
-#' @title Plot the transcript distribution of the peaks
+#' @title Plot the distribution of the peaks/sites on travis coordinate.
 #'
-#' @description  This function plot the transcript topology of RNA modification based on the provided SummarizedExomePeaks object.
+#' @description \code{plotGuitar} provides visualization of the peaks/sites' distribution on travis coordinate for the \code{\link{SummarizedExomePeaks}} object.
 #'
 #' @details
 #' If the SummarizedExomePeaks object contains quantification results for modification, the significantly modified peaks
@@ -9,14 +9,21 @@
 #' If the SummarizedExomePeaks object contains quantification results for differential modification, both the hyper modification
 #' and hypo modification peaks with DESeq2 Wald test p values < 0.05 will be plotted.
 
-#' @param sep a SummarizedExomePeaks object.
-#' @param txdb a txdb object containing the transcript annotation.
-#' @param save_pdf_prefix if provided, a pdf file with the given name will be saved under the current directory.
-#' @param include_control_regions a logical indicating whether to include the control regions or not.
+#' @param sep a \code{\link{SummarizedExomePeaks}} object.
+#' @param txdb a \code{\link{TxDb}} object containing the transcript annotation.
+#' @param save_pdf_prefix a \code{character}, if provided, a pdf file with the given name will be saved under the current directory.
+#' @param include_control_regions a \code{logical} for whether to plot the control regions together with the modification regions.
 #' @param guitar_coordinate optional, the guitar coordinate of the transcript annotation.
-#' @param save_dir a character indicating the directory to save the plot; default ".".
+#' @param save_dir optional, a \code{character} indicating the directory to save the plot; default ".".
 #'
-#' @return a ggplot object
+#' @return a \code{ggplot} object
+#'
+#' @examples
+#'\dontrun{
+#'sep #a SummarizedExomePeak object
+#'txdb #a TxDb object
+#'plotExonLength(sep,txdb)
+#'}
 #'
 #' @docType methods
 #'

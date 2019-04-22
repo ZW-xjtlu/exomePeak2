@@ -1,18 +1,57 @@
-#' @title Estimation of the size factors used in peaks quantification.
+#' @title Estimate the Sequencing Depth Size Factors for Peak Statistics Quantification.
 #'
-#' @description \code{estimateSeqDepth} estimate the sample wised size factors on exomic peaks,
-#' by default, it will use the median of the ratios to the row geometric means defined in package DESeq2.
+#' @description \code{estimateSeqDepth} estimate sequencing depth size factors for each MeRIP-seq samples.
+#' Under default setting, the sequencing depth are estimated by the robust estimator defined in package DESeq2.
+#' i.e. the median of the ratios to the row geometric means.
 #'
-#' @details The function takes the input of a summarizedExomePeak object, and it estimates the size factors based on the count information contained within it.
+#' @details The function takes the input of a \code{\link{summarizedExomePeak}} object,
+#' and it estimates the sequencing depth size factors by the columns of its \link{assay}.
 #'
-#' @param sep a summarizedExomePeak object.
-#' @param from Determine which group the size factor is estimated from, can be one of the "Control", "Modification", and "Both".
+#' @param sep a \code{\link{summarizedExomePeak}} object.
+#' @param from a \code{character} specify the subset of features for sequencing depth estimation, can be one of \code{c("Control", "Modification", "Both")}.
 #'
-#' By default, the size factors are estimated from the merged control peaks, that correspond to the exonic regions other than the modification containing peaks.
+#' \describe{
+#'  \item{\strong{\code{Control}}}{
+#'  The sequencing depths are estimated from the background control regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
+#'  }
+#'
+#'  \item{\strong{\code{Modification}}}{
+#'  The sequencing depths are estimated from the modification peaks/sites.
+#'  }
+#'
+#'  \item{\strong{\code{Both}}}{
+#'  The sequencing depths are estimated from both the control and modification features.
+#'  }
+#' }
+#'
+#' Under default setting, the sequencing depth factors are estimated from the background control regions.
 #'
 #' @param ... inherited from \code{\link{estimateSizeFactorsForMatrix}}.
 #'
-#' @return This function will return a summarizedExomePeak object containing newly estimated sample wised size factors.
+#' @examples
+#'
+#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#'
+#' aln <- scanMeripBAM(
+#' bam_ip = c("IP_rep1.bam",
+#'            "IP_rep2.bam",
+#'            "IP_rep3.bam"),
+#' bam_input = c("input_rep1.bam",
+#'               "input_rep2.bam",
+#'               "input_rep3.bam"),
+#' paired_end = TRUE
+#' )
+#'
+#'sep <- exomePeakCalling(merip_bams = aln,
+#'                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+#'                        bsgenome = Hsapiens)
+#'
+#'sep <- estimateSeqDepth(sep)
+#'
+#' @seealso \code{\link{normalizeGC}}
+#'
+#' @return This function will return a \code{\link{summarizedExomePeak}} object containing newly estimated sequencing depth size factors.
 #'
 #' @importFrom DESeq2 estimateSizeFactorsForMatrix
 #'

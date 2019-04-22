@@ -3,7 +3,7 @@
 \docType{methods}
 \name{exportResults}
 \alias{exportResults}
-\title{Export the modification / differential modification sites}
+\title{Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics}
 \usage{
 exportResults(sep, format = c("txt", "BED", "RDS"),
   save_dir = "exomepeaks_result", cut_off_pvalue = NULL,
@@ -13,47 +13,99 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 
 \S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv",
   "BED", "RDS"), save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
-  cut_off_padj = 0.2, cut_off_log2FC = 0, min_num_of_positive = 30,
+  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
   expected_direction = "both", inhibit_filter = FALSE,
   table_style = c("bed", "granges"))
 }
 \arguments{
-\item{sep}{A SummarizedExomePeak object.}
+\item{sep}{a \code{\link{SummarizedExomePeak}} object.}
 
-\item{format}{A character string of one of the c("tsv", "BED", "RDS"), indicating the exported format.
+\item{format}{a \code{character} for the exported format, can be one in \code{c("tsv", "BED", "RDS")}.
 
-- The choice tsv will save a tab separated values (tsv) file with the ranges and test information.
+\describe{
+ \item{\strong{\code{tsv}}}{
+ export a tab separated values (tsv) table with the genomic location and LFC statistics.
+ }
 
-- The choice BED will save a BEDGraph file with the score column being the -log2 adjusted p value.
+ \item{\strong{\code{BED}}}{
+ export a BEDGraph file with the score column = -log2(adjusted p value).
+ }
 
-- The choice RDS will save a Rdata of the SummarizedExperiment object which will additional include a comprehensive summary of the count and the design information (recommended).}
+ \item{\strong{\code{RDS}}}{
+ export the RDS file of the \code{\link{SummarizedExperiment}} object.
+ }
+}}
 
-\item{save_dir}{The name of the file being saved; Default "exomePeak2_output".}
+\item{save_dir}{a \code{character} for the name of the directory being saved; Default \code{= "exomePeak2_output"}.}
 
-\item{cut_off_pvalue}{A number between 0 and 1 indicate the p value cutoff in the exported result; Default NULL.}
+\item{cut_off_pvalue}{a \code{numeric} value for the p value cutoff in the exported result; Default \code{= NULL}.}
 
-\item{cut_off_padj}{A number between 0 and 1 indicate the adjusted p value cutoff in the exported result; Default 0.2.}
+\item{cut_off_padj}{a \code{numeric} value for the adjusted p value cutoff in the exported result; Default \code{= 0.05}.}
 
-\item{cut_off_log2FC}{A non negative number indicating the log2 fold change cutoff of the exported result,
+\item{cut_off_log2FC}{a \code{numeric} value for the log2 fold change cutoff of the exported result,
+only the sites with abs(LFC) larger than this value are kept; Default \code{= 0}.}
 
-only sites with log2 IP/input fold change bigger than this value are kept; Default 0.
+\item{min_num_of_positive}{a \code{numeric} value for the minimum number of reported sites.
+If the number of remaining sites is less than this number after filtering, additional sites will be reported by the increasing order of the p value to meet this number.}
 
-For differential modification analysis, the absolute value of the log2 Odds ratio will be filtered by \code{cut_off_log2FC}.}
+\item{expected_direction}{a \code{character} for the expected differential modification direction, could be one in \code{c("hyper", "hypo", "both")}.
 
-\item{min_num_of_positive}{The minimum number of reported sites.
-If the sites is filtered less than this number by its p values or effect sizes,
-more sites will be reported by the order of the p value until it reaches this number.}
+\describe{
+ \item{\strong{\code{hyper}}}{
+ only report the peaks/sites with interactive LFC > 0.
+ }
 
-\item{expected_direction}{The expected differential modification direction, could be "hyper", "hypo", or "both".
-This argument is useful when the treated group involves the perturbation of a writer or eraser protein for the modification; Default "both".}
+ \item{\strong{\code{hypo}}}{
+ only report the peaks/sites with interactive LFC < 0.
+ }
 
-\item{inhibit_filter}{Remove all the filters on the result, this is desired for user provided modification annotation; Default FALSE.}
-
-\item{table_style}{Determine the style of the tsv table being exported, could be one of "bed" and "granges", the later would index the site containing multiple ranges with an id.}
+ \item{\strong{\code{both}}}{
+ report the peaks/sites in both directions.
+ }
 }
-\value{
-a file containing the modification site genomic location, gene ids, statistics, and effect sizes will be created under the current working directory.
+
+This argument is useful when the treated group involves the perturbation of a known writer or eraser protein; Default "both".}
+
+\item{inhibit_filter}{a \code{logical} for whether to remove all the filters, this option is useful when quantification on single based site annotation; Default \code{= FALSE}.}
+
+\item{table_style}{a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+
+\describe{
+ \item{\strong{\code{bed}}}{
+ the genomic locations in the table are represented by BEDgraph style.
+ }
+
+ \item{\strong{\code{granges}}}{
+ the genomic locations in the table are represented by GRanges style.
+ }
+}}
 }
 \description{
-Export the modification / differential modification sites
+Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics
+}
+\examples{
+
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+aln <- scanMeripBAM(
+bam_ip = c("IP_rep1.bam",
+           "IP_rep2.bam",
+           "IP_rep3.bam"),
+bam_input = c("input_rep1.bam",
+              "input_rep2.bam",
+              "input_rep3.bam"),
+paired_end = TRUE
+)
+
+sep <- exomePeakCalling(merip_bams = aln,
+                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+                        bsgenome = Hsapiens)
+
+sep <- normalizeGC(sep)
+
+sep <- glmM(sep)
+
+exportResults(sep)
+
 }

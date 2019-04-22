@@ -4,7 +4,7 @@
 \alias{GLM_inference}
 \title{Statistical Inference with DESeq2 on IP over input fold change.}
 \usage{
-GLM_inference(SE_bins, glm_type = c("poisson", "NB", "DESeq2"),
+GLM_inference(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
   p_cutoff = NULL, p_adj_cutoff = 0.05, count_cutoff = 5,
   logFC_mod = 0, min_mod_number = floor(nrow(SE_bins) * 0.001))
 }
@@ -12,7 +12,7 @@ GLM_inference(SE_bins, glm_type = c("poisson", "NB", "DESeq2"),
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,
 which is a character vector with values of "IP" and "input". The column helps to index the design of MeRIP-Seq experiment.}
 
-\item{glm_type}{a character, which can be one of  the "poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "poisson".
+\item{glm_type}{a character, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
 The DESeq2 method is only recommended for high power experiments with more than 3 biological replicates for both IP and input.}
 
 \item{p_cutoff}{a numeric value of the p value cutoff used in DESeq inference.}

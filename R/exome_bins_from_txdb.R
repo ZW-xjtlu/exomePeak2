@@ -10,7 +10,7 @@
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures
-#' @export
+#'
 #'
 exome_bins_from_txdb <- function(txdb,
                                  window_size = 25,

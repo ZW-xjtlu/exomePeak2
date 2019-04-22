@@ -3,7 +3,7 @@
 \docType{methods}
 \name{Parameter}
 \alias{Parameter}
-\title{Accessor to the slot \code{Parameter} for the object \code{MeripBamFileList}.}
+\title{Accessor to the slot \code{Parameter} in class \code{MeripBamFileList}.}
 \usage{
 Parameter(x)
 
@@ -16,5 +16,5 @@ Parameter(x)
 a \code{ScanBamParam} object.
 }
 \description{
-Accessor to the slot \code{Parameter} for the object \code{MeripBamFileList}.
+Accessor to the slot \code{Parameter} in class \code{MeripBamFileList}.
 }

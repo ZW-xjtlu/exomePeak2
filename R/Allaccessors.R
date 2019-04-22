@@ -1,4 +1,4 @@
-#' @title Accessor to the slot \code{Parameter} for the object \code{MeripBamFileList}.
+#' @title Accessor to the slot \code{Parameter} in class \code{MeripBamFileList}.
 #'
 #' @param x a \code{MeripBamFileList} object.
 #'
@@ -18,7 +18,7 @@ setMethod("Parameter",
             return(x@Parameter)
           })
 
-#' @title Accessor to the slot \code{LibraryType} for the object \code{MeripBamFileList}.
+#' @title Accessor to the slot \code{LibraryType} in class \code{MeripBamFileList}.
 #'
 #' @param x a \code{MeripBamFileList} object.
 #'
@@ -39,7 +39,7 @@ setMethod("LibraryType",
           })
 
 
-#' @title Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
+#' @title Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
 #'
 #' @param x A \code{SummarizedExomePeak} object.
 #'
@@ -59,18 +59,8 @@ setMethod("GCsizeFactors",
             return(assays(x)$GCsizeFactors)
           })
 
-#' @title Accessor to the slot \code{GCsizeFactors} for the object \code{SummarizedExomePeak}.
-#'
-#' @param x A \code{SummarizedExomePeak} object.
-#'
-#' @return A matrix.
-#'
-#' @docType methods
-#'
-#' @name GCsizeFactors
-#'
-#' @rdname GCsizeFactors
-#'
+
+
 #' @export
 #'
 setMethod("GCsizeFactors<-",
@@ -80,7 +70,7 @@ setMethod("GCsizeFactors<-",
             return(x)
           })
 
-#' @title Accessor to the slot \code{DESeq2Results} for the object \code{SummarizedExomePeak}.
+#' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
 #'
 #' @param x A \code{SummarizedExomePeak} object.
 #'
@@ -100,18 +90,7 @@ setMethod("DESeq2Results",
             return(x@DESeq2Results)
           })
 
-#' @title Accessor to the slot \code{DESeq2Results} for the object \code{SummarizedExomePeak}.
-#'
-#' @param x A \code{SummarizedExomePeak} object.
-#'
-#' @return A data.frame.
-#'
-#' @docType methods
-#'
-#' @name DESeq2Results
-#'
-#' @rdname DESeq2Results
-#'
+
 #' @export
 #'
 setMethod("DESeq2Results<-",
