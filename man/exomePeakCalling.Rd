@@ -154,5 +154,5 @@ exomePeakCalling(
 
 }
 \seealso{
-\code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}
+\code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}
 }

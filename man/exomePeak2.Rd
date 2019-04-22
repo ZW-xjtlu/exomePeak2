@@ -133,10 +133,10 @@ see \code{\link{lfcShrink}} for more details.}
 
 \item{\strong{\code{full_transcript}}}{generate sliding windows on the full transcripts (include both introns and exons).}
 
-\item{\strong{\code{whole_genome}}}{generate sliding windows on the whole genome (include introns, exons, and intergenic regions).}
+\item{\strong{\code{whole_genome}}}{generate sliding windows on the whole genome (include introns, exons, and the intergenic regions).}
 }
 
-P.S. The full transcript mode and the whole genome mode demand big memory sizes (> 4GB) for large genomes.}
+P.S. The full transcript mode and the whole genome mode demand big memory size (> 4GB) for large genomes.}
 
 \item{manual_background}{optional, a \code{\link{GRanges}} object for the user provided unmodified background.}
 
@@ -154,10 +154,10 @@ The function integrates the following steps of a standardized MeRIP-seq pipeline
 \item Call modification peaks on exons with \code{\link{exomePeakCalling}}.
 \item Calculate GC content bias correction factors on the background regions with \code{\link{normalizeGC}}.
 \item Calculate (differential) modification statistics with generalized linear model (GLM) with \code{\link{glmM}} and \code{\link{glmDM}}
-\item Export the peak/site statistics in user defined format by \code{\link{exportResults}}.
+\item Export the peak/site statistics with user defined format by \code{\link{exportResults}}.
 }
 
-see the help pages of the corresponding functions for the complete documentations of each step
+See the help pages of the corresponding functions for the complete documentations at each step.
 }
 \details{
 \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from BAM files of a MeRIP-seq experiment.
@@ -238,5 +238,5 @@ exomePeak2(bam_ip = c("IP_rep1.bam",
 
 }
 \seealso{
-\code{\link{exomePeakCalling}}
+\code{\link{exomePeakCalling}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}, \code{\link{plotLfcGC}}
 }

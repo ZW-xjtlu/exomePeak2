@@ -125,7 +125,7 @@
 #'  mod_annot = m6A_hg19_gr)
 #'
 #'
-#' @seealso \code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}
+#' @seealso \code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}
 #' @import GenomicAlignments
 #' @importFrom Rsamtools asMates
 #' @import GenomicRanges
