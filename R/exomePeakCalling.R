@@ -1,51 +1,131 @@
-#' @title Exome peak calling on MeRIP-seq datasets while considering the biological variabilities.
+#' @title Perform Peak Calling on MeRIP-seq Dataset.
 #'
-#' @description \code{exomePeakCalling} call RNA modification peaks on exome regions with statistical tests that account for the biological variabilities between samples.
+#' @description \code{exomePeakCalling} call peaks of RNA modification from a MeRIP-seq data set.
 #'
-#' @details The function conduct exome level peak calling based on the read alignment results and the transcript annotations.
+#' @details \code{exomePeakCalling} perform peak calling from the MeRIP-seq BAM files on exon regions defined by the user provided transcript annotations.
+#' If the \code{\link{BSgenome}} object is provided, the peak calling will be conducted with the GC content bias correction.
 #'
-#' @param merip_bams a \code{MeripBamFileList} object.
-#' @param mode a character for the scope of peak calling on genome, can be one in "exon", "full_transcript", and "whole_genome".
+#' Under the default setting, for each window, exomePeak2 will fit a GLM of Negative Binomial (NB) with regulated estimation of the overdispersion parameters developed in \code{\link{DESeq}}.
+#' Wald tests with H0 of IP/input Log2 Fold Change (LFC) <= 0 are performed on each of the sliding windows.
+#' The significantly modified peaks are selected using the cutoff of fdr < 0.05 calculated by the Benjamini Hochberg approach.
 #'
-#' If mode == "whole_genome", the size of the genome is recommended to be less than 1e7.
 #'
-#' @param txdb a \code{TxDb} object, it can also be a single character string such as "hg19" which is processed by \code{\link{makeTxDbFromUCSC}}.
-#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence, alternatively it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
-#' @param gene_anno a string, which specifies a gene annotation GFF/GTF file if available, default: NA.
-#' @param fragment_length a positive integer of the expected fragment length in bp; default 100.
-#' @param binding_length a positive integer of the antibody binding length in IP samples; default 25.
-#' @param step_length a positive integer of the shift size of the sliding window; default is the binding length.
-#' @param glm_type a character, which can be one of the "DESeq2", "poisson", "NB". This argument specify the type of generalized linear model used in peak calling; Default to be "DESeq2".
+#' @param merip_bams a \code{MeripBamFileList} object returned by \code{\link{scanMeripBAM}}.
 #'
-#' Under the default setting, the DESeq2 method is implemented on experiments with > 1 biological replicates for both IP and input samples.
-#' The poisson GLM will be implemented otherwise.
+#' @param txdb a \code{\link{TxDb}} object for the transcript annotation,
+#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.
 #'
-#' @param pc_count_cutoff a non negative integer value of the minimum average reads count per window used in peak calling; default 5.
-#' @param gc_count_cutoff a non negative integer value of the minimum average reads count per window used in GC effect estimation; default 50.
-#' @param p_cutoff a value of the p value cut-off used in peak calling; default NULL.
-#' @param p_adj_cutoff a value of the adjusted p value cutoff used in DESeq inference; default 0.05.
-#' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
-#' @param peak_width positive integer of the minimum width for the merged peaks; default \code{fragment_length} .
-#' @param parallel a logical indicating whether to use parallel computation, consider this if your computer has more than 16GB RAM.
-#' @param mod_annot a \code{GRanges} object for user provided single based RNA modification annotation. If provided, the peak calling step will be skipped.
-#' Reads count will be performed using the provided annotation flanked by length of floor(fragment_length - binding_length/2).
+#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information,
+#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.
 #'
-#' @param manual_background a \code{GRanges} object for user provided RNA modification background.
-#' @param m6Aseq_background a logical of whether to use the topology knowledge of m6A-Seq to find appropriate background in GC effect estimation;
-#' If TRUE, the GC effect will be estimated on bins that is not overlapping with long exons (exon length >= 400bp) and 5'UTR.
-#' Also, the returned background control ranges returned will also exclude those regions;
-#' It should not be select if you are analyzing MeRIP-seq data of other modification, such as hm5C; default TRUE.
+#' @param gff_dir optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
 #'
-#' The background regions used in this senario will be the disjoint exon regions of the flanked provided sites.
+#' @param fragment_length a positive integer number for the expected fragment length in nucleotides; default \code{= 100}.
 #'
-#' @param background a \code{GRanges} or \code{GRangesList} object for user provided background control regions on the genome.
+#' @param binding_length a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.
 #'
-#' @return This function will return a \code{SummarizedExomePeak} object storing the ranges and reads counts information of the called peaks.
+#' @param step_length a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.
+#'
+#' @param glm_type a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
+#'
+#' \describe{
+#' \item{\strong{\code{DESeq2}}}{Fit the GLM defined in function \code{\link{DESeq}}, which is the NB GLM with regulated estimation of the overdispersion parameters.}
+#'
+#' \item{\strong{\code{NB}}}{Fit the Negative Binomial (NB) GLM.}
+#'
+#' \item{\strong{\code{Poisson}}}{Fit the Poisson GLM.}
+#' }
+#'
+#' By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.
+#'
+#' @param pc_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 5}.
+#'
+#' @param bg_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.
+#'
+#' @param p_cutoff a \code{numeric} value for the cutoff on p values in peak calling; default \code{= NULL}.
+#'
+#' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= 0.05}.
+#'
+#' @param logFC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
+#'
+#' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
+#'
+#' @param parallel a \code{logical} value indicating whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.
+#'
+#' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
+#'
+#' If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
+#'
+#' @param manual_background optional, a \code{\link{GRanges}} object for the user provided unmodified background.
+#'
+#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
+#'
+#' In order to accurately account for the technical variations, it is often neccessary to estimate the sequencing depth and GC content linear effects on windows without modification signals.
+#'
+#' The following methods are supported in \code{ExomePeak2} to differentiate the no modification background windows from the modification containig windows.
+#'
+#' \describe{
+#'  \item{\strong{\code{Gaussian_mixture}}}{The background is identified by Multivariate Gaussian Mixture Model (MGMM) with 2 mixing components on the vectors containing methylation level estimates and GC content, the background regions are predicted by the Bayes Classifier on the learned GMM.}
+#'
+#'  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
+#'
+#'  This type of background should not be used if the MeRIP-seq data is not targetting on m6A methylation.
+#'
+#'  }
+#'
+#'  \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
+#'
+#'  \item{\strong{\code{all}}}{Use all windows as the background. This is equivalent to not differentiating background and signal.
+#'  It can lead to biases on the estimation of the technical factors.
+#'  }
+#' }
+#'
+#' @param bp_param optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.
+#'
+#' @return a \code{\link{SummarizedExomePeak}} object.
 #'
 #' @examples
 #'
+#' # Load packages for the genome sequence and transcript annotation
 #'
-#' @seealso \code{\link{exomePeakCalling}}
+#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#'
+#' # Peak Calling
+#'
+#' exomePeakCalling(
+#'   merip_bams = scanMeripBAM(
+#'   bam_ip = c("IP_rep1.bam",
+#'              "IP_rep2.bam",
+#'              "IP_rep3.bam"),
+#'   bam_input = c("input_rep1.bam",
+#'                 "input_rep2.bam",
+#'                 "input_rep3.bam"),
+#'   paired_end = TRUE),
+#'   txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+#'   bsgenome = Hsapiens)
+#'
+#' # Analysis with single based modification annotation
+#'
+#' annot_dir <- system.file("extdata", "m6A_hg19_annot.rds", package = "exomePeak2")
+#'
+#' m6A_hg19_gr <- readRDS(annot_dir)
+#'
+#' exomePeakCalling(
+#'   merip_bams = scanMeripBAM(
+#'   bam_ip = c("IP_rep1.bam",
+#'              "IP_rep2.bam",
+#'              "IP_rep3.bam"),
+#'   bam_input = c("input_rep1.bam",
+#'                 "input_rep2.bam",
+#'                 "input_rep3.bam"),
+#'  paired_end = TRUE),
+#'  txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
+#'  bsgenome = Hsapiens,
+#'  mod_annot = m6A_hg19_gr)
+#'
+#'
+#' @seealso \code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}
 #' @import GenomicAlignments
 #' @importFrom Rsamtools asMates
 #' @import GenomicRanges
@@ -64,16 +144,16 @@ setMethod("exomePeakCalling",
           function(merip_bams = NULL,
                    txdb = NULL,
                    bsgenome = NULL,
-                   glm_type = c("DESeq2", "NB", "poisson"),
+                   mod_annot = NULL,
+                   glm_type = c("DESeq2", "NB", "Poisson"),
                    background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                    manual_background = NULL,
-                   gene_annot = NULL,
-                   mod_annot = NULL,
+                   gff_dir = NULL,
                    fragment_length = 100,
                    binding_length = 25,
                    step_length = binding_length,
                    pc_count_cutoff = 5,
-                   gc_count_cutoff = 50,
+                   bg_count_cutoff = 50,
                    p_cutoff = NULL,
                    p_adj_cutoff = 0.05,
                    logFC_cutoff = 0,
@@ -99,7 +179,7 @@ setMethod("exomePeakCalling",
 
             stopifnot(pc_count_cutoff >= 0)
 
-            stopifnot(gc_count_cutoff >= 0)
+            stopifnot(bg_count_cutoff >= 0)
 
             if(!is.null(mod_annot)){
             stopifnot(is(mod_annot,"GRanges")|is(mod_annot,"GRangesList"))
@@ -113,8 +193,8 @@ setMethod("exomePeakCalling",
               )
             }
 
-            if (!is.null(gene_annot)) {
-              txdb <- makeTxDbFromGFF(gene_annot)
+            if (!is.null(gff_dir)) {
+              txdb <- makeTxDbFromGFF(gff_dir)
             } else {
               if (is.null(txdb)) {
                 stop("Missing transcript annotation, please provide TxDb object or GFF/GTF file...")
@@ -205,7 +285,7 @@ setMethod("exomePeakCalling",
 
               #Count index
               rowData(SE_Peak_counts)$indx_gc_est <-
-                rowMeans(assay(SE_Peak_counts)) >= gc_count_cutoff
+                rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
 
 
               ######################################################
@@ -299,8 +379,8 @@ setMethod("exomePeakCalling",
 
               rm(exome_bins_grl,rowData_tmp)
 
-              if (glm_type == "poisson") {
-                message("Peak calling with poisson GLM...")
+              if (glm_type == "Poisson") {
+                message("Peak calling with Poisson GLM...")
               }
 
               if (glm_type == "NB") {
@@ -310,11 +390,11 @@ setMethod("exomePeakCalling",
               if (glm_type == "DESeq2") {
                 if (any(table(SE_Peak_counts$design_IP) == 1)) {
                   warning(
-                    "At least one of the IP or input samples have no replicate, peak calling method changed to poisson GLM.",
+                    "At least one of the IP or input samples have no replicate, peak calling method changed to Poisson GLM.",
                     call. = FALSE,
                     immediate. = TRUE
                   )
-                  glm_type = "poisson"
+                  glm_type = "Poisson"
                 } else{
                   message("Peak calling with DESeq2...")
                 }
@@ -417,8 +497,7 @@ setMethod("exomePeakCalling",
 
               mod_annot_flanked <- flank_on_exons(
                 grl = mod_annot,
-                flank_length = floor(fragment_length - binding_length /
-                                       2),
+                flank_length = floor(fragment_length - binding_length / 2),
                 txdb = txdb,
                 index_flank = FALSE
               )
