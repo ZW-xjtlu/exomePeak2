@@ -298,17 +298,13 @@ setMethod("exomePeakCalling",
               m6A_prior = F
 
               if (background == "Gaussian_mixture") {
-                message("Identifying background with Gaussian mixture model...")
+                message("Identifying background with Gaussian Mixture Model...")
 
-                #suppress output...
-                tc <- textConnection(NULL, "w")
-                sink(tc)
-                rowData(SE_Peak_counts)$indx_bg <- mclust_bg(se_peak_counts = SE_Peak_counts)
-                sink()
-                close(tc)
+                rowData(SE_Peak_counts)$indx_bg <- quiet( mclust_bg(se_peak_counts = SE_Peak_counts) )
 
                 if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                         rowData(SE_Peak_counts)$indx_bg) < 30) {
+
                   warning(
                     "Background bin # < 30 using mclust, search background with m6A-seq prior",
                     call. = FALSE,
@@ -355,7 +351,7 @@ setMethod("exomePeakCalling",
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                       rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
-                  "Background bin # < 30 using m6A-seq prior, peak calling without background",
+                  "Background bin # < 30 using m6A-seq prior, peak calling without background\n",
                   call. = FALSE,
                   immediate. = FALSE
                 )
@@ -473,6 +469,8 @@ setMethod("exomePeakCalling",
 
               colData(SummarizedExomePeaks) <- DataFrame(metadata(merip_bams))
 
+              colnames(SummarizedExomePeaks) <- names(merip_bams)
+
             } else {
 
               ######################################################
@@ -495,21 +493,21 @@ setMethod("exomePeakCalling",
 
               }
 
-              mod_annot_flanked <- flank_on_exons(
+              mod_annot_flanked <- suppressWarnings( flank_on_exons(
                 grl = mod_annot,
                 flank_length = floor(fragment_length - binding_length / 2),
                 txdb = txdb,
                 index_flank = FALSE
-              )
+              ) )
 
-              mod_annot_count <- disj_background(
+              mod_annot_count <- suppressWarnings( disj_background(
                 mod_gr = mod_annot_flanked,
                 txdb = txdb,
                 cut_off_num = 30,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background,
                 control_width = peak_width
-              )
+              ) )
 
               rm(SE_Peak_counts,mod_annot_flanked)
 
@@ -540,16 +538,18 @@ setMethod("exomePeakCalling",
               #Replace the rowRanges with the single based GRangesList.
               index_mod <- grepl("mod_", rownames(SE_temp))
 
-              index_sb_annot <-
-                as.numeric(gsub("mod_", "", rownames(SE_temp)[index_mod]))
+              index_se <- match(as.numeric(names(mod_annot)),
+                                as.numeric(gsub("mod_", "", rownames(SE_temp)[index_mod])))
 
               mod_count <-
-                assay(SE_temp)[index_mod, ][match(as.numeric(names(mod_annot)), index_sb_annot), ]
+                assay(SE_temp)[index_mod, ][index_se, ]
+
+              rm(index_se)
 
               rownames(mod_count) <-
                 paste0("mod_", seq_len(nrow(mod_count)))
 
-              #Fill the rows that are not on exons with zero counts.(what it for?)
+              #Fill the rows that are not on exons with zero counts.
               mod_count[is.na(mod_count)] <- 0
 
               control_count <- assay(SE_temp)[!index_mod, ]
@@ -559,14 +559,17 @@ setMethod("exomePeakCalling",
 
               mcols(mod_annot_gr) <- DataFrame(gene_id = NA)
 
-              mcols(mod_annot_gr)$gene_id[index_sb_annot] <-
-                mcols(unlist(rowRanges(SE_temp)))$gene_id[index_sb_annot]
+              SE_temp_gr <- unlist(rowRanges(SE_temp)[index_mod])
 
-              mod_annot <-
-                split(mod_annot_gr, names(mod_annot_gr))
+              mcols(mod_annot_gr)$gene_id <-
+                mcols(SE_temp_gr)$gene_id[match(as.numeric(names(mod_annot_gr)),
+                                            as.numeric(gsub("mod_", "", names(SE_temp_gr))))]
 
-              mod_annot <-
-                mod_annot[order(as.numeric(names(mod_annot)))]
+              rm(SE_temp_gr)
+
+              mod_annot <- split(mod_annot_gr, names(mod_annot_gr))
+
+              mod_annot <- mod_annot[order(as.numeric(names(mod_annot)))]
 
               names(mod_annot) <- paste0("mod_", names(mod_annot))
 
@@ -579,6 +582,8 @@ setMethod("exomePeakCalling",
                 colData = DataFrame(metadata(merip_bams))
 
               )
+
+              colnames(SummarizedExomePeaks) <- names(merip_bams)
 
             }
 

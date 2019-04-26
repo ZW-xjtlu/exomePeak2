@@ -14,7 +14,7 @@
 #' See the help pages of the corresponding functions for the complete documentations at each step.
 #'
 #' @details \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from BAM files of a MeRIP-seq experiment.
-#' The transcript annotation (from either the \code{\link{TxDB}} object or the GFF file) must be provided to perform analysis on exons.
+#' The transcript annotation (from either the \code{\link{TxDb}} object or the GFF file) must be provided to perform analysis on exons.
 #'
 #' The \code{\link{BSgenome}} object is also required to perform the GC content bias adjustment.
 #' If the \code{bsgenome} argument is not provided (\code{= NULL}), the downstream analysis will proceed without GC content bias corrections.
@@ -113,13 +113,13 @@
 #'
 #' @param LFC_shrinkage a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "ashr", "Gaussian", "none")}; Default \code{= "apeglm"}.
 #'
-#' see \code{\link{lfcShrink}} for more details.
+#' see \code{\link{lfcShrink}} for more details; if "none" is selected, only the MLE will be returned.
 #'
 #' @param table_style a \code{character} for the style of the table being exported, could be one of \code{c("bed", "granges")}; Default \code{= "bed"}.
 #'
 #' @param export_results a \code{logical} of whether to save the results on disk; default \code{= TRUE}.
 #'
-#' @param export_format a \code{character} for the format of the table being exported, could be one of \code{c("tsv","BED","RDS")}; Default \code{= "tsv"}.
+#' @param export_format a \code{character} vector for the format(s) of the result being exported, could be the subset of \code{c("tsv","BED","RDS")}; Default \code{= c("tsv","BED","RDS")}.
 #'
 #' @param save_plot_GC a \code{logical} of whether to generate the plots for GC content bias assessment; default \code{= TRUE}.
 #'
@@ -259,7 +259,7 @@ exomePeak2 <- function(bam_ip = NULL,
 
 LFC_shrinkage <- match.arg(LFC_shrinkage)
 
-export_format <- match.arg(export_format)
+stopifnot(all(export_format %in% c("tsv", "BED", "RDS")))
 
 table_style <- match.arg(table_style)
 
@@ -354,8 +354,6 @@ if(any(sep$design_Treatment)){
 }
 
 if( export_results ) {
-
-  message("Saving peak statistics in tabular format...")
 
   exportResults(sep,
                 format = export_format,

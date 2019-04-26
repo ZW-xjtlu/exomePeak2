@@ -92,11 +92,11 @@ if( length(indx_sig) < floor( sum(grepl("mod_", rownames(sep))) * 0.01 ) ){
 
 indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
-Decision[indx_sig] <- "p value < .05"
+Decision[indx_sig] <- "p value < 0.05"
 
 } else {
 
-Decision[indx_sig] <- "padj < .05"
+Decision[indx_sig] <- "padj < 0.05"
 
 }
 
@@ -104,10 +104,10 @@ Decision[indx_sig] <- "padj < .05"
 
   if(length(which(DESeq2Results(sep)$padj < .05)) <
      floor(sum(grepl("mod_", rownames(sep))) * 0.1)) {
-    Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < .05"
+    Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < 0.05"
 
   } else {
-    Decision[DESeq2Results(sep)$padj < .05] <- "p adj < .05"
+    Decision[DESeq2Results(sep)$padj < .05] <- "p adj < 0.05"
 
   }
 

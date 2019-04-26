@@ -88,7 +88,7 @@ setMethod("Results",
                    cut_off_padj = 0.05,
                    cut_off_log2FC = 0,
                    min_num_of_positive = 30,
-                   expected_direction = "both",
+                   expected_direction = c("both", "hyper", "hypo"),
                    inhibit_filter = TRUE,
                    table_style = c("bed", "granges")
                    ) {

@@ -16,7 +16,7 @@
 #'
 #' @param LFC_shrinkage a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "ashr", "none")}; Default \code{= "apeglm"}.
 #'
-#' see \code{\link{lfcShrink}} for more details.
+#' see \code{\link{lfcShrink}} for details; if "none" is selected, only the MLE will be returned.
 #'
 #' @param ... Optional arguments passed to \code{\link{DESeq}}
 #'
@@ -175,43 +175,93 @@ setMethod("glmDM",
 
   #Generation of the DESeq2 report.
 
+  DS_result <- as.data.frame( suppressMessages( results( dds ) ) )
+  DS_result <- DS_result[,c("log2FoldChange","log2FoldChange","lfcSE","pvalue","padj")]
+  colnames(DS_result) <- c("log2FoldChange","log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE","pvalue","padj")
+
+  #Include reads count
+  DS_result$ReadsCount.IP.Treated <- rowSums( assay(dds)[,colData(dds)$design_IP & colData(dds)$design_Treatment] )
+  DS_result$ReadsCount.input.Treated <- rowSums( assay(dds)[,!colData(dds)$design_IP & colData(dds)$design_Treatment] )
+  DS_result$ReadsCount.IP.Control <- rowSums( assay(dds)[,colData(dds)$design_IP & !colData(dds)$design_Treatment] )
+  DS_result$ReadsCount.input.Control <- rowSums( assay(dds)[,!colData(dds)$design_IP & !colData(dds)$design_Treatment] )
+
+  #Calculate estimates of other contrasts
+  Expr_Control_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(1,0,0,0)) ) )
+  DS_result$log2Expr.Control.MLE <- Expr_Control_design_MLE[,"log2FoldChange"]
+  DS_result$log2Expr.Control.MLE.SE <- Expr_Control_design_MLE[,"lfcSE"]
+  rm(Expr_Control_design_MLE)
+
+  Expr_Treated_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(1,1,0,0)) ) )
+  DS_result$log2Expr.Treated.MLE <- Expr_Treated_design_MLE[,"log2FoldChange"]
+  DS_result$log2Expr.Treated.MLE.SE <- Expr_Treated_design_MLE[,"lfcSE"]
+  rm(Expr_Treated_design_MLE)
+
+  DiffExpr_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(0,1,0,0)) ) )
+  DS_result$log2fcDiffExpr.MLE <- DiffExpr_design_MLE[,"log2FoldChange"]
+  DS_result$log2fcDiffExpr.MLE.SE <- DiffExpr_design_MLE[,"lfcSE"]
+  rm(DiffExpr_design_MLE)
+
+  Mod_Control_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(0,0,1,0)) ) )
+  DS_result$log2fcMod.Control.MLE <- Mod_Control_design_MLE[,"log2FoldChange"]
+  DS_result$log2fcMod.Control.MLE.SE  <- Mod_Control_design_MLE[,"lfcSE"]
+  rm(Mod_Control_design_MLE)
+
+  Mod_Treated_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(0,0,1,1)) ) )
+  DS_result$log2fcMod.Treated.MLE <- Mod_Treated_design_MLE[,"log2FoldChange"]
+  DS_result$log2fcMod.Treated.MLE.SE  <- Mod_Treated_design_MLE[,"lfcSE"]
+  rm(Mod_Treated_design_MLE)
+
+  #Calculate additional MAP estimates if LFCs are set != "none"
+  if(LFC_shrinkage != "none") {
+
+    DS_result$log2fcDiffExpr.MAP <- as.data.frame( suppressMessages( lfcShrink( dds=dds, coef = 2, type = LFC_shrinkage  ) ) )$log2FoldChange
+    DS_result$log2fcDiffMod.MAP <- as.data.frame( suppressMessages( lfcShrink( dds=dds, coef = 4, type = LFC_shrinkage  ) ) )$log2FoldChange
+
+    DS_result <- DS_result[,c("ReadsCount.input.Control","ReadsCount.IP.Control",
+                              "ReadsCount.input.Treated","ReadsCount.IP.Treated",
+                              "log2Expr.Control.MLE","log2Expr.Control.MLE.SE",
+                              "log2Expr.Treated.MLE","log2Expr.Treated.MLE.SE",
+                              "log2fcMod.Control.MLE","log2fcMod.Control.MLE.SE",
+                              "log2fcMod.Treated.MLE","log2fcMod.Control.MLE.SE",
+                              "log2fcDiffExpr.MLE","log2fcDiffExpr.MLE.SE","log2fcDiffExpr.MAP",
+                              "log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE","log2fcDiffMod.MAP",
+                              "log2FoldChange","pvalue","padj")]
+  } else {
+    DS_result <- DS_result[,c("ReadsCount.input.Control","ReadsCount.IP.Control",
+                              "ReadsCount.input.Treated","ReadsCount.IP.Treated",
+                              "log2Expr.Control.MLE","log2Expr.Control.MLE.SE",
+                              "log2Expr.Treated.MLE","log2Expr.Treated.MLE.SE",
+                              "log2fcMod.Control.MLE","log2fcMod.Control.MLE.SE",
+                              "log2fcMod.Treated.MLE","log2fcMod.Control.MLE.SE",
+                              "log2fcDiffExpr.MLE","log2fcDiffExpr.MLE.SE",
+                              "log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE",
+                              "log2FoldChange","pvalue","padj")]
+  }
+
+
   if (!is.null(GCsizeFactors( sep ))) {
 
-   if(LFC_shrinkage == "none") {
+     DS_final_rst <- matrix( NA, nrow = nrow(SE_M[indx_mod,]), ncol = ncol(DS_result) )
 
-     DS_result <- suppressMessages( results(dds) )
+    colnames( DS_final_rst) <- colnames(DS_result)
 
-   } else {
+     DS_final_rst <- as.data.frame( DS_final_rst)
 
-     DS_result  <- suppressMessages( lfcShrink(dds = dds, coef = 4, type = LFC_shrinkage) )
+     DS_final_rst[(!gc_na_indx)[indx_mod],] <- as.data.frame( DS_result )
 
-   }
-
-    quantification_rst <- matrix( NA, nrow = nrow(SE_M[indx_mod,]), ncol = ncol(DS_result) )
-
-    colnames(quantification_rst) <- colnames(DS_result)
-
-    quantification_rst <- as.data.frame(quantification_rst)
-
-    quantification_rst[(!gc_na_indx)[indx_mod],] <- as.data.frame( DS_result )
+     rm(DS_result)
 
   } else {
 
-    if(LFC_shrinkage == "none") {
+    DS_final_rst <- DS_result
 
-    quantification_rst  <- as.data.frame( results(dds) )
-
-    } else {
-
-    suppressWarnings( quantification_rst <- as.data.frame( lfcShrink(dds=dds, coef=4, type = LFC_shrinkage) ) )
-
-    }
+    rm(DS_result)
 
   }
 
-  rownames( quantification_rst ) = rownames( SE_M )[indx_mod]
+  rownames(  DS_final_rst ) = rownames( SE_M )[indx_mod]
 
-  DESeq2Results( sep ) = as.data.frame( quantification_rst )
+  DESeq2Results( sep ) = as.data.frame(  DS_final_rst )
 
   return( sep )
 

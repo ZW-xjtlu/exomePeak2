@@ -6,21 +6,23 @@
 \title{Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics}
 \usage{
 exportResults(sep, format = c("txt", "BED", "RDS"),
-  save_dir = "exomepeaks_result", cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
-  expected_direction = "both", inhibit_filter = FALSE,
-  table_style = c("bed", "granges"))
+  table_style = c("bed", "granges"), save_dir = "exomepeaks_result",
+  cut_off_pvalue = NULL, cut_off_padj = 0.1, cut_off_log2FC = 0,
+  min_num_of_positive = 30, expected_direction = c("both", "hyper",
+  "hypo"), inhibit_filter = FALSE, reads_count = TRUE,
+  GC_sizeFactors = TRUE)
 
 \S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv",
-  "BED", "RDS"), save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
-  expected_direction = "both", inhibit_filter = FALSE,
-  table_style = c("bed", "granges"))
+  "BED", "RDS"), table_style = c("bed", "granges"),
+  save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
+  cut_off_padj = 0.1, cut_off_log2FC = 0, min_num_of_positive = 30,
+  expected_direction = c("both", "hyper", "hypo"),
+  inhibit_filter = FALSE, reads_count = TRUE, GC_sizeFactors = TRUE)
 }
 \arguments{
 \item{sep}{a \code{\link{SummarizedExomePeak}} object.}
 
-\item{format}{a \code{character} for the exported format, can be one in \code{c("tsv", "BED", "RDS")}.
+\item{format}{a \code{character} for the exported format, could be a vector that contains \code{c("tsv", "BED", "RDS")}.
 
 \describe{
  \item{\strong{\code{tsv}}}{
@@ -33,6 +35,18 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 
  \item{\strong{\code{RDS}}}{
  export the RDS file of the \code{\link{SummarizedExperiment}} object.
+ }
+}}
+
+\item{table_style}{a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+
+\describe{
+ \item{\strong{\code{bed}}}{
+ the genomic locations in the table are represented by BEDgraph style.
+ }
+
+ \item{\strong{\code{granges}}}{
+ the genomic locations in the table are represented by GRanges style.
  }
 }}
 
@@ -66,19 +80,11 @@ If the number of remaining sites is less than this number after filtering, addit
 
 This argument is useful when the treated group involves the perturbation of a known writer or eraser protein; Default "both".}
 
-\item{inhibit_filter}{a \code{logical} for whether to remove all the filters, this option is useful when quantification on single based site annotation; Default \code{= FALSE}.}
+\item{inhibit_filter}{a \code{logical} of whether to remove all the filters, this option is useful when quantification on single based site annotation; Default \code{= FALSE}.}
 
-\item{table_style}{a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+\item{reads_count}{a \code{logical} of whether to export the reads count for each sample; Default \code{ = TRUE}.}
 
-\describe{
- \item{\strong{\code{bed}}}{
- the genomic locations in the table are represented by BEDgraph style.
- }
-
- \item{\strong{\code{granges}}}{
- the genomic locations in the table are represented by GRanges style.
- }
-}}
+\item{GC_sizeFactors}{a \code{logical} of whether to export the GC content correction size factors; Default \code{ = TRUE}.}
 }
 \description{
 Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics

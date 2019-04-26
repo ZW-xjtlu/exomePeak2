@@ -9,8 +9,7 @@ glmM(sep, glm_type = c("auto", "Poisson", "NB", "DESeq2"),
   LFC_shrinkage = c("apeglm", "Gaussian", "ashr"), ...)
 
 \S4method{glmM}{SummarizedExomePeak}(sep, glm_type = c("auto", "Poisson",
-  "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "Gaussian", "ashr",
-  "none"), ...)
+  "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "Gaussian", "ashr"), ...)
 }
 \arguments{
 \item{sep}{a \code{summarizedExomePeak} object.}
@@ -29,7 +28,7 @@ By default, the DESeq2 GLMs are fitted on the data set with > 1 biological repli
 
 \item{LFC_shrinkage}{a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "Gaussian", "ashr", "none")}; Default \code{= "apeglm"}.
 
-see \code{\link{lfcShrink}} for more details.}
+see \code{\link{lfcShrink}} for details; if "none" is selected, only the MLE will be returned.}
 
 \item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }

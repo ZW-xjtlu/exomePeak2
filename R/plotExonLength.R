@@ -24,6 +24,8 @@
 #'
 #' @rdname plotExonLength
 #'
+#' @examples
+#'
 #'\dontrun{
 #'sep #a SummarizedExomePeak object
 #'txdb #a TxDb object
@@ -126,7 +128,7 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
       indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
                             DESeq2Results(sep)$log2FoldChange < 0)
 
-      list_names <- c("hyper padj < .05", "hypo padj < .05")
+      list_names <- c("hyper padj < 0.05", "hypo padj < 0.05")
 
       min_positive <- floor(sum(grepl("mod_", rownames(sep))) * 0.1)
 
@@ -138,7 +140,7 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
       indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
                           DESeq2Results(sep)$log2FoldChange < 0)
 
-      list_names <- c("hyper p < .05", "hypo p < .05")
+      list_names <- c("hyper p < 0.05", "hypo p < 0.05")
 
       }
 

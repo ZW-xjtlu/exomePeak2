@@ -7,13 +7,13 @@
 \usage{
 Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
   cut_off_log2FC = 0, min_num_of_positive = 30,
-  expected_direction = "both", inhibit_filter = FALSE,
-  table_style = c("bed", "granges"))
+  expected_direction = c("both", "hyper", "hypo"),
+  inhibit_filter = FALSE, table_style = c("bed", "granges"))
 
 \S4method{Results}{SummarizedExomePeak}(sep, cut_off_pvalue = NULL,
   cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
-  expected_direction = "both", inhibit_filter = TRUE,
-  table_style = c("bed", "granges"))
+  expected_direction = c("both", "hyper", "hypo"),
+  inhibit_filter = TRUE, table_style = c("bed", "granges"))
 }
 \arguments{
 \item{sep}{a \code{\link{SummarizedExomePeak}} object.}

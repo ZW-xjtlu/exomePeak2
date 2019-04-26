@@ -126,14 +126,16 @@ setGeneric("plotLfcGC", function(sep,
 #' @export
 setGeneric("exportResults", function(sep,
                                      format = c("txt","BED","RDS"),
+                                     table_style = c("bed","granges"),
                                      save_dir = "exomepeaks_result",
                                      cut_off_pvalue = NULL,
-                                     cut_off_padj = 0.05,
+                                     cut_off_padj = 0.1,
                                      cut_off_log2FC = 0,
                                      min_num_of_positive = 30,
-                                     expected_direction = "both",
+                                     expected_direction = c("both", "hyper", "hypo"),
                                      inhibit_filter = FALSE,
-                                     table_style = c("bed","granges")) {standardGeneric("exportResults")})
+                                     reads_count = TRUE,
+                                     GC_sizeFactors = TRUE) {standardGeneric("exportResults")})
 
 #' @rdname Results
 #' @export
@@ -142,7 +144,7 @@ setGeneric("Results", function(sep,
                                cut_off_padj = 0.05,
                                cut_off_log2FC = 0,
                                min_num_of_positive = 30,
-                               expected_direction = "both",
+                               expected_direction = c("both", "hyper", "hypo"),
                                inhibit_filter = FALSE,
                                table_style = c("bed","granges")) {standardGeneric("Results")})
 
