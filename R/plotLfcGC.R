@@ -142,7 +142,7 @@ p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
                             alpha = .5) +
             theme_classic() +
             scale_colour_manual(values = c("blue", "red")) +
-            labs(x = "GC contents",
+            labs(x = "GC content",
                  y = ylabel,
                  title = mtitle,
                  subtitle = save_pdf_prefix) +

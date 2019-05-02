@@ -32,7 +32,7 @@
 #'
 #'@param effective_gc a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.
 #'
-#'@description \code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variatio when calculating the modification peak statistics.
+#'@description \code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation for the quantification of modification peak statistics.
 #'
 #'
 #'@details

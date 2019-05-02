@@ -40,6 +40,7 @@
 #'@import ggplot2
 #'@import BSgenome
 #'@import SummarizedExperiment
+#'@import quantreg
 #'@importFrom reshape2 melt
 #'
 #'@docType methods
@@ -85,17 +86,21 @@ elementMetadata( sep ) <- GC_content_over_grl(
 
 }
 
+#Select the rows with average < 50
+
+sep <- sep[rowMeans(assay(sep)) >= 50,]
+
 normalized_counts <- ( t( t(assay(sep))/sep$sizeFactor ) / elementMetadata( sep )$feature_length )
+
+normalized_counts <- scale(normalized_counts)
 
 if(!is.null(GCsizeFactors( sep ))) {
 
 cqnormalized_counts <- assay(sep) / exp( GCsizeFactors( sep ) )
 
+cqnormalized_counts <- scale(  cqnormalized_counts )
+
 }
-
-#Remove the rows with average < 50
-
-elementMetadata( sep )$GC_content[rowMeans(assay(sep)) < 50] = NA
 
 Plot_df <- melt(normalized_counts)
 
@@ -190,9 +195,9 @@ p1 <- ggplot(Plot_df,
 if (ncol(sep) <= 11)  p1 = p1 + scale_color_brewer(palette = "Spectral")
 
 if(!is.null(GCsizeFactors( sep ))) {
-  p1 = p1 + facet_grid(norm~group,scales = "free_y")
+  p1 = p1 + facet_grid(norm~group)
 } else {
-  p1 = p1 + facet_grid(~group,scales = "free_y")
+  p1 = p1 + facet_grid(~group)
 }
 
 figheight = 6.55 + .2 * round(ncol( sep )/4)

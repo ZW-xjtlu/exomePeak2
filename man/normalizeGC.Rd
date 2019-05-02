@@ -52,7 +52,7 @@ Subset quantile normalization will be applied within the IP and input samples se
 a \code{summarizedExomePeak} object with the updated slot \code{GCsizeFactors}.
 }
 \description{
-\code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variatio when calculating the modification peak statistics.
+\code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation for the quantification of modification peak statistics.
 }
 \details{
 PCR amplication bias related to GC content is a major source of technical variation in RNA-seq.

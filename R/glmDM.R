@@ -180,49 +180,50 @@ setMethod("glmDM",
   colnames(DS_result) <- c("log2FoldChange","log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE","pvalue","padj")
 
   #Include reads count
-  DS_result$ReadsCount.IP.Treated <- rowSums( assay(dds)[,colData(dds)$design_IP & colData(dds)$design_Treatment] )
-  DS_result$ReadsCount.input.Treated <- rowSums( assay(dds)[,!colData(dds)$design_IP & colData(dds)$design_Treatment] )
-  DS_result$ReadsCount.IP.Control <- rowSums( assay(dds)[,colData(dds)$design_IP & !colData(dds)$design_Treatment] )
-  DS_result$ReadsCount.input.Control <- rowSums( assay(dds)[,!colData(dds)$design_IP & !colData(dds)$design_Treatment] )
+  DS_result$ReadsCount.IP.Treated <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP & colData(dds)$design_Treatment]) )
+  DS_result$ReadsCount.input.Treated <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP & colData(dds)$design_Treatment] ))
+  DS_result$ReadsCount.IP.Control <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP & !colData(dds)$design_Treatment] ))
+  DS_result$ReadsCount.input.Control <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP & !colData(dds)$design_Treatment] ))
 
   #Calculate estimates of other contrasts
-  Expr_Control_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(1,0,0,0)) ) )
+  Expr_Control_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,0,0,0)) ) ))
   DS_result$log2Expr.Control.MLE <- Expr_Control_design_MLE[,"log2FoldChange"]
   DS_result$log2Expr.Control.MLE.SE <- Expr_Control_design_MLE[,"lfcSE"]
   rm(Expr_Control_design_MLE)
 
-  Expr_Treated_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(1,1,0,0)) ) )
+  Expr_Treated_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,1,0,0)) ) ))
   DS_result$log2Expr.Treated.MLE <- Expr_Treated_design_MLE[,"log2FoldChange"]
   DS_result$log2Expr.Treated.MLE.SE <- Expr_Treated_design_MLE[,"lfcSE"]
   rm(Expr_Treated_design_MLE)
 
-  DiffExpr_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(0,1,0,0)) ) )
+  DiffExpr_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(0,1,0,0)) ) ))
   DS_result$log2fcDiffExpr.MLE <- DiffExpr_design_MLE[,"log2FoldChange"]
   DS_result$log2fcDiffExpr.MLE.SE <- DiffExpr_design_MLE[,"lfcSE"]
   rm(DiffExpr_design_MLE)
 
-  Mod_Control_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(0,0,1,0)) ) )
+  Mod_Control_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(0,0,1,0)) ) ))
   DS_result$log2fcMod.Control.MLE <- Mod_Control_design_MLE[,"log2FoldChange"]
   DS_result$log2fcMod.Control.MLE.SE  <- Mod_Control_design_MLE[,"lfcSE"]
   rm(Mod_Control_design_MLE)
 
-  Mod_Treated_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(0,0,1,1)) ) )
+  Mod_Treated_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(0,0,1,1)) ) ))
   DS_result$log2fcMod.Treated.MLE <- Mod_Treated_design_MLE[,"log2FoldChange"]
   DS_result$log2fcMod.Treated.MLE.SE  <- Mod_Treated_design_MLE[,"lfcSE"]
   rm(Mod_Treated_design_MLE)
 
   #Calculate additional MAP estimates if LFCs are set != "none"
-  if(LFC_shrinkage != "none") {
+  if(LFC_shrinkage != "none" & glm_type != "Poisson") {
 
     DS_result$log2fcDiffExpr.MAP <- as.data.frame( suppressMessages( lfcShrink( dds=dds, coef = 2, type = LFC_shrinkage  ) ) )$log2FoldChange
     DS_result$log2fcDiffMod.MAP <- as.data.frame( suppressMessages( lfcShrink( dds=dds, coef = 4, type = LFC_shrinkage  ) ) )$log2FoldChange
+    DS_result$log2FoldChange <- DS_result$log2fcDiffMod.MAP
 
     DS_result <- DS_result[,c("ReadsCount.input.Control","ReadsCount.IP.Control",
                               "ReadsCount.input.Treated","ReadsCount.IP.Treated",
                               "log2Expr.Control.MLE","log2Expr.Control.MLE.SE",
                               "log2Expr.Treated.MLE","log2Expr.Treated.MLE.SE",
                               "log2fcMod.Control.MLE","log2fcMod.Control.MLE.SE",
-                              "log2fcMod.Treated.MLE","log2fcMod.Control.MLE.SE",
+                              "log2fcMod.Treated.MLE","log2fcMod.Treated.MLE.SE",
                               "log2fcDiffExpr.MLE","log2fcDiffExpr.MLE.SE","log2fcDiffExpr.MAP",
                               "log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE","log2fcDiffMod.MAP",
                               "log2FoldChange","pvalue","padj")]
@@ -232,7 +233,7 @@ setMethod("glmDM",
                               "log2Expr.Control.MLE","log2Expr.Control.MLE.SE",
                               "log2Expr.Treated.MLE","log2Expr.Treated.MLE.SE",
                               "log2fcMod.Control.MLE","log2fcMod.Control.MLE.SE",
-                              "log2fcMod.Treated.MLE","log2fcMod.Control.MLE.SE",
+                              "log2fcMod.Treated.MLE","log2fcMod.Treated.MLE.SE",
                               "log2fcDiffExpr.MLE","log2fcDiffExpr.MLE.SE",
                               "log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE",
                               "log2FoldChange","pvalue","padj")]

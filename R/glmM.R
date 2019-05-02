@@ -165,31 +165,30 @@ setMethod("glmM",
 
    #Generation of the DESeq2 report.
 
-      DS_result <- as.data.frame( suppressMessages( results( dds, altHypothesis = "greater" ) ) )
+      DS_result <- as.data.frame( suppressWarnings( suppressMessages( results( dds, altHypothesis = "greater" ) ) ))
       DS_result <- DS_result[,c("log2FoldChange","log2FoldChange","lfcSE","pvalue","padj")]
       colnames(DS_result) <- c("log2FoldChange","log2fcMod.MLE","log2fcMod.MLE.SE","pvalue","padj")
 
       #Include reads count
-      DS_result$ReadsCount.IP <- rowSums( assay(dds)[,colData(dds)$design_IP] )
-      DS_result$ReadsCount.input <- rowSums( assay(dds)[,!colData(dds)$design_IP] )
+      DS_result$ReadsCount.IP <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP]) )
+      DS_result$ReadsCount.input <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP]) )
 
       #Calculat expression level related estimates
-      Expr_design_MLE <- as.data.frame( suppressMessages( results( dds, contrast = c(1,0)) ) )
+      Expr_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,0)) ) ))
       DS_result$log2Expr.MLE <- Expr_design_MLE[,"log2FoldChange"]
       DS_result$log2Expr.MLE.SE <- Expr_design_MLE[,"lfcSE"]
       rm(Expr_design_MLE)
 
       #Calculate additional MAP estimates if LFCs are set != "none"
-      if(LFC_shrinkage != "none") {
+      if(LFC_shrinkage != "none" & glm_type != "Poisson") {
 
         #MAP for methylation level
         DS_result$log2fcMod.MAP <- as.data.frame( suppressMessages( lfcShrink( dds=dds, coef = 2, type = LFC_shrinkage  ) ) )$log2FoldChange
 
-        #MAP for expression level
-        DS_result$log2fcExpr.MAP <- as.data.frame( suppressMessages( lfcShrink( dds=dds, coef = 1, type = "normal"  ) ) )$log2FoldChange
+        DS_result$log2FoldChange <- DS_result$log2fcMod.MAP
 
         DS_result <- DS_result[,c("ReadsCount.input","ReadsCount.IP",
-                                  "log2Expr.MLE","log2Expr.MLE.SE","log2fcExpr.MAP",
+                                  "log2Expr.MLE","log2Expr.MLE.SE",
                                   "log2fcMod.MLE","log2fcMod.MLE.SE","log2fcMod.MAP",
                                   "log2FoldChange","pvalue","padj")]
       } else {
