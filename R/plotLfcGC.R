@@ -135,7 +135,7 @@ plot_df$GC_idx <- as.numeric(plot_df$GC_idx)
 
 plot_df <- plot_df[plot_df$GC_idx < 0.88 & plot_df$GC_idx > 0.2,]
 
-p1 <- ggplot(plot_df, aes(x =  GC_idx , y = Log2FC )) +
+p1 <- ggplot(plot_df, aes(x = GC_idx , y = Log2FC )) +
                  geom_point(aes(group = Label,
                                 colour = Label),
                             size = .05,

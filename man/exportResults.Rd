@@ -5,14 +5,14 @@
 \alias{exportResults}
 \title{Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics}
 \usage{
-exportResults(sep, format = c("txt", "BED", "RDS"),
+exportResults(sep, format = c("CSV", "BED", "RDS"),
   table_style = c("bed", "granges"), save_dir = "exomepeaks_result",
   cut_off_pvalue = NULL, cut_off_padj = 0.1, cut_off_log2FC = 0,
   min_num_of_positive = 30, expected_direction = c("both", "hyper",
   "hypo"), inhibit_filter = FALSE, reads_count = TRUE,
   GC_sizeFactors = TRUE)
 
-\S4method{exportResults}{SummarizedExomePeak}(sep, format = c("tsv",
+\S4method{exportResults}{SummarizedExomePeak}(sep, format = c("CSV",
   "BED", "RDS"), table_style = c("bed", "granges"),
   save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
   cut_off_padj = 0.1, cut_off_log2FC = 0, min_num_of_positive = 30,
@@ -22,11 +22,11 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
 \arguments{
 \item{sep}{a \code{\link{SummarizedExomePeak}} object.}
 
-\item{format}{a \code{character} for the exported format, could be a vector that contains \code{c("tsv", "BED", "RDS")}.
+\item{format}{a \code{character} for the exported format, could be a vector that contains \code{c("CSV", "BED", "RDS")}.
 
 \describe{
- \item{\strong{\code{tsv}}}{
- export a tab separated values (tsv) table with the genomic location and LFC statistics.
+ \item{\strong{\code{CSV}}}{
+ export a comma separated values (CSV) table with the genomic location and LFC statistics.
  }
 
  \item{\strong{\code{BED}}}{
@@ -38,7 +38,7 @@ exportResults(sep, format = c("txt", "BED", "RDS"),
  }
 }}
 
-\item{table_style}{a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+\item{table_style}{a \code{character} for the style of the CSV table being exported, could be one in \code{c("bed","granges")}.
 
 \describe{
  \item{\strong{\code{bed}}}{

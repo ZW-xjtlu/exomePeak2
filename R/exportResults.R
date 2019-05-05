@@ -1,10 +1,10 @@
 #' @title Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics
 #' @param sep a \code{\link{SummarizedExomePeak}} object.
-#' @param format a \code{character} for the exported format, could be a vector that contains \code{c("tsv", "BED", "RDS")}.
+#' @param format a \code{character} for the exported format, could be a vector that contains \code{c("CSV", "BED", "RDS")}.
 #'
 #' \describe{
-#'  \item{\strong{\code{tsv}}}{
-#'  export a tab separated values (tsv) table with the genomic location and LFC statistics.
+#'  \item{\strong{\code{CSV}}}{
+#'  export a comma separated values (CSV) table with the genomic location and LFC statistics.
 #'  }
 #'
 #'  \item{\strong{\code{BED}}}{
@@ -48,7 +48,7 @@
 #'
 #' @param inhibit_filter a \code{logical} of whether to remove all the filters, this option is useful when quantification on single based site annotation; Default \code{= FALSE}.
 #'
-#' @param table_style a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+#' @param table_style a \code{character} for the style of the CSV table being exported, could be one in \code{c("bed","granges")}.
 #'
 #' \describe{
 #'  \item{\strong{\code{bed}}}{
@@ -104,7 +104,7 @@
 setMethod("exportResults",
           "SummarizedExomePeak",
           function(sep,
-                   format = c("tsv", "BED", "RDS"),
+                   format = c("CSV", "BED", "RDS"),
                    table_style = c("bed", "granges"),
                    save_dir = "exomePeak2_output",
                    cut_off_pvalue = NULL,
@@ -119,7 +119,7 @@ setMethod("exportResults",
             #Check the input
             stopifnot(cut_off_pvalue <= 1 & cut_off_pvalue >= 0)
             stopifnot(cut_off_log2FC >= 0)
-            stopifnot(all(format %in% c("tsv", "BED", "RDS")))
+            stopifnot(all(format %in% c("CSV", "BED", "RDS")))
             table_style <- match.arg(table_style)
             expected_direction <- match.arg(expected_direction)
 
@@ -128,8 +128,13 @@ setMethod("exportResults",
               dir.create(save_dir)
             }
 
+            #Create the folder for the additional information
+            if (!dir.exists(file.path(save_dir,"ADDInfo"))) {
+              dir.create(file.path(save_dir,"ADDInfo"))
+            }
+
             #Decide the file names
-            if (!any(sep$design_Treatment)) {
+            if (!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
               file_name <- "Mod"
             } else{
               file_name <- "DiffMod"
@@ -156,7 +161,7 @@ setMethod("exportResults",
 
             } else {
 
-            if (!any(sep$design_Treatment)) {
+            if (!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
 
               #Decide the filter on modification
               decision_mod <- decision_deseq2(
@@ -247,7 +252,7 @@ setMethod("exportResults",
             result_grl <- result_grl[id_index,]
             names(result_grl) <- renamed_id
 
-            #Generate the tables according to the styke choices
+            #Generate the tables according to the style choices
                 if (table_style == "granges") {
                   result_df <- as.data.frame(result_grl)
                   result_df <-
@@ -292,12 +297,28 @@ setMethod("exportResults",
                 }
 
 
-            if (any(format == "tsv")) write.table(result_df,
-                                                  file = file.path(save_dir,
-                                                                   paste0(file_name, ".txt")),
-                                                  sep = "\t",
-                                                  row.names = FALSE,
-                                                  col.names = TRUE)
+            #Export the complete model estimates
+            write.csv(
+              result_df[,grepl("MAP|MLE",colnames(result_df))],
+              file = file.path(save_dir,"ADDInfo","ADDInfo_SiteEstimates.csv")
+            )
+
+            if (!any(grepl("Diff", colnames(DESeq2Results(sep))))){
+              result_df <- result_df[, !grepl("MAP|MLE",colnames(result_df))]
+            } else {
+              result_df <- result_df[, !grepl("MAP|MLE",colnames(result_df)) | colnames(result_df) %in% c("log2fcMod.Control.MLE",
+                                                                                                         "log2fcMod.Treated.MLE")]
+              colnames( result_df )[colnames(result_df) %in% c("log2fcMod.Control.MLE",
+                                                             "log2fcMod.Treated.MLE",
+                                                             "log2FoldChange")] <- c("ModLog2FC_control",
+                                                                                     "ModLog2FC_treated",
+                                                                                     "DiffModLog2FC")
+            }
+
+            if (any(format == "CSV")) write.csv(x = result_df,
+                                                file = file.path(save_dir,
+                                                                 paste0(file_name, ".csv"))
+                                                )
 
                 scores <- -1 * log2(mcols(result_grl)$padj)
 
@@ -311,21 +332,16 @@ setMethod("exportResults",
                   format = "BED"
                 )
 
-          if (reads_count) write.table(assays(sep)[[1]],
-                                        file = file.path(save_dir,
-                                                         paste0("AddInfo_ReadsCount.txt")),
-                                        sep = "\t",
-                                        row.names = TRUE,
-                                        col.names = TRUE)
+          if (reads_count) write.csv(x = assays(sep)[[1]],
+                                     file = file.path(save_dir,"ADDInfo","ADDInfo_ReadsCount.csv")
+                                     )
 
 
           if (!is.null(GCsizeFactors(sep))&
-                       GC_sizeFactors) write.table(assays(sep)[[2]],
-                                          file = file.path(save_dir,
-                                                           paste0("AddInfo_SizeFactors.txt")),
-                                          sep = "\t",
-                                          row.names = TRUE,
-                                          col.names = TRUE)
+                       GC_sizeFactors) write.csv(
+                                          x = assays(sep)[[2]],
+                                          file = file.path(save_dir,"ADDInfo","ADDInfo_SizeFactors.csv")
+                                          )
 
 message(paste0("Result files have saved under the directory: '", file.path(save_dir)), "'...")
 

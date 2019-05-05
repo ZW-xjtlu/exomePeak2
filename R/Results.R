@@ -31,7 +31,7 @@
 #'
 #' @param inhibit_filter a \code{logical} for whether to remove all the filters, this option is useful when quantification on single based site annotation; Default \code{= FALSE}.
 #'
-#' @param table_style a \code{character} for the style of the tsv table being exported, could be one in \code{c("bed","granges")}.
+#' @param table_style a \code{character} for the style of the table being returned, could be one in \code{c("bed","granges")}.
 #'
 #' \describe{
 #'  \item{\strong{\code{bed}}}{

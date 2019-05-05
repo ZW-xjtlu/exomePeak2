@@ -16,7 +16,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   glm_type = c("DESeq2", "Poisson", "NB"), LFC_shrinkage = c("apeglm",
   "ashr", "Gaussian", "none"), export_results = TRUE,
-  export_format = c("tsv", "BED", "RDS"), table_style = c("bed",
+  export_format = c("CSV", "BED", "RDS"), table_style = c("bed",
   "granges"), save_plot_GC = TRUE, save_plot_analysis = FALSE,
   save_plot_name = "ep2", save_dir = "exomePeak2_output",
   peak_calling_mode = c("exon", "full_tx", "whole_genome"))
@@ -114,7 +114,7 @@ see \code{\link{lfcShrink}} for more details; if "none" is selected, only the ML
 
 \item{export_results}{a \code{logical} of whether to save the results on disk; default \code{= TRUE}.}
 
-\item{export_format}{a \code{character} vector for the format(s) of the result being exported, could be the subset of \code{c("tsv","BED","RDS")}; Default \code{= c("tsv","BED","RDS")}.}
+\item{export_format}{a \code{character} vector for the format(s) of the result being exported, could be the subset of \code{c("CSV","BED","RDS")}; Default \code{= c("CSV","BED","RDS")}.}
 
 \item{table_style}{a \code{character} for the style of the table being exported, could be one of \code{c("bed", "granges")}; Default \code{= "bed"}.}
 
@@ -169,7 +169,7 @@ If the \code{bsgenome} argument is not provided (\code{= NULL}), the downstream 
 If the BAM files in treated samples are provided at the arguments \code{bam_treated_ip} and \code{bam_treated_input}, the statistics of differential modification analysis will be reported.
 
 Under default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named by \code{'exomePeak2_output'}.
-The results generated include a BED file and a TSV table that store the locations and statistics of (differential) modified peaks/sites.
+The results generated include a BED file and a CSV table that store the locations and statistics of (differential) modified peaks/sites.
 }
 \examples{
 # Load packages for the genome sequence and transcript annotation

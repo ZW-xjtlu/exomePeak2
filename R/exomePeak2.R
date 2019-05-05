@@ -22,7 +22,7 @@
 #' If the BAM files in treated samples are provided at the arguments \code{bam_treated_ip} and \code{bam_treated_input}, the statistics of differential modification analysis will be reported.
 #'
 #' Under default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named by \code{'exomePeak2_output'}.
-#' The results generated include a BED file and a TSV table that store the locations and statistics of (differential) modified peaks/sites.
+#' The results generated include a BED file and a CSV table that store the locations and statistics of (differential) modified peaks/sites.
 #'
 #'
 #' @param bam_ip a \code{character} vector for the BAM file directories of the (control) IP samples.
@@ -119,13 +119,13 @@
 #'
 #' @param export_results a \code{logical} of whether to save the results on disk; default \code{= TRUE}.
 #'
-#' @param export_format a \code{character} vector for the format(s) of the result being exported, could be the subset of \code{c("tsv","BED","RDS")}; Default \code{= c("tsv","BED","RDS")}.
+#' @param export_format a \code{character} vector for the format(s) of the result being exported, could be the subset of \code{c("CSV","BED","RDS")}; Default \code{= c("CSV","BED","RDS")}.
 #'
 #' @param save_plot_GC a \code{logical} of whether to generate the plots for GC content bias assessment; default \code{= TRUE}.
 #'
 #' @param save_plot_analysis a \code{logical} of whether to generate the plots for genomic analysis on modification sites; default \code{= FALSE}.
 #'
-#' @param save_plot_name a \code{character} for the name of the plots being saved; Default \code{= "ep2"}.
+#' @param save_plot_name a \code{character} for the name of the plots being saved; Default \code{= "Plot"}.
 #'
 #' @param save_dir a \code{character} for the name of the directory being saved; Default \code{= "exomePeak2_output"}.
 #'
@@ -248,18 +248,18 @@ exomePeak2 <- function(bam_ip = NULL,
                        glm_type = c("DESeq2","Poisson","NB"),
                        LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),
                        export_results = TRUE,
-                       export_format = c("tsv","BED","RDS"),
+                       export_format = c("CSV","BED","RDS"),
                        table_style = c("bed","granges"),
                        save_plot_GC = TRUE,
                        save_plot_analysis = FALSE,
-                       save_plot_name = "ep2",
+                       save_plot_name = "Plot",
                        save_dir = "exomePeak2_output",
                        peak_calling_mode = c("exon", "full_tx", "whole_genome")
                       ) {
 
 LFC_shrinkage <- match.arg(LFC_shrinkage)
 
-stopifnot(all(export_format %in% c("tsv", "BED", "RDS")))
+stopifnot(all(export_format %in% c("CSV", "BED", "RDS")))
 
 table_style <- match.arg(table_style)
 
@@ -308,6 +308,14 @@ if( peak_calling_mode != "exon") {
 if(!is.null(bsgenome)) {
   bsgenome <- getBSgenome(bsgenome)
 }
+
+argg <- as.list(environment()) #Get arguments information
+
+if(length(argg$library_type) > 1) argg$library_type = argg$library_type[1]
+
+if(length(argg$export_format) > 1) argg$export_format = argg$export_format[1]
+
+argg <- lapply(argg, capture.output)
 
 #Check the completeness of the genome annotation
 
@@ -360,6 +368,9 @@ if( export_results ) {
                 inhibit_filter = !is.null( mod_annot ),
                 table_style = table_style,
                 save_dir = save_dir)
+
+  writeLines( format_argg(argg) , file.path(save_dir, "RunInfo.txt") )
+
 }
 
 if( !is.null(bsgenome) & save_plot_GC ) {

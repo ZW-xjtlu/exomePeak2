@@ -125,7 +125,7 @@ setGeneric("plotLfcGC", function(sep,
 #' @rdname exportResults
 #' @export
 setGeneric("exportResults", function(sep,
-                                     format = c("txt","BED","RDS"),
+                                     format = c("CSV","BED","RDS"),
                                      table_style = c("bed","granges"),
                                      save_dir = "exomepeaks_result",
                                      cut_off_pvalue = NULL,
