@@ -229,7 +229,7 @@ if(!is.null(save_pdf_prefix)) {
     dir.create(save_dir)
   }
 
-  suppressMessages( ggsave(file.path(save_dir, paste0(save_pdf_prefix, "_ab_GC.pdf")),
+  suppressMessages( ggsave(file.path(save_dir, paste0(save_pdf_prefix, "ReadsGC.pdf")),
                            p1, width = figwidth, height = figheight) )
 
 }

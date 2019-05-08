@@ -53,7 +53,7 @@ if(is.null(colData( sep )$sizeFactor)){
     sep <- estimateSeqDepth(sep)
 }
 
-if(is.null(DESeq2Results(sep))) {
+if(nrow(DESeq2Results(sep)) == 0) {
   if(any(sep$design_Treatment)) {
     sep <- glmDM(sep)
    } else {
@@ -78,13 +78,11 @@ elementMetadata( sep ) <- GC_content_over_grl(
                           binding_length = binding_length,
                           effective_GC = effective_GC
 )
-
 }
-
 
 Decision <- rep("Insignificant",nrow(DESeq2Results(sep)))
 
-if(!any(sep$design_Treatment)) {
+if(!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
 
 indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
@@ -123,7 +121,7 @@ plot_df = data.frame(
   Label = Decision[!na_idx]
 )
 
-if(!any(sep$design_Treatment)) {
+if(!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
   ylabel <- "IP/input log2 Fold Change"
   mtitle <- "GC Content Against log2 Fold Change Estimates"
 } else {
@@ -155,7 +153,7 @@ if(!is.null( save_pdf_prefix )) {
   }
 
 ggsave(file.path(save_dir,
-                 paste0(save_pdf_prefix, "_lfc_GC.pdf")),
+                 paste0(save_pdf_prefix, "LfcGC.pdf")),
                  p1,
                  width = 4.5,
                 height = 3)

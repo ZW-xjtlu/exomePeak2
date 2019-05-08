@@ -5,7 +5,7 @@
 #'@param txdb a \code{\link{TxDb}} object for the transcript annotation,
 #' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence information,
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome reference,
 #' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.
 #'
 #'@param fragment_length a positive integer number for the expected fragment length in nucleotides; default \code{= 100}.
@@ -16,13 +16,14 @@
 #'
 #'\describe{
 #'  \item{\strong{\code{background}}}{
-#'  The GC content linear effect and the conditional quantile normalization will be performed only on the background regions.
+#'  The GC content linear effect and the parameters for quantile normalization will be estimated on the background regions.
 #'  }
 #'
-#'  \item{\strong{\code{all}}}{ The GC content and quantile correction factors will be estimated on all regions,
-#' this choice will force the resulting modification signals independent on GC content, which could result in the complete removal of the effect of GC content on further analysis.
+#'  \item{\strong{\code{all}}}{ The GC content and the parameters for quantile normalization will be estimated on all regions.
 #'
-#' This method will introduce bias if the modification level is biologically dependent on GC content, but it should be applied when the background is hard to estimate.
+#' this method will force the resulting modification signals independent of GC contents.
+#' It will introduce biases if the modification levels are biologically dependent on GC contents, users should apply this mode if the background regions cannot be reliably estimated.
+#'
 #' }
 #' }
 #'
@@ -32,7 +33,7 @@
 #'
 #'@param effective_gc a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.
 #'
-#'@description \code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation for the quantification of modification peak statistics.
+#'@description \code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation during modification peak statistics quantification.
 #'
 #'
 #'@details

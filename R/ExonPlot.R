@@ -51,7 +51,7 @@ exonPlot <- function(
       dir.create(save_dir)
     }
 
-    ggsave( file.path( save_dir, paste0(save_pdf_prefix, "_exl.pdf")),
+    ggsave( file.path( save_dir, paste0(save_pdf_prefix, "ExonsLength.pdf")),
                                         p1, width = 5, height = 3)
 
   }

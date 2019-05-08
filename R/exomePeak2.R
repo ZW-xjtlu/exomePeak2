@@ -374,7 +374,7 @@ if( export_results ) {
 }
 
 if( !is.null(bsgenome) & save_plot_GC ) {
-message("Saving plots for GC content bias assessments...")
+message("Saving plot for GC content bias assessments...")
 
 suppressMessages(
 plotLfcGC(sep = sep,
@@ -407,9 +407,9 @@ if (save_plot_analysis) {
                  save_pdf_prefix = save_plot_name,
                  save_dir = save_dir)
 
-plotReadsGC(sep = sep,
-            save_pdf_prefix = save_plot_name,
-            save_dir = save_dir)
+  plotReadsGC(sep = sep,
+              save_pdf_prefix = save_plot_name,
+              save_dir = save_dir)
 }
 
 return(sep)

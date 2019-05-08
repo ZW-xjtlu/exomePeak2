@@ -18,7 +18,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   "ashr", "Gaussian", "none"), export_results = TRUE,
   export_format = c("CSV", "BED", "RDS"), table_style = c("bed",
   "granges"), save_plot_GC = TRUE, save_plot_analysis = FALSE,
-  save_plot_name = "ep2", save_dir = "exomePeak2_output",
+  save_plot_name = "Plot", save_dir = "exomePeak2_output",
   peak_calling_mode = c("exon", "full_tx", "whole_genome"))
 }
 \arguments{
@@ -122,7 +122,7 @@ see \code{\link{lfcShrink}} for more details; if "none" is selected, only the ML
 
 \item{save_plot_analysis}{a \code{logical} of whether to generate the plots for genomic analysis on modification sites; default \code{= FALSE}.}
 
-\item{save_plot_name}{a \code{character} for the name of the plots being saved; Default \code{= "ep2"}.}
+\item{save_plot_name}{a \code{character} for the name of the plots being saved; Default \code{= "Plot"}.}
 
 \item{save_dir}{a \code{character} for the name of the directory being saved; Default \code{= "exomePeak2_output"}.}
 
