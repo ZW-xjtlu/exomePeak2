@@ -12,13 +12,13 @@ normalizeGC(sep, bsgenome = "hg19", txdb = "hg19", gff_dir = NULL,
 
 \S4method{normalizeGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
   txdb = NULL, gff_dir = NULL, fragment_length = 100,
-  binding_length = 25, feature = c("background", "all"),
+  binding_length = 25, feature = c("all", "background"),
   qtnorm = TRUE, effective_GC = FALSE)
 }
 \arguments{
 \item{sep}{a \code{\link{summarizedExomePeak}} object returned by \code{\link{exomePeak2}} or \code{\link{exomePeakCalling}}.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information,
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome reference,
 If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.}
 
 \item{txdb}{a \code{\link{TxDb}} object for the transcript annotation,
@@ -28,23 +28,23 @@ If the \code{TxDb} object is not available, it could be a \code{character} strin
 
 \item{binding_length}{a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.}
 
-\item{feature}{a \code{character} specifies the region used in the GC effect estimation, can be one in \code{c("background", "all")}; default \code{"background"}.
+\item{feature}{a \code{character} specifies the region used in the GC effect estimation, can be one in \code{c("all", "background")}; default \code{"all"}.
 
 \describe{
- \item{\strong{\code{background}}}{
- The GC content linear effect and the conditional quantile normalization will be performed only on the background regions.
+
+ \item{\strong{\code{all}}}{
+ The GC content and the parameters for quantile normalization will be estimated on all regions.
  }
 
- \item{\strong{\code{all}}}{ The GC content and quantile correction factors will be estimated on all regions,
-this choice will force the resulting modification signals independent on GC content, which could result in the complete removal of the effect of GC content on further analysis.
+ \item{\strong{\code{background}}}{
+ The GC content linear effect and the parameters for quantile normalization will be estimated on the background regions.
+ }
 
-This method will introduce bias if the modification level is biologically dependent on GC content, but it should be applied when the background is hard to estimate.
-}
 }}
 
-\item{qtnorm}{a \code{logical} of whether to perform conditional quantile normalization after the GC content linear effect estimation； default \code{= TRUE}.
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
 
-Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
+If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 
 \item{effective_gc}{a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.}
 }
@@ -52,14 +52,11 @@ Subset quantile normalization will be applied within the IP and input samples se
 a \code{summarizedExomePeak} object with the updated slot \code{GCsizeFactors}.
 }
 \description{
-\code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation for the quantification of modification peak statistics.
+\code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation during modification peak statistics quantification.
 }
 \details{
 PCR amplication bias related to GC content is a major source of technical variation in RNA-seq.
 The GC content biases are usually correlated within the same laboratory environment, and this will result in the batch effect between different studies.
-
-Under the default condition, the GC content correction factors are estimated on the background regions that have no modification signals.
-This strategy can avoid the quantification biases for RNA modifications that are biologically dependent on the GC content of the underlying sequences.
 
 The GC content normalization can result in an improvement of peak accuracy for most published m6A-seq data,
 and it is particullarly recommended if you want to compare the quantifications on methylation levels between different laboratory conditions.

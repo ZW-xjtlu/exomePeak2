@@ -12,24 +12,23 @@
 #'
 #'@param binding_length a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.
 #'
-#'@param feature a \code{character} specifies the region used in the GC effect estimation, can be one in \code{c("background", "all")}; default \code{"background"}.
+#'@param feature a \code{character} specifies the region used in the GC effect estimation, can be one in \code{c("all", "background")}; default \code{"all"}.
 #'
 #'\describe{
+#'
+#'  \item{\strong{\code{all}}}{
+#'  The GC content and the parameters for quantile normalization will be estimated on all regions.
+#'  }
+#'
 #'  \item{\strong{\code{background}}}{
 #'  The GC content linear effect and the parameters for quantile normalization will be estimated on the background regions.
 #'  }
 #'
-#'  \item{\strong{\code{all}}}{ The GC content and the parameters for quantile normalization will be estimated on all regions.
-#'
-#' this method will force the resulting modification signals independent of GC contents.
-#' It will introduce biases if the modification levels are biologically dependent on GC contents, users should apply this mode if the background regions cannot be reliably estimated.
-#'
-#' }
 #' }
 #'
-#'@param qtnorm a \code{logical} of whether to perform conditional quantile normalization after the GC content linear effect estimation； default \code{= TRUE}.
+#'@param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
 #'
-#'Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
+#' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
 #'@param effective_gc a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.
 #'
@@ -39,9 +38,6 @@
 #'@details
 #'PCR amplication bias related to GC content is a major source of technical variation in RNA-seq.
 #'The GC content biases are usually correlated within the same laboratory environment, and this will result in the batch effect between different studies.
-#'
-#'Under the default condition, the GC content correction factors are estimated on the background regions that have no modification signals.
-#'This strategy can avoid the quantification biases for RNA modifications that are biologically dependent on the GC content of the underlying sequences.
 #'
 #'The GC content normalization can result in an improvement of peak accuracy for most published m6A-seq data,
 #'and it is particullarly recommended if you want to compare the quantifications on methylation levels between different laboratory conditions.
@@ -88,7 +84,7 @@ setMethod("normalizeGC",
                                  gff_dir = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
-                                 feature = c("background", "all"),
+                                 feature = c("all","background"),
                                  qtnorm = TRUE,
                                  effective_GC = FALSE
                                  ) {

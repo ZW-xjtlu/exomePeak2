@@ -85,7 +85,15 @@
 #'
 #' If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
 #'
-#' @param manual_background optional, a \code{\link{GRanges}} object for the user provided unmodified background.
+#' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
+#'
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#'
+#' If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
+#'
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#'
+#' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
 #' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
 #'
@@ -245,6 +253,9 @@ exomePeak2 <- function(bam_ip = NULL,
                        logFC_cutoff = 0,
                        parallel = FALSE,
                        background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+                       manual_background = NULL,
+                       correct_GC_bg = FALSE,
+                       qtnorm = TRUE,
                        glm_type = c("DESeq2","Poisson","NB"),
                        LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),
                        export_results = TRUE,
@@ -343,14 +354,21 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         peak_width = fragment_length/2,
                         parallel = parallel,
                         mod_annot = mod_annot,
-                        background = background
+                        background = background,
+                        manual_background = manual_background,
+                        correct_GC_bg = correct_GC_bg,
+                        qtnorm = qtnorm
 )
 
 sep <- estimateSeqDepth(sep)
 
 if(!is.null(bsgenome)) {
   message("Evaluating GC content biases on the background...")
-  sep <- normalizeGC(sep)
+
+  sep <- normalizeGC(sep,
+                     feature = ifelse(correct_GC_bg,"background","all"),
+                     qtnorm = qtnorm)
+
 }
 
 if(any(sep$design_Treatment)){

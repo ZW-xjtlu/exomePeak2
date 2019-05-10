@@ -5,14 +5,22 @@
 \title{Statistical Inference with DESeq package based on the provided reads count for exomic bins.}
 \usage{
 call_peaks_with_GLM(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
-  txdb, count_cutoff = 5, p_cutoff = NULL, p_adj_cutoff = 0.05,
-  logFC_cutoff = 0)
+  correct_GC_bg = FALSE, qtnorm = TRUE, txdb, count_cutoff = 5,
+  p_cutoff = NULL, p_adj_cutoff = 0.05, logFC_cutoff = 0)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP/input + treated/control.}
 
 \item{glm_type}{a character, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
 The DESeq2 method is only recommended for high power experiments with more than 3 biological replicates for both IP and input.}
+
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+
+If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
+
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+
+Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 
 \item{txdb}{the txdb object that is necessary for the calculation of the merge of the peaks.}
 

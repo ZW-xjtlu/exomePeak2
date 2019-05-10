@@ -16,6 +16,14 @@
 #'
 #' @param txdb the txdb object that is necessary for the calculation of the merge of the peaks.
 #'
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#'
+#' If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
+#'
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#'
+#' Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
+#'
 #' @param count_cutoff an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with the row average read count bigger than the cutoff. Default value is 5.
 #'
 #' @param p_cutoff a numeric value of the p value cutoff used in DESeq inference.
@@ -31,6 +39,8 @@
 #'
 call_peaks_with_GLM <- function(SE_bins,
                                 glm_type = c("Poisson", "NB", "DESeq2"),
+                                correct_GC_bg = FALSE,
+                                qtnorm = TRUE,
                                 txdb,
                                 count_cutoff = 5,
                                 p_cutoff = NULL,
@@ -53,7 +63,8 @@ call_peaks_with_GLM <- function(SE_bins,
     p_cutoff = p_cutoff,
     p_adj_cutoff = p_adj_cutoff,
     count_cutoff = count_cutoff,
-    logFC_mod = logFC_cutoff
+    logFC_mod = logFC_cutoff,
+    correct_GC_bg = correct_GC_bg
   )
 
   gr_mod <-

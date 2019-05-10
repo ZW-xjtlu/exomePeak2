@@ -12,6 +12,14 @@
 #' If the bins are filtered less than this number by the p values or effect sizes,
 #' more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(SE_bins)*0.002 ).
 #'
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#'
+#' If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
+#'
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#'
+#' Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
+#'
 #' @description \code{GLM_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model in DESeq.
 #'
 #' @return a list of the index for the significant modified peaks (IP > input) and control peaks (peaks other than modification containing peaks).
@@ -25,7 +33,9 @@ GLM_inference <- function(SE_bins,
                           p_adj_cutoff = 0.05,
                           count_cutoff = 5,
                           logFC_mod = 0,
-                          min_mod_number = floor(nrow(SE_bins) * 0.001)) {
+                          min_mod_number = floor(nrow(SE_bins) * 0.001),
+                          correct_GC_bg = FALSE,
+                          qtnorm = TRUE) {
 
   glm_type <- match.arg(glm_type)
 
@@ -47,6 +57,12 @@ GLM_inference <- function(SE_bins,
 
     message("Estimating GC content correction factors for IP samples...")
 
+    if(correct_GC_bg) {
+      subindex = which(rowData(dds)$indx_bg & rowData(dds)$indx_gc_est)
+    }else{
+      subindex = which(rowData(dds)$indx_gc_est)
+    }
+
     cqnObject_IP <- quiet(
       suppressMessages(
       cqn(
@@ -55,10 +71,9 @@ GLM_inference <- function(SE_bins,
         lengthMethod = "fixed",
         x = rowData(dds)$gc_contents,
         sizeFactors = dds$sizeFactor[indx_IP],
-        subindex = which(rowData(dds)$indx_bg &
-                           rowData(dds)$indx_gc_est ),
-        sqn = TRUE,
-        verbose = FALSE
+        subindex = subindex,
+        verbose = FALSE,
+        sqn = qtnorm
       )
     )
     )
@@ -73,13 +88,14 @@ GLM_inference <- function(SE_bins,
         lengthMethod = "fixed",
         x = rowData(dds)$gc_contents,
         sizeFactors = dds$sizeFactor[!indx_IP],
-        subindex = which(rowData(dds)$indx_bg &
-                           rowData(dds)$indx_gc_est ),
-        sqn = TRUE,
-        verbose = FALSE
+        subindex = subindex,
+        verbose = FALSE,
+        sqn = qtnorm
       )
     )
     )
+
+    rm(subindex)
 
     glm_off_sets <- matrix(NA, nrow = nrow(dds), ncol = ncol(dds))
 

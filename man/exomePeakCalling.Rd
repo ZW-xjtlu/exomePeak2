@@ -8,21 +8,23 @@
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   mod_annot = NULL, glm_type = c("DESeq2", "NB", "Poisson"),
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, gff_dir = NULL, fragment_length = 100,
-  binding_length = 25, step_length = binding_length,
-  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = NULL,
-  p_adj_cutoff = 0.05, logFC_cutoff = 0,
-  peak_width = fragment_length/2, parallel = FALSE, bp_param = NULL)
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
+  gff_dir = NULL, fragment_length = 100, binding_length = 25,
+  step_length = binding_length, pc_count_cutoff = 5,
+  bg_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
+  bp_param = NULL)
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
   txdb = NULL, bsgenome = NULL, mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"),
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, gff_dir = NULL, fragment_length = 100,
-  binding_length = 25, step_length = binding_length,
-  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = NULL,
-  p_adj_cutoff = 0.05, logFC_cutoff = 0,
-  peak_width = fragment_length/2, parallel = FALSE, bp_param = NULL)
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
+  gff_dir = NULL, fragment_length = 100, binding_length = 25,
+  step_length = binding_length, pc_count_cutoff = 5,
+  bg_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
+  bp_param = NULL)
 }
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object returned by \code{\link{scanMeripBAM}}.}
@@ -60,18 +62,26 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
 
- This type of background should not be used if the MeRIP-seq data is not targetting on m6A methylation.
+ This type of background should not be used if the MeRIP-seq data is not using anti-m6A antibody.
 
  }
 
- \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
+ \item{\strong{\code{manual}}}{The background regions are defined by user manually at the argument \code{manual_background}.}
 
  \item{\strong{\code{all}}}{Use all windows as the background. This is equivalent to not differentiating background and signal.
- It can lead to biases on the estimation of the technical factors.
+ It can lead to biases during the sequencing depth and the GC content correction factors estimation.
  }
 }}
 
-\item{manual_background}{optional, a \code{\link{GRanges}} object for the user provided unmodified background.}
+\item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
+
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+
+If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
+
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+
+If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 
 \item{gff_dir}{optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.}
 
@@ -93,7 +103,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 \item{peak_width}{a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .}
 
-\item{parallel}{a \code{logical} value indicating whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.}
+\item{parallel}{a \code{logical} value of whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.}
 
 \item{bp_param}{optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.}
 }

@@ -14,6 +14,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = NULL,
   p_adj_cutoff = 0.05, logFC_cutoff = 0, parallel = FALSE,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
   glm_type = c("DESeq2", "Poisson", "NB"), LFC_shrinkage = c("apeglm",
   "ashr", "Gaussian", "none"), export_results = TRUE,
   export_format = c("CSV", "BED", "RDS"), table_style = c("bed",
@@ -96,6 +97,16 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
  }
 }}
 
+\item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
+
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+
+If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
+
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+
+If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
+
 \item{glm_type}{a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 
 \describe{
@@ -137,8 +148,6 @@ see \code{\link{lfcShrink}} for more details; if "none" is selected, only the ML
 }
 
 P.S. The full transcript mode and the whole genome mode demand big memory size (> 4GB) for large genomes.}
-
-\item{manual_background}{optional, a \code{\link{GRanges}} object for the user provided unmodified background.}
 
 \item{bp_param}{optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.}
 }

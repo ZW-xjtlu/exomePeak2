@@ -50,13 +50,21 @@
 #'
 #' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
 #'
-#' @param parallel a \code{logical} value indicating whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.
+#' @param parallel a \code{logical} value of whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.
 #'
 #' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
 #'
 #' If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
 #'
-#' @param manual_background optional, a \code{\link{GRanges}} object for the user provided unmodified background.
+#' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
+#'
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#'
+#' If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
+#'
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#'
+#' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
 #' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
 #'
@@ -69,14 +77,14 @@
 #'
 #'  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
 #'
-#'  This type of background should not be used if the MeRIP-seq data is not targetting on m6A methylation.
+#'  This type of background should not be used if the MeRIP-seq data is not using anti-m6A antibody.
 #'
 #'  }
 #'
-#'  \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
+#'  \item{\strong{\code{manual}}}{The background regions are defined by user manually at the argument \code{manual_background}.}
 #'
 #'  \item{\strong{\code{all}}}{Use all windows as the background. This is equivalent to not differentiating background and signal.
-#'  It can lead to biases on the estimation of the technical factors.
+#'  It can lead to biases during the sequencing depth and the GC content correction factors estimation.
 #'  }
 #' }
 #'
@@ -148,6 +156,8 @@ setMethod("exomePeakCalling",
                    glm_type = c("DESeq2", "NB", "Poisson"),
                    background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                    manual_background = NULL,
+                   correct_GC_bg = FALSE,
+                   qtnorm = TRUE,
                    gff_dir = NULL,
                    fragment_length = 100,
                    binding_length = 25,
@@ -403,6 +413,8 @@ setMethod("exomePeakCalling",
                 p_cutoff = p_cutoff,
                 p_adj_cutoff = p_adj_cutoff,
                 logFC_cutoff = logFC_cutoff,
+                correct_GC_bg = correct_GC_bg,
+                qtnorm =  qtnorm,
                 txdb = txdb
               )
 
