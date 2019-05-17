@@ -7,6 +7,7 @@ header_txdb <- c("########################################################",
 txdb_info <- c(header_txdb, txdb_info)
 bsgenome_info <- x$bsgenome
 bsgenome_info[1] <- ""
+if(length(bsgenome_info) == 1) bsgenome_info = "Missing Genome Sequence Infomation"
 header_bsgenome <- c("########################################################",
                      "#                Genome Reference Info:                #",
                      "########################################################")

@@ -263,7 +263,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        table_style = c("bed","granges"),
                        save_plot_GC = TRUE,
                        save_plot_analysis = FALSE,
-                       save_plot_name = "Plot",
+                       save_plot_name = "",
                        save_dir = "exomePeak2_output",
                        peak_calling_mode = c("exon", "full_tx", "whole_genome")
                       ) {

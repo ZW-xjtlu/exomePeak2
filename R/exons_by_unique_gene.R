@@ -11,7 +11,7 @@ exons_by_unique_gene <- function(txdb) {
 exbg <- exonsBy(txdb, by = "gene")
 
 #remove the genes that are not belong to the same strands
-exbg <- exbg[elementNROWS( range(exbg) ) == 1]
+#exbg <- exbg[elementNROWS( range(exbg) ) == 1]
 
 #Creating gene names for duplicated genes
 
