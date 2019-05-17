@@ -18,6 +18,8 @@ exome_bins_from_txdb <- function(txdb,
 
   stopifnot(step_size <= window_size)
 
+  #exBygene  <- exonsBy(txdb, by = "gene")
+
   exBygene  <- exons_by_unique_gene(txdb = txdb)
 
   tx_widths <- sum(width(exBygene))

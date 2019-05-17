@@ -19,7 +19,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   "ashr", "Gaussian", "none"), export_results = TRUE,
   export_format = c("CSV", "BED", "RDS"), table_style = c("bed",
   "granges"), save_plot_GC = TRUE, save_plot_analysis = FALSE,
-  save_plot_name = "Plot", save_dir = "exomePeak2_output",
+  save_plot_name = "", save_dir = "exomePeak2_output",
   peak_calling_mode = c("exon", "full_tx", "whole_genome"))
 }
 \arguments{

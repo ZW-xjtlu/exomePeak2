@@ -179,6 +179,8 @@ setMethod("exomePeakCalling",
 
             glm_type <- match.arg(glm_type)
 
+            background <- match.arg(background)
+
             stopifnot(fragment_length > 0)
 
             stopifnot(step_length > 0)
