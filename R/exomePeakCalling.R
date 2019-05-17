@@ -456,6 +456,10 @@ setMethod("exomePeakCalling",
               } else {
                 if (!is.null(bp_param)) {
                   register(bp_param, default = TRUE)
+                } else {
+                  register(SerialParam(), default = FALSE)
+                  register(MulticoreParam(workers = 3))
+                  register(SnowParam(workers = 3))
                 }
               }
 
@@ -532,6 +536,10 @@ setMethod("exomePeakCalling",
               } else {
                 if (!is.null(bp_param)) {
                   register(bp_param, default = TRUE)
+                } else {
+                  register(SerialParam(), default = FALSE)
+                  register(MulticoreParam(workers = 3))
+                  register(SnowParam(workers = 3))
                 }
               }
 
