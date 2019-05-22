@@ -87,9 +87,9 @@
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
 #'
-#' If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
+#' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
 #' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
 #'
@@ -248,13 +248,13 @@ exomePeak2 <- function(bam_ip = NULL,
                        peak_width = fragment_length/2,
                        pc_count_cutoff = 5,
                        bg_count_cutoff = 50,
-                       p_cutoff = NULL,
-                       p_adj_cutoff = 0.05,
+                       p_cutoff = 0.0001,
+                       p_adj_cutoff = NULL,
                        logFC_cutoff = 0,
                        parallel = FALSE,
                        background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                        manual_background = NULL,
-                       correct_GC_bg = FALSE,
+                       correct_GC_bg = TRUE,
                        qtnorm = TRUE,
                        glm_type = c("DESeq2","Poisson","NB"),
                        LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),

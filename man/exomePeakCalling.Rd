@@ -8,10 +8,10 @@
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   mod_annot = NULL, glm_type = c("DESeq2", "NB", "Poisson"),
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
+  manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, pc_count_cutoff = 5,
-  bg_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  bg_count_cutoff = 50, p_cutoff = 1e-04, p_adj_cutoff = NULL,
   logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
   bp_param = NULL)
 
@@ -19,10 +19,10 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   txdb = NULL, bsgenome = NULL, mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"),
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
+  manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, pc_count_cutoff = 5,
-  bg_count_cutoff = 50, p_cutoff = NULL, p_adj_cutoff = 0.05,
+  bg_count_cutoff = 50, p_cutoff = 1e-04, p_adj_cutoff = NULL,
   logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
   bp_param = NULL)
 }
@@ -53,7 +53,7 @@ By default, the DESeq2 GLMs are fitted on the data set with > 1 biological repli
 
 \item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
 
-In order to accurately account for the technical variations, it is often neccessary to estimate the sequencing depth and GC content linear effects on windows without modification signals.
+In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 
 The following methods are supported in \code{ExomePeak2} to differentiate the no modification background windows from the modification containig windows.
 
@@ -75,11 +75,11 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 \item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
 
-\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
 
-If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
+If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 
-\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= TRUE}.
 
 If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 
@@ -95,9 +95,9 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{bg_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.}
 
-\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= NULL}.}
+\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 0.0001}.}
 
-\item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= 0.05}.}
+\item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
 \item{logFC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.}
 
@@ -119,7 +119,7 @@ If the \code{\link{BSgenome}} object is provided, the peak calling will be condu
 
 Under the default setting, for each window, exomePeak2 will fit a GLM of Negative Binomial (NB) with regulated estimation of the overdispersion parameters developed in \code{\link{DESeq}}.
 Wald tests with H0 of IP/input Log2 Fold Change (LFC) <= 0 are performed on each of the sliding windows.
-The significantly modified peaks are selected using the cutoff of fdr < 0.05 calculated by the Benjamini Hochberg approach.
+The significantly modified peaks are selected using the cutoff of p value < 0.0001.
 }
 \examples{
 

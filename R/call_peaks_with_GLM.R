@@ -16,9 +16,9 @@
 #'
 #' @param txdb the txdb object that is necessary for the calculation of the merge of the peaks.
 #'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
 #'
-#' If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
+#' If \code{correct_GC_bg = TRUE}, it could result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
 #'
 #' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
 #'
@@ -39,7 +39,7 @@
 #'
 call_peaks_with_GLM <- function(SE_bins,
                                 glm_type = c("Poisson", "NB", "DESeq2"),
-                                correct_GC_bg = FALSE,
+                                correct_GC_bg = TRUE,
                                 qtnorm = TRUE,
                                 txdb,
                                 count_cutoff = 5,

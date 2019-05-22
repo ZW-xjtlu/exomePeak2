@@ -30,7 +30,7 @@
 GLM_inference <- function(SE_bins,
                           glm_type = c("Poisson", "NB", "DESeq2"),
                           p_cutoff = NULL,
-                          p_adj_cutoff = 0.05,
+                          p_adj_cutoff = 0.01,
                           count_cutoff = 5,
                           logFC_mod = 0,
                           min_mod_number = floor(nrow(SE_bins) * 0.001),
@@ -50,7 +50,7 @@ GLM_inference <- function(SE_bins,
   #               Size factor estimation               #
   ######################################################
 
-  dds$sizeFactor = estimateSizeFactorsForMatrix(assay(dds)[rowData(dds)$indx_bg, ])
+  dds$sizeFactor = estimateSizeFactorsForMatrix(assay(dds))
 
   if (!is.null(rowData(SE_bins)$gc_contents)) {
     indx_IP <- dds$design_IP == "IP"
@@ -188,7 +188,6 @@ GLM_inference <- function(SE_bins,
   }
 
   sig_peak_mod <- as.numeric(rownames(res)[sig_indx])
-
 
   return(sig_peak_mod)
 
