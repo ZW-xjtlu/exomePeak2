@@ -363,6 +363,7 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
 sep <- estimateSeqDepth(sep)
 
 if(!is.null(bsgenome)) {
+
   message("Evaluating GC content biases on the background...")
 
   sep <- normalizeGC(sep,

@@ -53,7 +53,7 @@ if(sum(grepl("mod",rownames(sep))) < 10 ) {
 stopifnot(!(is.null(txdb) & is.null(guitar_coordinate)))
 
 if(is.null(guitar_coordinate)){
-  guitar_coordinate = quiet( Guitar::makeGuitarCoordsFromTxDb(txdb) )
+  guitar_coordinate = quiet( Guitar::makeGuitarTxdb(txdb) )
 }
 
 if(is.null(save_pdf_prefix)) {
