@@ -239,7 +239,6 @@ scanMeripBAM <- function(bam_ip = NULL,
       ),
       LibraryType = library_type
     )
-
   )
 }
 

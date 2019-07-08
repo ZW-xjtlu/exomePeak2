@@ -12,7 +12,9 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   "2nd_strand"), fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
   pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
-  p_adj_cutoff = NULL, logFC_cutoff = 0, parallel = FALSE,
+  p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = TRUE,
+  consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
+  alpha = 0.05, p0 = 0.8, parallel = FALSE,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
   glm_type = c("DESeq2", "Poisson", "NB"), LFC_shrinkage = c("apeglm",
@@ -71,7 +73,21 @@ If user provides the single based RNA modification annotation, this function wil
 
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= 0.05}.}
 
-\item{logFC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.}
+\item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
+
+\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.}
+
+\item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
+
+\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.}
+
+\item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
+
+\item{p0}{a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
+
+For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+
+The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.}
 
 \item{parallel}{a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.}
 

@@ -10,10 +10,11 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
-  step_length = binding_length, pc_count_cutoff = 5,
-  bg_count_cutoff = 50, p_cutoff = 1e-04, p_adj_cutoff = NULL,
-  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
-  bp_param = NULL)
+  step_length = binding_length, peak_width = fragment_length/2,
+  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
+  p_adj_cutoff = NULL, log2FC_cutoff = 0, consistent_peak = TRUE,
+  consistent_log2FC_cutoff = 0, consistent_fdr_cutoff = 0.05,
+  alpha = 0.05, p0 = 0.8, parallel = FALSE, bp_param = NULL)
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
   txdb = NULL, bsgenome = NULL, mod_annot = NULL,
@@ -21,10 +22,11 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
-  step_length = binding_length, pc_count_cutoff = 5,
-  bg_count_cutoff = 50, p_cutoff = 1e-04, p_adj_cutoff = NULL,
-  logFC_cutoff = 0, peak_width = fragment_length/2, parallel = FALSE,
-  bp_param = NULL)
+  step_length = binding_length, peak_width = fragment_length/2,
+  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
+  p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = TRUE,
+  consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
+  alpha = 0.05, p0 = 0.8, parallel = FALSE, bp_param = NULL)
 }
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object returned by \code{\link{scanMeripBAM}}.}
@@ -91,6 +93,8 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{step_length}{a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.}
 
+\item{peak_width}{a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .}
+
 \item{pc_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 5}.}
 
 \item{bg_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.}
@@ -99,9 +103,21 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
-\item{logFC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.}
+\item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
 
-\item{peak_width}{a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .}
+\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.}
+
+\item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
+
+\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.}
+
+\item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
+
+\item{p0}{a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
+
+For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+
+The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.}
 
 \item{parallel}{a \code{logical} value of whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.}
 

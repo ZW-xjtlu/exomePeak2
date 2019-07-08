@@ -6,8 +6,10 @@
 \usage{
 GLM_inference(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
   p_cutoff = NULL, p_adj_cutoff = 0.01, count_cutoff = 5,
-  logFC_mod = 0, min_mod_number = floor(nrow(SE_bins) * 0.001),
-  correct_GC_bg = FALSE, qtnorm = TRUE)
+  log2FC_mod = 1, min_mod_number = floor(nrow(SE_bins) * 1e-04),
+  correct_GC_bg = FALSE, qtnorm = TRUE, consistent_peak = TRUE,
+  consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
+  alpha = 0.05, p0 = 0.8)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,
@@ -22,7 +24,7 @@ The DESeq2 method is only recommended for high power experiments with more than 
 
 \item{count_cutoff}{an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
 
-\item{logFC_mod}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).}
+\item{log2FC_mod}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).}
 
 \item{min_mod_number}{a non negative numeric value of the he minimum number of the reported modification containing bins.
 If the bins are filtered less than this number by the p values or effect sizes,
@@ -32,13 +34,27 @@ more sites will be reported by the order of the p value until it reaches this nu
 
 If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
 
-\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= TRUE}.
 
 Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
+
+\item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
+
+\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.}
+
+\item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
+
+\item{p0}{a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
+
+For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+
+The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.}
+
+\item{consistent}{a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.}
 }
 \value{
 a list of the index for the significant modified peaks (IP > input) and control peaks (peaks other than modification containing peaks).
 }
 \description{
-\code{GLM_inference} conduct inference on log2 fold changes of IP over input using the negative binomial model in DESeq.
+\code{GLM_inference} conduct inference on log2 fold changes of IP over input using the GLM defined in DESeq2.
 }

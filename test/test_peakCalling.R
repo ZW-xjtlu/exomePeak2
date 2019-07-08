@@ -19,13 +19,17 @@ test_that( "Peak Calling", {
     paired_end = TRUE
   )
 
+
   SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment,
                                            txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-                                           bsgenome = Hsapiens)
+                                           bsgenome = Hsapiens,
+                                           background = "mclust")
 
   SummarizedExomePeaks <- normalizeGC(SummarizedExomePeaks)
 
   SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
+
+  SummarizedExomePeaks <- glmMeth(SummarizedExomePeaks)
 
   plotReadsGC(SummarizedExomePeaks)
 

@@ -15,7 +15,7 @@ exportResults(sep, format = c("CSV", "BED", "RDS"),
 \S4method{exportResults}{SummarizedExomePeak}(sep, format = c("CSV",
   "BED", "RDS"), table_style = c("bed", "granges"),
   save_dir = "exomePeak2_output", cut_off_pvalue = NULL,
-  cut_off_padj = 0.1, cut_off_log2FC = 0, min_num_of_positive = 30,
+  cut_off_padj = 0.1, cut_off_log2FC = 0, min_num_of_positive = 100,
   expected_direction = c("both", "hyper", "hypo"),
   inhibit_filter = FALSE, reads_count = TRUE, GC_sizeFactors = TRUE)
 }

@@ -110,7 +110,7 @@ setMethod("exportResults",
                    cut_off_pvalue = NULL,
                    cut_off_padj = 0.1,
                    cut_off_log2FC = 0,
-                   min_num_of_positive = 30,
+                   min_num_of_positive = 100,
                    expected_direction = c("both", "hyper", "hypo"),
                    inhibit_filter = FALSE,
                    reads_count = TRUE,
@@ -139,10 +139,6 @@ setMethod("exportResults",
             } else{
               file_name <- "DiffMod"
             }
-
-            if (!inhibit_filter)
-              file_name <- paste0("Sig", file_name)
-
 
             #Check if the users have calculated the log2FCs and their associated p-values
             if (nrow(DESeq2Results(sep)) == 0) {
@@ -182,6 +178,7 @@ setMethod("exportResults",
             } else {
 
               #Decide the filter on differential modification
+
               decision_dm <- decision_deseq2(
                 Inf_RES = DESeq2Results(sep),
                 log2FC_cut = cut_off_log2FC,
@@ -205,10 +202,9 @@ setMethod("exportResults",
               index_keep <-
                 which(DESeq2Results(sep)[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected & indx_es)
 
-              if (length(index_keep) == 0) {
-                stop(
-                  "No sites could be left using the current filter, please change into a less rigorous one."
-                )
+
+              if (length(index_keep) == min_num_of_positive) {
+                warning(paste0("The number of positive differential methylation sites < ",min_num_of_positive,", the insignificant sites are returned to reach the minimum number of ",min_num_of_positive,"; to get all insignificant sites, please try to set 'inhibit_filter = TRUE.'"))
               }
             }
             }

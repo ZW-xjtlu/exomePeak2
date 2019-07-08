@@ -30,7 +30,21 @@
 #'
 #' @param p_adj_cutoff a numeric value of the adjusted p value cutoff used in DESeq2 inference; if provided, the value of \code{p_cutoff} will be ignored; Default = 0.05.
 #'
-#' @param logFC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
+#' @param log2FC_cutoff a non negative numeric value of the log2 fold change (log2 IP/input) cutoff used in the inferene of peaks.
+#'
+#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.
+#'
+#' @param consistent_log2FC_cutoff  a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 0.
+#'
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.
+#'
+#' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
+#'
+#' @param p0 a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
+#'
+#' For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+#'
+#' The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.
 #'
 #' @return This function will return a list of \code{GRangesList} object storing peaks for both modification and control.
 #'
@@ -45,7 +59,12 @@ call_peaks_with_GLM <- function(SE_bins,
                                 count_cutoff = 5,
                                 p_cutoff = NULL,
                                 p_adj_cutoff = 0.05,
-                                logFC_cutoff = 0) {
+                                log2FC_cutoff  = 0,
+                                consistent_peak = TRUE,
+                                consistent_log2FC_cutoff  = 0,
+                                consistent_fdr_cutoff = 0.05,
+                                alpha = 0.05,
+                                p0 = 0.8) {
 
   design_IP_temp <- rep("input", ncol(SE_bins))
 
@@ -63,8 +82,13 @@ call_peaks_with_GLM <- function(SE_bins,
     p_cutoff = p_cutoff,
     p_adj_cutoff = p_adj_cutoff,
     count_cutoff = count_cutoff,
-    logFC_mod = logFC_cutoff,
-    correct_GC_bg = correct_GC_bg
+    log2FC_mod = log2FC_cutoff ,
+    correct_GC_bg = correct_GC_bg,
+    consistent_peak = consistent_peak,
+    consistent_log2FC_cutoff = consistent_log2FC_cutoff,
+    consistent_fdr_cutoff = consistent_fdr_cutoff,
+    alpha = alpha,
+    p0 = p0
   )
 
   gr_mod <-

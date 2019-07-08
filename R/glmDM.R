@@ -83,7 +83,9 @@ setMethod("glmDM",
 
   glm_type = match.arg(glm_type)
 
-  stopifnot( ( any(sep$design_Treatment) & any(!sep$design_Treatment) ) )
+   if( !(any(sep$design_Treatment) & any(!sep$design_Treatment) ) ){
+     stop("Your data has no interactive design / treatment groups, please consider to use glm_M().")
+   }
 
   if(glm_type == "auto") {
     if( all( table(colData(sep)$design_IP,colData(sep)$design_Treatment) > 1 ) ) {

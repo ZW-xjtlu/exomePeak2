@@ -55,6 +55,8 @@
 #'
 #' @param step_length a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.
 #'
+#' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
+#'
 #' @param glm_type a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 #'
 #' \describe{
@@ -75,9 +77,21 @@
 #'
 #' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= 0.05}.
 #'
-#' @param logFC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
+#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
 #'
-#' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
+#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.
+#'
+#' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
+#'
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.
+#'
+#' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
+#'
+#' @param p0 a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
+#'
+#' For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+#'
+#' The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.
 #'
 #' @param parallel a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.
 #'
@@ -250,7 +264,12 @@ exomePeak2 <- function(bam_ip = NULL,
                        bg_count_cutoff = 50,
                        p_cutoff = 0.0001,
                        p_adj_cutoff = NULL,
-                       logFC_cutoff = 0,
+                       log2FC_cutoff = 1,
+                       consistent_peak = TRUE,
+                       consistent_log2FC_cutoff = 1,
+                       consistent_fdr_cutoff = 0.05,
+                       alpha = 0.05,
+                       p0 = 0.8,
                        parallel = FALSE,
                        background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                        manual_background = NULL,
@@ -290,7 +309,7 @@ stopifnot(step_length > 0)
 
 stopifnot(peak_width > 0)
 
-stopifnot(logFC_cutoff >= 0)
+stopifnot(log2FC_cutoff >= 0)
 
 stopifnot(pc_count_cutoff >= 0)
 
@@ -346,12 +365,17 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         fragment_length = fragment_length,
                         binding_length = binding_length,
                         step_length = binding_length,
+                        peak_width = fragment_length/2,
                         pc_count_cutoff = pc_count_cutoff,
                         bg_count_cutoff = bg_count_cutoff,
                         p_cutoff = p_cutoff,
                         p_adj_cutoff = p_adj_cutoff,
-                        logFC_cutoff = logFC_cutoff,
-                        peak_width = fragment_length/2,
+                        log2FC_cutoff = log2FC_cutoff,
+                        consistent_peak = consistent_peak,
+                        consistent_log2FC_cutoff = consistent_log2FC_cutoff,
+                        consistent_fdr_cutoff = consistent_fdr_cutoff,
+                        alpha = alpha,
+                        p0 = p0,
                         parallel = parallel,
                         mod_annot = mod_annot,
                         background = background,
@@ -384,7 +408,7 @@ if( export_results ) {
 
   exportResults(sep,
                 format = export_format,
-                inhibit_filter = !is.null( mod_annot ),
+                inhibit_filter = (!is.null( mod_annot ))|(any(grepl("Diff",colnames(DESeq2Results( sep ))))),
                 table_style = table_style,
                 save_dir = save_dir)
 

@@ -73,6 +73,9 @@ setMethod("glmM",
                     glm_type = c("auto","Poisson", "NB", "DESeq2"),
                     LFC_shrinkage = c("apeglm", "Gaussian", "ashr"),
                     ...) {
+  if( (any(sep$design_Treatment) & any(!sep$design_Treatment)) ){
+      warning("Your data has interactive design / treatment groups, perhaps you want to use the function glm_DM().")
+  }
 
   LFC_shrinkage = match.arg(LFC_shrinkage)
 

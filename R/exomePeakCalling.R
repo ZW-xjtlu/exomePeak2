@@ -45,7 +45,21 @@
 #'
 #' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
 #'
-#' @param logFC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
+#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
+#'
+#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.
+#'
+#' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
+#'
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.
+#'
+#' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
+#'
+#' @param p0 a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
+#'
+#' For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+#'
+#' The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.
 #'
 #' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
 #'
@@ -153,7 +167,10 @@ setMethod("exomePeakCalling",
                    bsgenome = NULL,
                    mod_annot = NULL,
                    glm_type = c("DESeq2", "NB", "Poisson"),
-                   background = c("Gaussian_mixture", "m6Aseq_prior", "manual","all"),
+                   background = c("Gaussian_mixture",
+                                  "m6Aseq_prior",
+                                  "manual",
+                                  "all"),
                    manual_background = NULL,
                    correct_GC_bg = TRUE,
                    qtnorm = TRUE,
@@ -161,12 +178,17 @@ setMethod("exomePeakCalling",
                    fragment_length = 100,
                    binding_length = 25,
                    step_length = binding_length,
+                   peak_width = fragment_length / 2,
                    pc_count_cutoff = 5,
                    bg_count_cutoff = 50,
                    p_cutoff = 0.0001,
                    p_adj_cutoff = NULL,
-                   logFC_cutoff = 0,
-                   peak_width = fragment_length / 2,
+                   log2FC_cutoff = 1,
+                   consistent_peak = TRUE,
+                   consistent_log2FC_cutoff = 1,
+                   consistent_fdr_cutoff = 0.05,
+                   alpha = 0.05,
+                   p0 = 0.8,
                    parallel = FALSE,
                    bp_param = NULL
           ) {
@@ -186,7 +208,7 @@ setMethod("exomePeakCalling",
 
             stopifnot(peak_width > 0)
 
-            stopifnot(logFC_cutoff >= 0)
+            stopifnot(log2FC_cutoff >= 0)
 
             stopifnot(pc_count_cutoff >= 0)
 
@@ -246,6 +268,7 @@ setMethod("exomePeakCalling",
                   register(bp_param, default = TRUE)
                 }
               }
+              yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SE_Peak_counts <- suppressWarnings( summarizeOverlaps(
                 features = split_by_name(
@@ -271,10 +294,10 @@ setMethod("exomePeakCalling",
               ######################################################
 
               #Experimental design
-              colData(SE_Peak_counts) = DataFrame(metadata(merip_bams))
+              colData(SE_Peak_counts) <- DataFrame(metadata(merip_bams))
 
 
-              #GC
+              #GC content calculation
               if (is.null(bsgenome)) {
 
               } else{
@@ -290,11 +313,11 @@ setMethod("exomePeakCalling",
                 rm(flanked_gr, GC_freq, sum_freq)
               }
 
-              #Bin width
+              #Bin width calculation
               rowData(SE_Peak_counts)$region_widths <-
                 sum(width(rowRanges(SE_Peak_counts)))
 
-              #Count index
+              #Count cutoff index
               rowData(SE_Peak_counts)$indx_gc_est <-
                 rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
 
@@ -303,9 +326,7 @@ setMethod("exomePeakCalling",
               #                 Background search                  #
               ######################################################
 
-
               #Model based clustering
-
               m6A_prior = F
 
               if (background == "Gaussian_mixture") {
@@ -327,10 +348,7 @@ setMethod("exomePeakCalling",
               }
 
 
-              #Prior knowledge on m6A topology
-
-              #Check for minimum background #
-
+              #Define background using prior knowledge of m6A topology
 
               if (background == "m6Aseq_prior" | m6A_prior) {
                 indx_UTR5 <-
@@ -344,7 +362,7 @@ setMethod("exomePeakCalling",
                 rm(indx_UTR5, indx_longexon, m6A_prior)
               }
 
-              #Provided granges
+              #Define background using user provided GRanges
 
               if (background == "manual") {
 
@@ -358,7 +376,7 @@ setMethod("exomePeakCalling",
 
               }
 
-              #Check for minimum background #
+              #Check for minimum background number
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                       rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
@@ -413,10 +431,15 @@ setMethod("exomePeakCalling",
                 count_cutoff = pc_count_cutoff,
                 p_cutoff = p_cutoff,
                 p_adj_cutoff = p_adj_cutoff,
-                logFC_cutoff = logFC_cutoff,
+                log2FC_cutoff = log2FC_cutoff,
                 correct_GC_bg = correct_GC_bg,
                 qtnorm =  qtnorm,
-                txdb = txdb
+                txdb = txdb,
+                consistent_peak = consistent_peak,
+                consistent_log2FC_cutoff = consistent_log2FC_cutoff,
+                consistent_fdr_cutoff = consistent_fdr_cutoff,
+                alpha = alpha,
+                p0 = p0
               )
 
               #Filter peak by width
@@ -463,6 +486,8 @@ setMethod("exomePeakCalling",
                   register(SnowParam(workers = 3))
                 }
               }
+
+              yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SummarizedExomePeaks <- suppressWarnings( summarizeOverlaps(
                 features = count_row_features,
@@ -543,6 +568,8 @@ setMethod("exomePeakCalling",
                   register(SnowParam(workers = 3))
                 }
               }
+
+              yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SE_temp <- summarizeOverlaps(
                 features = mod_annot_count,
@@ -632,6 +659,5 @@ setMethod("exomePeakCalling",
                 DESeq2Results = data.frame()
               )
             )
-
         }
 )
