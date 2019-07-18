@@ -12,7 +12,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   "2nd_strand"), fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
   pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
-  p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = TRUE,
+  p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = FALSE,
   consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE,
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
@@ -75,7 +75,7 @@ If user provides the single based RNA modification annotation, this function wil
 
 \item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
 
-\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.}
+\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among all the replicates; default \code{= FALSE}.}
 
 \item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
 
