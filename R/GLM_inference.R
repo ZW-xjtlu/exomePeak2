@@ -194,7 +194,7 @@ GLM_inference <- function(SE_bins,
                               consistent_log2FC_cutoff = consistent_log2FC_cutoff,
                               consistent_fdr_cutoff = consistent_fdr_cutoff,
                               alpha = alpha,
-                              p = p)
+                              p0 = p0)
 
     sig_peak_mod <- sig_peak_mod[ sig_peak_mod%in%rownames(dds)[cons_indx] ]
     rm(cons_indx)

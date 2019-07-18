@@ -47,7 +47,7 @@
 #'
 #' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
 #'
-#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.
+#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among all the replicates; default \code{= FALSE}.
 #'
 #' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
 #'
@@ -184,7 +184,7 @@ setMethod("exomePeakCalling",
                    p_cutoff = 0.0001,
                    p_adj_cutoff = NULL,
                    log2FC_cutoff = 1,
-                   consistent_peak = TRUE,
+                   consistent_peak = FALSE,
                    consistent_log2FC_cutoff = 1,
                    consistent_fdr_cutoff = 0.05,
                    alpha = 0.05,
