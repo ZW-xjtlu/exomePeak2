@@ -67,14 +67,14 @@ setGeneric("DESeq2Results<-", function(x,...,value) {standardGeneric("DESeq2Resu
 #' @rdname normalizeGC
 #' @export
 setGeneric("normalizeGC", function(sep,
-                                       bsgenome = "hg19",
-                                       txdb = "hg19",
-                                       gff_dir = NULL,
-                                       fragment_length = 100,
-                                       binding_length = 25,
-                                       feature = c("background","all"),
-                                       qtnorm = FALSE,
-                                       effective_GC = FALSE) {standardGeneric("normalizeGC")})
+                                   bsgenome = "hg19",
+                                   txdb = "hg19",
+                                   gff_dir = NULL,
+                                   fragment_length = 100,
+                                   binding_length = 25,
+                                   feature = c("background","all"),
+                                   qtnorm = FALSE,
+                                   effective_GC = FALSE) {standardGeneric("normalizeGC")})
 
 
 #' @rdname glmM

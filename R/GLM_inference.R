@@ -83,6 +83,7 @@ GLM_inference <- function(SE_bins,
     }
 
     cqnObject_IP <- quiet(
+      suppressWarnings(
       suppressMessages(
       cqn(
         assay(dds)[, indx_IP],
@@ -95,12 +96,14 @@ GLM_inference <- function(SE_bins,
         sqn = qtnorm
       )
     )
+      )
     )
 
     message("Estimating GC content correction factors for input samples...")
 
     cqnObject_input <- quiet(
       suppressMessages(
+      suppressWarnings(
       cqn(
         assay(dds)[, !indx_IP],
         lengths = rowData(dds)$region_widths,
@@ -111,6 +114,7 @@ GLM_inference <- function(SE_bins,
         verbose = FALSE,
         sqn = qtnorm
       )
+    )
     )
     )
 

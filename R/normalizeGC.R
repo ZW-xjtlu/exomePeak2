@@ -145,14 +145,18 @@ if(feature == "all"){
 
 if(!qtnorm) {
 
-cqnObject <- quiet( suppressMessages( cqn(assay(sep)[!GC_na_index,],
+cqnObject <- quiet( suppressMessages(
+                    suppressWarnings(
+                                     cqn(assay(sep)[!GC_na_index,],
                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                      lengthMethod = "fixed",
                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
                                      subindex = Subindex,
                                      sizeFactors = sep$sizeFactor,
                                      sqn = qtnorm,
-                                     verbose = FALSE) ) )
+                                     verbose = FALSE) )
+                    )
+                    )
 
 GC_size_factors[!GC_na_index,] <- cqnObject$glm.offset
 
@@ -160,23 +164,33 @@ assays(sep)$GCsizeFactors <- GC_size_factors
 
 } else {
 
-cqnObject_IP <- quiet(  suppressMessages( cqn(assay(sep)[!GC_na_index, sep$design_IP],
+cqnObject_IP <- quiet(  suppressMessages(
+                        suppressWarnings(
+                                     cqn(assay(sep)[!GC_na_index, sep$design_IP],
                                      lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                      lengthMethod = "fixed",
                                      x = elementMetadata( sep )$GC_content[!GC_na_index],
                                      subindex = Subindex,
                                      sizeFactors = sep$sizeFactor[sep$design_IP],
                                      sqn = qtnorm,
-                                     verbose = FALSE) ) )
+                                     verbose = FALSE)
+                                     )
+                               )
+                        )
 
-cqnObject_input <-  quiet( suppressMessages( cqn(assay(sep)[!GC_na_index, !sep$design_IP],
+cqnObject_input <-  quiet( suppressMessages(
+                           suppressWarnings(
+                                      cqn(assay(sep)[!GC_na_index, !sep$design_IP],
                                       lengths = elementMetadata( sep )$feature_length[!GC_na_index],
                                       lengthMethod = "fixed",
                                       x = elementMetadata( sep )$GC_content[!GC_na_index],
                                       subindex = Subindex,
                                       sizeFactors = sep$sizeFactor[!sep$design_IP],
                                       sqn = qtnorm,
-                                      verbose = FALSE) ) )
+                                      verbose = FALSE)
+                                      )
+                                )
+                           )
 
 GC_size_factors[!GC_na_index,sep$design_IP] <- cqnObject_IP$glm.offset
 

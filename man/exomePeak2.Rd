@@ -14,8 +14,8 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
   p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = FALSE,
   consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
-  alpha = 0.05, p0 = 0.8, parallel = FALSE,
-  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  alpha = 0.05, p0 = 0.8, parallel = FALSE, background = c("all",
+  "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
   glm_type = c("DESeq2", "Poisson", "NB"), LFC_shrinkage = c("apeglm",
   "ashr", "Gaussian", "none"), export_results = TRUE,
@@ -91,7 +91,7 @@ The consistency defined in this way is equivalent to the rejection of an exact b
 
 \item{parallel}{a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.}
 
-\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
+\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "all"}.
 
 In order to accurately account for the technical variations, it is often neccessary to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 
@@ -128,7 +128,7 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 \describe{
 \item{\strong{\code{DESeq2}}}{Fit the GLM defined in the function \code{\link{DESeq}}, which is the NB GLM with regulated estimation of the overdispersion parameters.}
 
-\item{\strong{\code{NB}}}{Fit the Negative Binomial (NB) GLM.}
+\item{\strong{\code{NB}}}{Fit the ordinary Negative Binomial (NB) GLM.}
 
 \item{\strong{\code{Poisson}}}{Fit the Poisson GLM.}
 }

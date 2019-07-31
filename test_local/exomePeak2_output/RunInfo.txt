@@ -1,0 +1,91 @@
+########################################################
+#                 exomePeak2 Run Info                  #
+########################################################
+
+bam_ip = "bam/ip_rep1.bam" "bam/ip_rep2.bam" "bam/ip_rep3.bam"
+bam_input = "bam/input_rep1.bam" "bam/input_rep2.bam" "bam/input_rep3.bam"
+bam_treated_ip = NULL
+bam_treated_input = NULL
+genome_assembly = NA
+gff_dir = NULL
+mod_annot = NULL
+paired_end = TRUE
+library_type = "unstranded"
+fragment_length = 100
+binding_length = 25
+step_length = 25
+peak_width = 50
+pc_count_cutoff = 5
+bg_count_cutoff = 50
+p_cutoff = 1e-04
+p_adj_cutoff = NULL
+log2FC_cutoff = 1
+consistent_peak = FALSE
+consistent_log2FC_cutoff = 1
+consistent_fdr_cutoff = 0.05
+alpha = 0.05
+p0 = 0.8
+parallel = FALSE
+background = "all"
+manual_background = NULL
+correct_GC_bg = TRUE
+qtnorm = TRUE
+glm_type = "DESeq2"
+LFC_shrinkage = "apeglm"
+export_results = TRUE
+export_format = "CSV"
+table_style = "bed"
+save_plot_GC = TRUE
+save_plot_analysis = TRUE
+save_plot_name = ""
+save_dir = "exomePeak2_output"
+peak_calling_mode = "exon"
+
+########################################################
+#              Transcript Annotation Info:             #
+########################################################
+
+# Db type: TxDb
+# Supporting package: GenomicFeatures
+# Data source: UCSC
+# Genome: hg19
+# Organism: Homo sapiens
+# Taxonomy ID: 9606
+# UCSC Table: knownGene
+# Resource URL: http://genome.ucsc.edu/
+# Type of Gene ID: Entrez Gene ID
+# Full dataset: yes
+# miRBase build ID: GRCh37
+# transcript_nrow: 82960
+# exon_nrow: 289969
+# cds_nrow: 237533
+# Db created by: GenomicFeatures package from Bioconductor
+# Creation time: 2015-10-07 18:11:28 +0000 (Wed, 07 Oct 2015)
+# GenomicFeatures version at creation time: 1.21.30
+# RSQLite version at creation time: 1.0.0
+# DBSCHEMAVERSION: 1.1
+
+########################################################
+#                Genome Reference Info:                #
+########################################################
+
+# organism: Homo sapiens (Human)
+# provider: UCSC
+# provider version: hg19
+# release date: Feb. 2009
+# release name: Genome Reference Consortium GRCh37
+# 93 sequences:
+#   chr1                  chr2                  chr3                  chr4                  chr5                 
+#   chr6                  chr7                  chr8                  chr9                  chr10                
+#   chr11                 chr12                 chr13                 chr14                 chr15                
+#   chr16                 chr17                 chr18                 chr19                 chr20                
+#   chr21                 chr22                 chrX                  chrY                  chrM                 
+#   ...                   ...                   ...                   ...                   ...                  
+#   chrUn_gl000227        chrUn_gl000228        chrUn_gl000229        chrUn_gl000230        chrUn_gl000231       
+#   chrUn_gl000232        chrUn_gl000233        chrUn_gl000234        chrUn_gl000235        chrUn_gl000236       
+#   chrUn_gl000237        chrUn_gl000238        chrUn_gl000239        chrUn_gl000240        chrUn_gl000241       
+#   chrUn_gl000242        chrUn_gl000243        chrUn_gl000244        chrUn_gl000245        chrUn_gl000246       
+#   chrUn_gl000247        chrUn_gl000248        chrUn_gl000249                                                   
+
+--------------------------------------------------------
+exomePeak2 Version: 1.0.0

@@ -62,7 +62,7 @@
 #' \describe{
 #' \item{\strong{\code{DESeq2}}}{Fit the GLM defined in the function \code{\link{DESeq}}, which is the NB GLM with regulated estimation of the overdispersion parameters.}
 #'
-#' \item{\strong{\code{NB}}}{Fit the Negative Binomial (NB) GLM.}
+#' \item{\strong{\code{NB}}}{Fit the ordinary Negative Binomial (NB) GLM.}
 #'
 #' \item{\strong{\code{Poisson}}}{Fit the Poisson GLM.}
 #' }
@@ -109,7 +109,7 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
+#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "all"}.
 #'
 #' In order to accurately account for the technical variations, it is often neccessary to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 #'
@@ -271,7 +271,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        alpha = 0.05,
                        p0 = 0.8,
                        parallel = FALSE,
-                       background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+                       background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
                        manual_background = NULL,
                        correct_GC_bg = TRUE,
                        qtnorm = TRUE,
