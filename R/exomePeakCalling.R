@@ -220,7 +220,7 @@ setMethod("exomePeakCalling",
 
             if (is.null(bsgenome)) {
               warning(
-                "Missing bsgenome argument, peak calling without GC content correction...",
+                "Missing BSgenome, peak calling without GC content correction...",
                 call. = FALSE,
                 immediate. = TRUE
               )
@@ -338,11 +338,11 @@ setMethod("exomePeakCalling",
                         rowData(SE_Peak_counts)$indx_bg) < 30) {
 
                   warning(
-                    "Background bin # < 30 using mclust, search background with m6A-seq prior",
+                    "Number of the background bins < 30. Background method changed to the uniform.",
                     call. = FALSE,
                     immediate. = FALSE
                   )
-                   m6A_prior = T
+                  rowData(SE_Peak_counts)$indx_bg = T
                 }
 
               }
@@ -380,7 +380,7 @@ setMethod("exomePeakCalling",
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                       rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
-                  "Background bin # < 30 using m6A-seq prior, peak calling without background\n",
+                  "Number of the background bins < 30. Background method changed to the uniform.\n",
                   call. = FALSE,
                   immediate. = FALSE
                 )
@@ -415,7 +415,7 @@ setMethod("exomePeakCalling",
               if (glm_type == "DESeq2") {
                 if (any(table(SE_Peak_counts$design_IP) == 1)) {
                   warning(
-                    "At least one of the IP or input samples have no replicate, peak calling method changed to Poisson GLM.",
+                    "At least one of the IP or input group has no replicates. Peak calling method changed to Poisson GLM.",
                     call. = FALSE,
                     immediate. = TRUE
                   )

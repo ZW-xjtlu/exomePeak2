@@ -7,7 +7,7 @@
 decision_deseq(res, log2FC_cut, p_cut, padj_cut, min_mod)
 }
 \arguments{
-\item{res}{A \code{DESeqResults} or similar object that contains the result statistics for either methylation or differential methylation.}
+\item{res}{A \code{DESeqResults} or similar object that contains the result statistics for either modification or differential modification.}
 
 \item{log2FC_cut}{The log2 fold change cutoff of the inference result, default setting is 0.}
 

@@ -204,7 +204,7 @@ setMethod("exportResults",
 
 
               if (length(index_keep) == min_num_of_positive) {
-                warning(paste0("The number of positive differential methylation sites < ",min_num_of_positive,", the insignificant sites are returned to reach the minimum number of ",min_num_of_positive,"; to get all insignificant sites, please try to set 'inhibit_filter = TRUE.'"))
+                warning(paste0("The number of significantly differentially modified sites < ",min_num_of_positive,", the insignificantly differentially modified sites are reported to reach the minimum site number of ",min_num_of_positive,"; to report the differential modification status on all modification sites, please set 'inhibit_filter = TRUE.'\n"))
               }
             }
             }
@@ -254,17 +254,23 @@ setMethod("exportResults",
                   result_df <-
                     result_df[, colnames(result_df) != "group"]
                   colnames(result_df)[colnames(result_df) == "group_name"] = "mod_name"
+                  colnames_range_info <- colnames(result_df)
                   result_df <-
                     cbind(result_df, as.data.frame(mcols(result_grl))[rep(seq_along(result_grl), elementNROWS(result_grl)),])
+                  site_widths <- sum(width(result_grl[rep(seq_along(result_grl), elementNROWS(result_grl))]))
+
                 } else {
+
                   scores <- -1 * log2(mcols(result_grl)$padj)
                   scores[is.na(scores)] <- 0
                   mcols(result_grl)$score <- scores
+
                   export(
                     object = result_grl,
                     con = file.path(save_dir, paste0(file_name, ".bed")),
                     format = "BED"
                   )
+
                   result_df <- read.table(file.path(save_dir, paste0(file_name, ".bed")),
                                header = F,
                                sep = "\t")
@@ -286,24 +292,46 @@ setMethod("exportResults",
 
                   result_df$geneID <- sapply( result_grl, function(x) x$gene_id[1] )
 
+                  colnames_range_info <- colnames(result_df)
+
                   mcols(result_grl) <- mcols(result_grl)[,!colnames(mcols(result_grl)) %in% "score"]
+
+                  site_widths <- sum(width(result_grl))
 
                   result_df <- cbind(result_df , as.data.frame(mcols(result_grl)))
 
                 }
 
 
-            #Export the complete model estimates
+            #Retrieve the index for columns
+            indx_range_info <- colnames(result_df) %in% colnames_range_info
+            indx_reads_count <- grepl("Count",colnames(result_df))
+            indx_major_stat <- colnames(result_df) %in% c("log2FoldChange","pvalue","padj")
+
+            #Export the estimates and statistics of all DESeq2 design
             write.csv(
-              result_df[,grepl("MAP|MLE",colnames(result_df))],
-              file = file.path(save_dir,"ADDInfo","ADDInfo_SiteEstimates.csv")
+              result_df[,!(indx_reads_count|indx_major_stat|indx_range_info)],
+              file = file.path(save_dir, "ADDInfo", "ADDInfo_DESeq2_allDesigns.csv")
+            )
+
+            #Report a matrix of RPKM
+            rpkm_df <- result_df[,indx_reads_count]
+            rpkm_df <- t(t((rpkm_df/(site_widths/1e3)))/colSums(rpkm_df))
+            colnames(rpkm_df) <- gsub("ReadsCount","RPKM",colnames(rpkm_df))
+
+            write.csv(
+              rpkm_df,
+              file = file.path(save_dir, "ADDInfo", "ADDInfo_RPKM.csv")
             )
 
             if (!any(grepl("Diff", colnames(DESeq2Results(sep))))){
-              result_df <- result_df[, !grepl("MAP|MLE",colnames(result_df))]
+
+              result_df <- result_df[,indx_range_info|indx_reads_count|indx_major_stat]
+
             } else {
-              result_df <- result_df[, !grepl("MAP|MLE",colnames(result_df)) | colnames(result_df) %in% c("log2fcMod.Control.MLE",
-                                                                                                         "log2fcMod.Treated.MLE")]
+
+              result_df <- result_df[,indx_range_info|indx_reads_count|indx_major_stat|colnames(result_df) %in% c("log2fcMod.Control.MLE","log2fcMod.Treated.MLE")]
+
               colnames( result_df )[colnames(result_df) %in% c("log2fcMod.Control.MLE",
                                                              "log2fcMod.Treated.MLE",
                                                              "log2FoldChange")] <- c("ModLog2FC_control",

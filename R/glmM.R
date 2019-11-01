@@ -73,9 +73,12 @@ setMethod("glmM",
                     glm_type = c("auto","Poisson", "NB", "DESeq2"),
                     LFC_shrinkage = c("apeglm", "Gaussian", "ashr"),
                     ...) {
-  if( (any(sep$design_Treatment) & any(!sep$design_Treatment)) ){
-      warning("Your data has interactive design / treatment groups, perhaps you want to use the function glm_DM().")
+  if( (any(sep$design_Treatment) & any(!sep$design_Treatment)) ) {
+
+      warning("Your data has interactive design / treatment groups, perhaps you want to use the function glm_DM().\n")
+
   }
+
 
   LFC_shrinkage = match.arg(LFC_shrinkage)
 
@@ -169,18 +172,24 @@ setMethod("glmM",
    #Generation of the DESeq2 report.
 
       DS_result <- as.data.frame( suppressWarnings( suppressMessages( results( dds, altHypothesis = "greater" ) ) ))
-      DS_result <- DS_result[,c("log2FoldChange","log2FoldChange","lfcSE","pvalue","padj")]
-      colnames(DS_result) <- c("log2FoldChange","log2fcMod.MLE","log2fcMod.MLE.SE","pvalue","padj")
+      DS_result <- DS_result[,c("log2FoldChange","lfcSE","pvalue","padj")]
+      colnames(DS_result) <- c("log2fcMod.MLE","log2fcMod.MLE.SE","log2fcMod.pvalue","log2fcMod.padj")
 
       #Include reads count
       DS_result$ReadsCount.IP <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP]) )
       DS_result$ReadsCount.input <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP]) )
 
-      #Calculat expression level related estimates
+      #Calculate expression level related estimates
       Expr_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,0)) ) ))
       DS_result$log2Expr.MLE <- Expr_design_MLE[,"log2FoldChange"]
       DS_result$log2Expr.MLE.SE <- Expr_design_MLE[,"lfcSE"]
       rm(Expr_design_MLE)
+
+      #Calculate absolute methylation level related estimates
+      AbsMod_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(0,1)) ) ))
+      DS_result$log2AbsMod.MLE <- AbsMod_design_MLE[,"log2FoldChange"]
+      DS_result$log2AbsMod.MLE.SE <- AbsMod_design_MLE[,"lfcSE"]
+      rm(AbsMod_design_MLE)
 
       #Calculate additional MAP estimates if LFCs are set != "none"
       if(LFC_shrinkage != "none" & glm_type != "Poisson") {
@@ -192,14 +201,34 @@ setMethod("glmM",
 
         DS_result <- DS_result[,c("ReadsCount.input","ReadsCount.IP",
                                   "log2Expr.MLE","log2Expr.MLE.SE",
+                                  "log2AbsMod.MLE", "log2AbsMod.MLE.SE",
                                   "log2fcMod.MLE","log2fcMod.MLE.SE","log2fcMod.MAP",
-                                  "log2FoldChange","pvalue","padj")]
+                                  "log2fcMod.pvalue","log2fcMod.padj")]
+
+        major_statistics <- DS_result[,c("log2fcMod.MAP","log2fcMod.pvalue","log2fcMod.padj")]
+
+        colnames(major_statistics) = c("log2FoldChange","pvalue","padj")
+
+        DS_result <- cbind(DS_result, major_statistics)
+
+        rm(major_statistics)
+
       } else {
 
         DS_result <- DS_result[,c("ReadsCount.input","ReadsCount.IP",
                                   "log2Expr.MLE","log2Expr.MLE.SE",
+                                  "log2AbsMod.MLE", "log2AbsMod.MLE.SE",
                                   "log2fcMod.MLE","log2fcMod.MLE.SE",
-                                  "log2FoldChange","pvalue","padj")]
+                                  "log2fcMod.pvalue","log2fcMod.padj")]
+
+        major_statistics <- DS_result[,c("log2fcMod.MLE","log2fcMod.pvalue","log2fcMod.padj")]
+
+        colnames(major_statistics) = c("log2FoldChange","pvalue","padj")
+
+        DS_result <- cbind(DS_result, major_statistics)
+
+        rm(major_statistics)
+
       }
 
 

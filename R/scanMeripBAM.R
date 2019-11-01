@@ -130,13 +130,13 @@ scanMeripBAM <- function(bam_ip = NULL,
     if (!index_bam) {
       warning(
         paste0(
-          "Cannot find the bam index files, The bam files are treated as not indexed."
+          "The bam files are treated as not indexed."
         ),
         call. = F,
         immediate. = T
       )
     } else {
-      message("Cannot find the bam index files, sorting and indexing BAM files with Rsamtools...")
+      message("Sorting and indexing BAM files with Rsamtools...")
 
       sorted_bam_names <- gsub(".bam$", "_sorted", bam_files)
 

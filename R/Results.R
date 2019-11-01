@@ -103,7 +103,8 @@ setMethod("Results",
                 )
             }
 
-            #In case of users have not run inference on the sep.
+            #Check if users have not run inference on the summarizedExomePeak.
+
             if (is.null(DESeq2Results(sep))) {
               if (any(sep$design_Treatment)) {
                 sep <- glmDM(sep)
@@ -112,7 +113,8 @@ setMethod("Results",
               }
             }
 
-            #Check the validity of the arguments
+            #Check the validity of the arguments.
+
             stopifnot(cut_off_pvalue <= 1 & cut_off_pvalue >= 0)
             stopifnot(cut_off_log2FC >= 0)
             table_style <- match.arg(table_style)
@@ -132,7 +134,7 @@ setMethod("Results",
                 Min_mod = min_num_of_positive
               )
 
-              #In case of no sites are reported, export all the p values that are not NA
+              #If no sites are reported, export all the p values that are not NA.
 
               index_keep <-
                 which(
@@ -173,16 +175,12 @@ setMethod("Results",
             }
             }
 
-            #now, create the final result summary that contain GRangesList with metadata collumns.
+            #Create the final result summary that contain GRangesList with metadata collumns.
             result_grl <-
               rowRanges(sep)[grepl("mod_", rownames(sep))][index_keep]
             result_stat <- DESeq2Results(sep)[index_keep, ]
 
 
-            #Make some clarifications on the final output results:
-            #1. remove the .x in gene ids.
-            #2. group names should be changed into mod names mod + id that is corresponding to the original table.
-            #3. change log2FoldChange into log2 Odds ratio for differential modification.
             result_gr <- unlist(result_grl)
             result_gr$gene_id <-
               gsub("\\.[0-9]*$", "", result_gr$gene_id)
@@ -262,7 +260,10 @@ setMethod("Results",
 
             }
 
-            #Attach gene ids at the end of the table
+            indx_reads_count <- grepl("Count",colnames(result_df))
+            indx_major_stat <- colnames(result_df) %in% c("log2FoldChange","pvalue","padj")
+
+            result_df <- result_df[,!grepl("MLE|MAP|.padj|.pvalue",colnames(result_df))]
 
             return(result_df)
 
