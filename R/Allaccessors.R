@@ -59,8 +59,16 @@ setMethod("GCsizeFactors",
             return(assays(x)$GCsizeFactors)
           })
 
-
-
+#' @title Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
+#'
+#' @param x A \code{matrix} object.
+#'
+#' @docType methods
+#'
+#' @name GCsizeFactors<-
+#'
+#' @rdname GCsizeFactors<-
+#'
 #' @export
 #'
 setMethod("GCsizeFactors<-",
@@ -68,6 +76,24 @@ setMethod("GCsizeFactors<-",
           function(x,value) {
             assays(x)$GCsizeFactors <- value
             return(x)
+          })
+
+#' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
+#'
+#' @param x A \code{data.frame} object.
+#'
+#' @docType methods
+#'
+#' @name DESeq2Results<-
+#'
+#' @rdname DESeq2Results<-
+#'
+#' @export
+#'
+setMethod("DESeq2Results",
+          "SummarizedExomePeak",
+          function(x) {
+            return(x@DESeq2Results)
           })
 
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
@@ -82,15 +108,6 @@ setMethod("GCsizeFactors<-",
 #'
 #' @rdname DESeq2Results
 #'
-#' @export
-#'
-setMethod("DESeq2Results",
-          "SummarizedExomePeak",
-          function(x) {
-            return(x@DESeq2Results)
-          })
-
-
 #' @export
 #'
 setMethod("DESeq2Results<-",

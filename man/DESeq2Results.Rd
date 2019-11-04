@@ -7,7 +7,7 @@
 \usage{
 DESeq2Results(x)
 
-\S4method{DESeq2Results}{SummarizedExomePeak}(x)
+\S4method{DESeq2Results}{SummarizedExomePeak}(x) <- value
 }
 \arguments{
 \item{x}{A \code{SummarizedExomePeak} object.}

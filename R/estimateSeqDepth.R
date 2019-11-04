@@ -8,23 +8,23 @@
 #' and it estimates the sequencing depth size factors by the columns of its \link{assay}.
 #'
 #' @param sep a \code{\link{summarizedExomePeak}} object.
-#' @param from a \code{character} specify the subset of features for sequencing depth estimation, can be one of \code{c("Control", "Modification", "Both")}.
+#' @param from a \code{character} specify the subset of features for sequencing depth estimation, can be one of \code{c("Background", "Modification", "All")}.
 #'
 #' \describe{
-#'  \item{\strong{\code{Control}}}{
-#'  The sequencing depths are estimated from the background control regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
+#'  \item{\strong{\code{Background}}}{
+#'  The sequencing depths are estimated from the background Background regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
 #'  }
 #'
 #'  \item{\strong{\code{Modification}}}{
 #'  The sequencing depths are estimated from the modification peaks/sites.
 #'  }
 #'
-#'  \item{\strong{\code{Both}}}{
-#'  The sequencing depths are estimated from both the control and modification features.
+#'  \item{\strong{\code{All}}}{
+#'  The sequencing depths are estimated from All the Background and modification features.
 #'  }
 #' }
 #'
-#' Under default setting, the sequencing depth factors are estimated from the background control regions.
+#' Under default setting, the sequencing depth factors are estimated from the background Background regions.
 #'
 #' @param ... inherited from \code{\link{estimateSizeFactorsForMatrix}}.
 #'
@@ -66,17 +66,17 @@
 setMethod("estimateSeqDepth",
           "SummarizedExomePeak",
                        function(sep,
-                                from = c("Control","Modification","Both"),
+                                from = c("Background","Modification","All"),
                                 ...){
   from <- match.arg(from)
 
-  if(from == "Control") {
-    control_peaks_indx <- grepl("control", rownames(sep))
-    if(sum(control_peaks_indx) == 0) {
-    warning("Cannot find control peaks, the size factors are estimated using the modification containing peaks.", call. = F,immediate. = T)
+  if(from == "Background") {
+    Background_peaks_indx <- grepl("control", rownames(sep))
+    if(sum(Background_peaks_indx) == 0) {
+    warning("Cannot find Background peaks, the size factors are estimated using the modification containing peaks.", call. = F,immediate. = T)
     sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep ) )
     } else {
-    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[control_peaks_indx,] ))
+    sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[Background_peaks_indx,] ))
     }
 
   }
@@ -85,7 +85,7 @@ setMethod("estimateSeqDepth",
     sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[mod_peaks_indx,] ) )
   }
 
-  if(from == "Both"){
+  if(from == "All"){
     sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep ) )
   }
   return(sep)

@@ -40,6 +40,7 @@
 #'
 #' @importFrom DESeq2 DESeqDataSet estimateDispersions estimateSizeFactors nbinomWaldTest results
 #'
+#' @import cqn
 #'
 GLM_inference <- function(SE_bins,
                           glm_type = c("Poisson", "NB", "DESeq2"),
@@ -74,7 +75,7 @@ GLM_inference <- function(SE_bins,
   if (!is.null(rowData(SE_bins)$gc_contents)) {
     indx_IP <- dds$design_IP == "IP"
 
-    message("Estimating GC content correction factors for IP samples...")
+    message("Estimating offsets of GC content biases in IP samples...")
 
     if(correct_GC_bg) {
       subindex = which(rowData(dds)$indx_bg & rowData(dds)$indx_gc_est)
@@ -99,7 +100,7 @@ GLM_inference <- function(SE_bins,
       )
     )
 
-    message("Estimating GC content correction factors for input samples...")
+    message("Estimating offsets of GC content biases in input samples...")
 
     cqnObject_input <- quiet(
       suppressMessages(
@@ -173,7 +174,7 @@ GLM_inference <- function(SE_bins,
 
   if (sum(sig_indx) < min_mod_number) {
     warning(
-      "The number of positive bins is too small using DESeq2 under current filter,
+      "The number of positive bins is too small using DESeq2 under the current filter,
       the filter is changed into p value < 0.05 and log2FC > 0, please consider using Poisson GLM.",
       call. = FALSE,
       immediate. = TRUE

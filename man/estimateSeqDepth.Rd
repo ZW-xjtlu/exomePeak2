@@ -5,31 +5,31 @@
 \alias{estimateSeqDepth}
 \title{Estimate the Sequencing Depth Size Factors for Peak Statistics Quantification.}
 \usage{
-estimateSeqDepth(sep, from = c("Control", "Modification", "Both"), ...)
+estimateSeqDepth(sep, from = c("Background", "Modification", "All"), ...)
 
-\S4method{estimateSeqDepth}{SummarizedExomePeak}(sep, from = c("Control",
-  "Modification", "Both"), ...)
+\S4method{estimateSeqDepth}{SummarizedExomePeak}(sep,
+  from = c("Background", "Modification", "All"), ...)
 }
 \arguments{
 \item{sep}{a \code{\link{summarizedExomePeak}} object.}
 
-\item{from}{a \code{character} specify the subset of features for sequencing depth estimation, can be one of \code{c("Control", "Modification", "Both")}.
+\item{from}{a \code{character} specify the subset of features for sequencing depth estimation, can be one of \code{c("Background", "Modification", "All")}.
 
 \describe{
- \item{\strong{\code{Control}}}{
- The sequencing depths are estimated from the background control regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
+ \item{\strong{\code{Background}}}{
+ The sequencing depths are estimated from the background Background regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
  }
 
  \item{\strong{\code{Modification}}}{
  The sequencing depths are estimated from the modification peaks/sites.
  }
 
- \item{\strong{\code{Both}}}{
- The sequencing depths are estimated from both the control and modification features.
+ \item{\strong{\code{All}}}{
+ The sequencing depths are estimated from All the Background and modification features.
  }
 }
 
-Under default setting, the sequencing depth factors are estimated from the background control regions.}
+Under default setting, the sequencing depth factors are estimated from the background Background regions.}
 
 \item{...}{inherited from \code{\link{estimateSizeFactorsForMatrix}}.}
 }

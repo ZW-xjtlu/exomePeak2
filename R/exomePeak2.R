@@ -388,7 +388,7 @@ sep <- estimateSeqDepth(sep)
 
 if(!is.null(bsgenome)) {
 
-  message("Evaluating GC content biases on the background...")
+  message("Estimating linear effects between GC contents and reads abundancies on bins...")
 
   sep <- normalizeGC(sep,
                      feature = ifelse(correct_GC_bg,"background","all"),
@@ -397,10 +397,10 @@ if(!is.null(bsgenome)) {
 }
 
 if(any(sep$design_Treatment)){
-  message("Differential modification analysis with interactive GLM...")
-  sep <- glmDM(sep, LFC_shrinkage = LFC_shrinkage)
+  message("Differential modification analysis using interactive GLM...")
+  sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage) )
 } else {
-  message("Calculating peak statistics with updated GLM offsets...")
+  message("Calculating peak statistics using DESeq2...")
   sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage)
 }
 
@@ -429,21 +429,21 @@ plotLfcGC(sep = sep,
 
 
 if (save_plot_analysis) {
-  message("Generating plots for RNA modification analysis...")
+  message("Saving plots for RNA modification analysis...")
 
-  if (!require(Guitar)) {
-    warning(
-      "the 'Guitar' package is not installed, skipping the distribution plot on travis coordinate."
-    )
-  } else {
-    message("Generating the distribution plot on travis coordinate...")
-    plotGuitar(
-      sep,
-      txdb = txdb,
-      save_pdf_prefix = save_plot_name,
-      save_dir = save_dir
-    )
-  }
+  # if (!require(Guitar)) {
+  #   warning(
+  #     "the 'Guitar' package is not installed, skipping the distribution plot on travis coordinate."
+  #   )
+  # } else {
+  #   message("Generating the distribution plot on travis coordinate...")
+  #   plotGuitar(
+  #     sep,
+  #     txdb = txdb,
+  #     save_pdf_prefix = save_plot_name,
+  #     save_dir = save_dir
+  #   )
+  # }
 
   plotExonLength(sep,
                  txdb = txdb,

@@ -41,7 +41,7 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
 #' @rdname estimateSeqDepth
 #' @export
 setGeneric("estimateSeqDepth", function(sep,
-                                        from = c("Control","Modification","Both"),
+                                        from = c("Background","Modification","All"),
                                         ...) {standardGeneric("estimateSeqDepth")})
 
 #' @rdname plotSizeFactors
@@ -92,14 +92,14 @@ setGeneric("glmDM", function(sep,
                              ...) {standardGeneric("glmDM")})
 
 
-#' @rdname plotGuitar
-#' @export
-setGeneric("plotGuitar", function(sep,
-                                  txdb = NULL,
-                                  save_pdf_prefix = NULL,
-                                  include_control_regions = TRUE,
-                                  guitar_coordinate = NULL,
-                                  save_dir = ".") {standardGeneric("plotGuitar")})
+# @rdname plotGuitar
+# @export
+# setGeneric("plotGuitar", function(sep,
+#                                  txdb = NULL,
+#                                  save_pdf_prefix = NULL,
+#                                  include_control_regions = TRUE,
+#                                  guitar_coordinate = NULL,
+#                                  save_dir = ".") {standardGeneric("plotGuitar")})
 
 #' @rdname plotExonLength
 #' @export

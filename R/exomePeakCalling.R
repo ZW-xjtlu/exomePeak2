@@ -553,7 +553,7 @@ setMethod("exomePeakCalling",
 
               rm(SE_Peak_counts,mod_annot_flanked)
 
-              message("Counting reads using single based annotation on exons...")
+              message("Counting reads on the single based annotation...")
 
               if (!parallel) {
                 register(SerialParam())

@@ -4,6 +4,8 @@
 #'
 #'@docType methods
 #'
+#'@importFrom reshape2 melt
+#'
 #'@name plotSizeFactors
 #'
 #'@rdname plotSizeFactors
@@ -13,10 +15,10 @@
 setMethod("plotSizeFactors",
           "SummarizedExomePeak",
                 function(sep){
- plot_df <- sapply(c("Control","Both","Methylation"),function(x) estimateSeqDepth(sep,from = x)$sizeFactor)
- plot_df <- reshape2::melt(plot_df)
+ plot_df <- sapply(c("Background","All","Modification"),function(x) estimateSeqDepth(sep,from = x)$sizeFactor)
+ plot_df <- melt(plot_df)
  colnames(plot_df) <- c("bam_files","Estimation_Methods","size_factors")
- plot_df$Estimation_Methods <- factor(plot_df$Estimation_Methods, levels = c("Control","Both","Methylation"))
+ plot_df$Estimation_Methods <- factor(plot_df$Estimation_Methods, levels = c("Background","All","Modification"))
  plot_df$bam_files <- as.factor( plot_df$bam_files )
  plot_df$IP_input <- "input"
  plot_df$IP_input[rep(sep$design_IP ,3)] <- "IP"
@@ -36,7 +38,7 @@ setMethod("plotSizeFactors",
    theme_classic() +
   scale_fill_brewer(palette = "Dark2") +
    theme(axis.text.x = element_text(angle = 310,hjust = 0,face = "bold",colour = "darkblue")) +
-   labs(x = "Samples", y = "Size factors", title = "Compare size factors estimated by different methods") +
+   labs(x = "Samples", y = "Sequencing Depth Size Factors", title = "Size Factors Estimated on Different Features") +
    theme( plot.margin = margin(t = 1,
                                r = 0.5,
                                b = 0.5,

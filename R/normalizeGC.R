@@ -66,6 +66,7 @@
 #'sep <- normalizeGC(sep)
 #'
 #'@import SummarizedExperiment
+#'@import cqn
 #'@importFrom BSgenome getBSgenome
 #'@docType methods
 #'@seealso \code{\link{estimateSeqDepth}}
