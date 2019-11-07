@@ -1,13 +1,19 @@
-#' @rdname Parameter
-#' @export
+#' Method Parameter
+#' @name Parameter-methods
+#' @rdname Parameter-methods
+#' @exportMethod Parameter
 setGeneric("Parameter", function(x) {standardGeneric("Parameter")})
 
-#' @rdname LibraryType
-#' @export
+#' Method LibraryType
+#' @name LibraryType-methods
+#' @rdname LibraryType-methods
+#' @exportMethod LibraryType
 setGeneric("LibraryType", function(x) standardGeneric("LibraryType"))
 
-#' @rdname exomePeakCalling
-#' @export
+#' Method exomePeakCalling
+#' @name exomePeakCalling-methods
+#' @rdname exomePeakCalling-methods
+#' @exportMethod exomePeakCalling
 setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         txdb = NULL,
                                         bsgenome = NULL,
@@ -38,54 +44,72 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         parallel = FALSE,
                                         bp_param = NULL) {standardGeneric("exomePeakCalling")})
 
-#' @rdname estimateSeqDepth
-#' @export
+#' Method estimateSeqDepth
+#' @name estimateSeqDepth-methods
+#' @rdname estimateSeqDepth-methods
+#' @exportMethod estimateSeqDepth
 setGeneric("estimateSeqDepth", function(sep,
                                         from = c("Background","Modification","All"),
                                         ...) {standardGeneric("estimateSeqDepth")})
 
-#' @rdname plotSizeFactors
-#' @export
+#' Method plotSizeFactors
+#' @name plotSizeFactors-methods
+#' @rdname plotSizeFactors-methods
+#' @exportMethod plotSizeFactors
 setGeneric("plotSizeFactors", function(sep) {standardGeneric("plotSizeFactors")})
 
-#' @rdname GCsizeFactors
-#' @export
-setGeneric("GCsizeFactors", function(x) {standardGeneric("GCsizeFactors")})
+#' Method GCsizeFactors
+#' @name GCsizeFactors-methods
+#' @rdname GCsizeFactors-methods
+#' @exportMethod GCsizeFactors
+setGeneric("GCsizeFactors", function(x1) {standardGeneric("GCsizeFactors")})
 
-#' @rdname GCsizeFactors<-
-#' @export
-setGeneric("GCsizeFactors<-", function(x,...,value) {standardGeneric("GCsizeFactors<-")})
+#' Method GCsizeFactors<-
+#' @name GCsizeFactors-methods
+#' @rdname GCsizeFactors-methods
+#' @exportMethod GCsizeFactors<-
+setGeneric("GCsizeFactors<-", function(x2,value) {standardGeneric("GCsizeFactors<-")})
 
-#' @rdname DESeq2Results
-#' @export
-setGeneric("DESeq2Results", function(x) {standardGeneric("DESeq2Results")})
+#' Method DESeq2Results
+#' @name DESeq2Results-methods
+#' @rdname DESeq2Results-methods
+#' @exportMethod DESeq2Results
+setGeneric("DESeq2Results", function(x1) {standardGeneric("DESeq2Results")})
 
-#' @rdname DESeq2Results<-
-#' @export
-setGeneric("DESeq2Results<-", function(x,...,value) {standardGeneric("DESeq2Results<-")})
+#' Method DESeq2Results<-
+#' @name DESeq2Results-methods
+#' @rdname DESeq2Results-methods
+#' @exportMethod DESeq2Results<-
+setGeneric("DESeq2Results<-", function(x2,value) {standardGeneric("DESeq2Results<-")})
 
-#' @rdname normalizeGC
-#' @export
+#' Method normalizeGC
+#' @name normalizeGC-methods
+#' @rdname normalizeGC-methods
+#' @exportMethod normalizeGC
 setGeneric("normalizeGC", function(sep,
                                    bsgenome = "hg19",
                                    txdb = "hg19",
                                    gff_dir = NULL,
                                    fragment_length = 100,
                                    binding_length = 25,
-                                   feature = c("background","all"),
+                                   feature = c("All","Modification","Background"),
                                    qtnorm = FALSE,
                                    effective_GC = FALSE) {standardGeneric("normalizeGC")})
 
 
-#' @rdname glmM
-#' @export
+#' Method glmM
+#' @name glmM-methods
+#' @rdname glmM-methods
+#' @exportMethod glmM
 setGeneric("glmM", function(sep,
                                glm_type = c("auto","Poisson", "NB", "DESeq2"),
                                LFC_shrinkage = c("apeglm","Gaussian","ashr"),
                                ...) {standardGeneric("glmM")})
 
-#' @rdname glmDM
-#' @export
+#' Method glmDM
+#' @name glmDM-methods
+#' @rdname glmDM-methods
+#' @exportMethod glmDM
 setGeneric("glmDM", function(sep,
                              glm_type = c("auto","Poisson", "NB", "DESeq2"),
                              LFC_shrinkage = c("apeglm","ashr"),
@@ -101,16 +125,20 @@ setGeneric("glmDM", function(sep,
 #                                  guitar_coordinate = NULL,
 #                                  save_dir = ".") {standardGeneric("plotGuitar")})
 
-#' @rdname plotExonLength
-#' @export
+#' Method plotExonLength
+#' @name plotExonLength-methods
+#' @rdname plotExonLength-methods
+#' @exportMethod plotExonLength
 setGeneric("plotExonLength", function(sep,
                                       txdb = NULL,
                                       save_pdf_prefix = NULL,
                                       include_control_regions = TRUE,
                                       save_dir = ".") {standardGeneric("plotExonLength")})
 
-#' @rdname plotReadsGC
-#' @export
+#' Method plotReadsGC
+#' @name plotReadsGC-methods
+#' @rdname plotReadsGC-methods
+#' @exportMethod plotReadsGC
 setGeneric("plotReadsGC", function(sep,
                                    bsgenome = NULL,
                                    txdb = NULL,
@@ -121,8 +149,10 @@ setGeneric("plotReadsGC", function(sep,
                                    pool_replicates = FALSE,
                                    save_dir = ".") {standardGeneric("plotReadsGC")})
 
-#' @rdname plotLfcGC
-#' @export
+#' Method plotLfcGC
+#' @name plotLfcGC-methods
+#' @rdname plotLfcGC-methods
+#' @exportMethod plotLfcGC
 setGeneric("plotLfcGC", function(sep,
                                   bsgenome = NULL,
                                   txdb = NULL,
@@ -132,8 +162,10 @@ setGeneric("plotLfcGC", function(sep,
                                   effective_GC = FALSE,
                                   save_dir = ".") {standardGeneric("plotLfcGC")})
 
-#' @rdname exportResults
-#' @export
+#' Method exportResults
+#' @name exportResults-methods
+#' @rdname exportResults-methods
+#' @exportMethod exportResults
 setGeneric("exportResults", function(sep,
                                      format = c("CSV","BED","RDS"),
                                      table_style = c("bed","granges"),
@@ -147,8 +179,10 @@ setGeneric("exportResults", function(sep,
                                      reads_count = TRUE,
                                      GC_sizeFactors = TRUE) {standardGeneric("exportResults")})
 
-#' @rdname Results
-#' @export
+#' Method Results
+#' @name Results-methods
+#' @rdname Results-methods
+#' @exportMethod Results
 setGeneric("Results", function(sep,
                                cut_off_pvalue = NULL,
                                cut_off_padj = 0.05,

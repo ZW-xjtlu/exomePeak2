@@ -8,7 +8,7 @@
 #' If the SummarizedExomePeaks object contains interactive LFC statistics, both the hyper modification
 #' and hypo modification peaks with DESeq2 Wald test p values < .05 will be plotted.
 #'
-#' @param sep a \code{\link{SummarizedExomePeaks}} object.
+#' @param sep a \code{\link{SummarizedExomePeak}} object.
 #' @param txdb a \code{\link{TxDb}} object containing the transcript annotation.
 #' @param save_pdf_prefix a \code{character} if provided, a pdf file with the given name will be saved under the current working directory.
 #' @param include_control_regions a \code{logical} for whether to include the control regions or not; Default \code{= TRUE}.
@@ -18,11 +18,9 @@
 #'
 #' @import SummarizedExperiment
 #'
-#' @docType methods
+#' @aliases plotExonLength
 #'
-#' @name plotExonLength
-#'
-#' @rdname plotExonLength
+#' @rdname plotExonLength-methods
 #'
 #' @examples
 #'

@@ -4,7 +4,9 @@
 #'
 #' @exportClass MeripBamFileList
 #'
-#' @export
+#' @aliases MeripBamFileList
+#' @name MeripBamFileList-class
+#' @rdname MeripBamFileList-class
 
 setClass(
   Class = "MeripBamFileList",
@@ -15,8 +17,8 @@ setClass(
 
 #' @title SummarizedExomePeak
 #'
-#' @description A S4 object defined in exomePeak2 that summarizes the information for modification peaks/sites,
-#' reads count, size factors, GC contents, and the LFC related statistics.
+#' @description An S4 object defined in exomePeak2 that summarizes the information of modification peaks/sites,
+#' reads counts, size factors, GC contents, and the LFC related statistics.
 #'
 #' This class contains \link{SummarizedExperiment}.
 #'
@@ -24,9 +26,10 @@ setClass(
 #'
 #' \strong{Constructors:}
 #'
-#'The \code{SummarizedExomePeak} object can be contructed by 2 functions.
+#'The \code{SummarizedExomePeak} object can be contructed by 3 functions.
 #'
 #'\enumerate{
+#'  \item \link{SummarizedExomePeak}
 #'  \item \link{exomePeakCalling}
 #'  \item \link{exomePeak2}
 #'}
@@ -79,8 +82,9 @@ setClass(
 #' DESeq2Results(sep)
 #'
 #' @import SummarizedExperiment
-#' @name SummarizedExomePeak
-#' @rdname SummarizedExomePeak
+#' @name SummarizedExomePeak-class
+#' @rdname SummarizedExomePeak-class
+#' @aliases SummarizedExomePeak
 #' @exportClass SummarizedExomePeak
 #'
 
@@ -90,3 +94,9 @@ setClass(
   contains = "RangedSummarizedExperiment"
 )
 
+#' Wrapper function SummarizedExomePeak.
+#' @param ... arguments passed to \code{new()}.
+#' @name SummarizedExomePeak
+#' @rdname SummarizedExomePeak-class
+#' @export
+SummarizedExomePeak <- function(...) new("SummarizedExomePeak", ...)

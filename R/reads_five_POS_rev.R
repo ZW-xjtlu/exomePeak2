@@ -1,5 +1,9 @@
 #'@title extract reads five prime POS and reverse its strand.
 #'@param reads a GAlignmentList object.
+#'@param width the width of the five prime POS.
+#'@param fix the end of the POS, start means 5', end means 3'.
+#'@param ... arguments path to function resize.
+#'
 #'@import GenomicAlignments
 #'@import GenomicRanges
 #'

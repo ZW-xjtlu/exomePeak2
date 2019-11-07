@@ -19,9 +19,9 @@ disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
 
 \item{background_types}{A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.}
 
-\item{rename_mod}{Whether to rename the returned modification sites, default = FALSE.}
+\item{control_width}{A integer for the minimum width of the control region returned; default 50.}
 
-\item{distance_5p}{A numeric value of the length of the transcript starting region; default 200.}
+\item{rename_mod}{Whether to rename the returned modification sites, default = FALSE.}
 }
 \value{
 A \code{GRangesList} object.

@@ -4,7 +4,7 @@
 #'
 #' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
 #'
-#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.
 #'
 #' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
 #'

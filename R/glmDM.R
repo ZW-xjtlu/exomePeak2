@@ -1,6 +1,6 @@
 #' @title Estimation and Inference on RNA Differential Modification Log2 Fold Changes with Generalized Linear Model.
 #'
-#' @param sep a \code{\link{summarizedExomePeak}} object.
+#' @param sep a \code{\link{SummarizedExomePeak}} object.
 #'
 #' @param glm_type a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 #'
@@ -64,9 +64,9 @@
 #' sep <- glmDM(sep)
 #'
 #'
-#' @name glmDM
+#' @aliases glmDM
 #'
-#' @rdname glmDM
+#' @rdname glmDM-methods
 #'
 #' @seealso \code{\link{glmM}}
 #'

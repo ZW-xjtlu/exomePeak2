@@ -1,14 +1,15 @@
 #'@title plot the size factors using different strategies.
+#'
+#'@param sep a \code{\link{SummarizedExomePeak}} object.
+#'
 #'@import ggplot2
 #'@import reshape2
 #'
-#'@docType methods
-#'
 #'@importFrom reshape2 melt
 #'
-#'@name plotSizeFactors
+#'@aliases plotSizeFactors
 #'
-#'@rdname plotSizeFactors
+#'@rdname plotSizeFactors-methods
 #'
 #'@export
 #'

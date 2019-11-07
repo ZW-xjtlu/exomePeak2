@@ -4,15 +4,15 @@
 #' Under default setting, the sequencing depth are estimated by the robust estimator defined in package DESeq2.
 #' i.e. the median of the ratios to the row geometric means.
 #'
-#' @details The function takes the input of a \code{\link{summarizedExomePeak}} object,
+#' @details The function takes the input of a \code{\link{SummarizedExomePeak}} object,
 #' and it estimates the sequencing depth size factors by the columns of its \link{assay}.
 #'
-#' @param sep a \code{\link{summarizedExomePeak}} object.
+#' @param sep a \code{\link{SummarizedExomePeak}} object.
 #' @param from a \code{character} specify the subset of features for sequencing depth estimation, can be one of \code{c("Background", "Modification", "All")}.
 #'
 #' \describe{
 #'  \item{\strong{\code{Background}}}{
-#'  The sequencing depths are estimated from the background Background regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
+#'  The sequencing depths are estimated from the background regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
 #'  }
 #'
 #'  \item{\strong{\code{Modification}}}{
@@ -20,7 +20,7 @@
 #'  }
 #'
 #'  \item{\strong{\code{All}}}{
-#'  The sequencing depths are estimated from All the Background and modification features.
+#'  The sequencing depths are estimated from both the background and modification regions.
 #'  }
 #' }
 #'
@@ -51,15 +51,13 @@
 #'
 #' @seealso \code{\link{normalizeGC}}
 #'
-#' @return This function will return a \code{\link{summarizedExomePeak}} object containing newly estimated sequencing depth size factors.
+#' @return This function will return a \code{\link{SummarizedExomePeak}} object containing newly estimated sequencing depth size factors.
 #'
 #' @importFrom DESeq2 estimateSizeFactorsForMatrix
 #'
-#' @docType methods
+#' @aliases estimateSeqDepth
 #'
-#' @name estimateSeqDepth
-#'
-#' @rdname estimateSeqDepth
+#' @rdname estimateSeqDepth-methods
 #'
 #' @export
 #'

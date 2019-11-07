@@ -7,12 +7,12 @@
 #'
 #' \deqn{normalized_feature_abundance = ( ( read_count / size_factor) / region_length ) * 500}
 #'
-#'  By default, it will use the sequencing depth size factor defined in the \code{\link{summarizedExomePeak}} object,
+#'  By default, it will use the sequencing depth size factor defined in the \code{\link{SummarizedExomePeak}} object,
 #'  if the sequencing depth size factor is not found, new size factors will be estimated with the default method in \code{\link{estimateSeqDepth}}.
 #'
-#'@param sep a \code{\link{summarizedExomePeak}} object.
+#'@param sep a \code{\link{SummarizedExomePeak}} object.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenome}}.
 #'
 #'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
 #'
@@ -22,7 +22,7 @@
 #'
 #'@param binding_length a \code{numeric} value for the expected antibody binding length in IP samples; Default \code{= 25}.
 #'
-#'@param effective_gc a \code{logical} value of whether to calculate the weighted GC content by the probability of reads alignment; default \code{= FALSE}.
+#'@param effective_GC a \code{logical} value of whether to calculate the weighted GC content by the probability of reads alignment; default \code{= FALSE}.
 #'
 #'@param pool_replicates a \code{logical} value of whether to pool the replicates in the local regression fit; default \code{= FALSE}.
 #'
@@ -43,11 +43,9 @@
 #'@import quantreg
 #'@importFrom reshape2 melt
 #'
-#'@docType methods
+#'@aliases plotReadsGC
 #'
-#'@name plotReadsGC
-#'
-#'@rdname plotReadsGC
+#'@rdname plotReadsGC-methods
 #'
 #'@export
 setMethod("plotReadsGC",

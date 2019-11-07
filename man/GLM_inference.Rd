@@ -15,22 +15,22 @@ GLM_inference(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,
 which is a character vector with values of "IP" and "input". The column helps to index the design of MeRIP-Seq experiment.}
 
-\item{glm_type}{a character, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
+\item{glm_type}{a \code{character}, which can be one of  the "Poisson", "NB", and "DESeq2". This argument specify the type of generalized linear model used in peak calling; Default to be "Poisson".
 The DESeq2 method is only recommended for high power experiments with more than 3 biological replicates for both IP and input.}
 
-\item{p_cutoff}{a numeric value of the p value cutoff used in DESeq inference.}
+\item{p_cutoff}{a \code{numeric} for the p value cutoff used in DESeq inference.}
 
-\item{p_adj_cutoff}{a numeric value of the adjusted p value cutoff used in DESeq2 inference; if provided, values in \code{p_cutoff} will be ignored.}
+\item{p_adj_cutoff}{a \code{numeric} for the adjusted p value cutoff used in DESeq2 inference; if provided, values in \code{p_cutoff} will be ignored.}
 
-\item{count_cutoff}{an integer value indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
+\item{count_cutoff}{an \code{integer} indicating the cutoff of the mean of reads count in a row, inference is only performed on the windows with read count bigger than the cutoff. Default value is 10.}
 
-\item{log2FC_mod}{a non negative numeric value of the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).}
+\item{log2FC_mod}{a non negative \code{numeric} for the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).}
 
-\item{min_mod_number}{a non negative numeric value of the he minimum number of the reported modification containing bins.
+\item{min_mod_number}{a non negative \code{numeric} for the minimum number of the reported modification containing bins.
 If the bins are filtered less than this number by the p values or effect sizes,
 more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(SE_bins)*0.002 ).}
 
-\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+\item{correct_GC_bg}{a \code{logical} of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 
 If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
 
@@ -38,9 +38,11 @@ If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of t
 
 Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 
+\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.}
+
 \item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
 
-\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.}
+\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.}
 
 \item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
 
@@ -49,8 +51,6 @@ Subset quantile normalization will be applied within the IP and input samples se
 For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
 
 The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.}
-
-\item{consistent}{a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.}
 }
 \value{
 a list of the index for the significant modified peaks (IP > input) and control peaks (peaks other than modification containing peaks).

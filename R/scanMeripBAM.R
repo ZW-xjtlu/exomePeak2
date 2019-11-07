@@ -35,7 +35,7 @@
 #'
 #' @param mapq a non-negative integer specifying the minimum reads mapping quality. BAM records with mapping qualities less than \code{mapq} are discarded; default \code{= 30L}.
 #'
-#' @param isSecondaryAlignment,isNotPassingQualityControls,isDuplicate,... arguments specifying the filters on SAM FLAG scores, inherited from \code{\link{ScanBAMParam}}.
+#' @param isPaired,isProperPair,hasUnmappedMate,isSecondaryAlignment,isNotPassingQualityControls,isDuplicate,... arguments specifying the filters on SAM FLAG scores, inherited from \code{\link{ScanBamParam}}.
 #'
 #' @return a \code{MeripBamFileList} object.
 #'

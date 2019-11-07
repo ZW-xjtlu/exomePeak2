@@ -2,8 +2,6 @@
 #'
 #' @description \code{reduce_inter_grl} redivide and reduce the overlapping GRangesList element.
 #'
-
-#' @param grl a GRangesList object.
 #' @return GRangesList object that is reduced between its inner elements.
 #' The metadata collumn is preserved, however the names is not tracked anymore.
 #' @param peaks_grl The GRangesList of the peaks region to be reduced.

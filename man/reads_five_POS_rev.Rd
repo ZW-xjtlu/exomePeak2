@@ -8,6 +8,12 @@ reads_five_POS_rev(reads, width = 1, fix = "start", ...)
 }
 \arguments{
 \item{reads}{a GAlignmentList object.}
+
+\item{width}{the width of the five prime POS.}
+
+\item{fix}{the end of the POS, start means 5', end means 3'.}
+
+\item{...}{arguments path to function resize.}
 }
 \description{
 extract reads five prime POS and reverse its strand.

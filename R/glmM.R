@@ -34,11 +34,9 @@
 #'
 #' @import DESeq2
 #'
-#' @docType methods
+#' @aliases glmM
 #'
-#' @name glmM
-#'
-#' @rdname glmM
+#' @rdname glmM-methods
 #'
 #' @seealso \code{\link{glmDM}}
 #'

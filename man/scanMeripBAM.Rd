@@ -45,7 +45,7 @@ The BAM index files will be named by adding ".bai" after the names of the corres
 
 \item{mapq}{a non-negative integer specifying the minimum reads mapping quality. BAM records with mapping qualities less than \code{mapq} are discarded; default \code{= 30L}.}
 
-\item{isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments specifying the filters on SAM FLAG scores, inherited from \code{\link{ScanBAMParam}}.}
+\item{isPaired, isProperPair, hasUnmappedMate, isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, ...}{arguments specifying the filters on SAM FLAG scores, inherited from \code{\link{ScanBamParam}}.}
 }
 \value{
 a \code{MeripBamFileList} object.

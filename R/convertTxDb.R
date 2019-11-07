@@ -1,7 +1,6 @@
 #' @title Convert the txdb object into the full transcript and whole genome types
 #'
 #' @description This function can convert the txdb object into full transcript and whole genome types.
-#' @details
 #'
 #' @param txdb a \code{TxDb} object containing the regular transcript annotation.
 #' @param type the type of \code{TxDb} object of the output, can be one in c("full_tx","whole_genome").

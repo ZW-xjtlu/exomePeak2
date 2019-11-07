@@ -10,8 +10,6 @@ reduce_peaks(peaks_grl, txdb)
 \item{peaks_grl}{The GRangesList of the peaks region to be reduced.}
 
 \item{txdb}{The txdb object used during the generation of the peaks.}
-
-\item{grl}{a GRangesList object.}
 }
 \value{
 GRangesList object that is reduced between its inner elements.

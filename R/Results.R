@@ -74,9 +74,9 @@
 #' @importFrom rtracklayer export
 #' @import GenomicRanges
 #'
-#' @name Results
+#' @aliases Results
 #'
-#' @rdname Results
+#' @rdname Results-methods
 #'
 #' @export
 #'

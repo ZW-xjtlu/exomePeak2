@@ -5,7 +5,7 @@
 #' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.
 #' @param background_bins A Granges object for background binds.
 #' @param background_types A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
-#' @param distance_5p A numeric value of the length of the transcript starting region; default 200.
+#' @param control_width A integer for the minimum width of the control region returned; default 50.
 #' @param rename_mod Whether to rename the returned modification sites, default = FALSE.
 #' @return A \code{GRangesList} object.
 #' The first portion is the exons regions that is not overlapped with \code{annoation}.

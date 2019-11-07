@@ -1,9 +1,11 @@
 #'@title Estimate Normalization Factors for GC content Bias Correction.
 #'
-#'@param sep a \code{\link{summarizedExomePeak}} object returned by \code{\link{exomePeak2}} or \code{\link{exomePeakCalling}}.
+#'@param sep a \code{\link{SummarizedExomePeak}} object returned by \code{\link{exomePeak2}} or \code{\link{exomePeakCalling}}.
 #'
 #'@param txdb a \code{\link{TxDb}} object for the transcript annotation,
 #' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.
+#'
+#'@param gff_dir optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
 #'
 #'@param bsgenome a \code{\link{BSgenome}} object for the genome reference,
 #' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.
@@ -12,25 +14,29 @@
 #'
 #'@param binding_length a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.
 #'
-#'@param feature a \code{character} specifies the region used in the GC effect estimation, can be one in \code{c("all", "background")}; default \code{"all"}.
+#'@param feature a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("All","Modification","Background")}; default is \code{"All"}.
 #'
 #'\describe{
 #'
-#'  \item{\strong{\code{all}}}{
-#'  The GC content and the parameters for quantile normalization will be estimated on all regions.
+#'  \item{\strong{\code{All}}}{
+#'  The GC content linear effects will be estimated on all regions, i.e. both the region of modification and the background control regions.
 #'  }
 #'
-#'  \item{\strong{\code{background}}}{
-#'  The GC content linear effect and the parameters for quantile normalization will be estimated on the background regions.
+#'  \item{\strong{\code{Modification}}}{
+#'  The GC content linear effects will be estimated on the modification peaks/sites.
+#'  }
+#'
+#'  \item{\strong{\code{Background}}}{
+#'  The GC content linear effects will be estimated on the background control regions.
 #'  }
 #'
 #' }
 #'
-#'@param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#'@param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= FALSE}.
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#'@param effective_gc a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.
+#'@param effective_GC a \code{logical} of whether to calculate the effective GC content weighted by the fragment alignment probabilities; default \code{= FALSE}.
 #'
 #'@description \code{normalizeGC} estimates the feature specific size factors in order to reduce the technical variation during modification peak statistics quantification.
 #'
@@ -42,7 +48,7 @@
 #'The GC content normalization can result in an improvement of peak accuracy for most published m6A-seq data,
 #'and it is particullarly recommended if you want to compare the quantifications on methylation levels between different laboratory conditions.
 #'
-#'@return a \code{summarizedExomePeak} object with the updated slot \code{GCsizeFactors}.
+#'@return a \code{SummarizedExomePeak} object with the updated slot \code{GCsizeFactors}.
 #'
 #'@examples
 #'
@@ -71,9 +77,9 @@
 #'@docType methods
 #'@seealso \code{\link{estimateSeqDepth}}
 #'
-#'@name normalizeGC
+#'@aliases normalizeGC
 #'
-#'@rdname normalizeGC
+#'@rdname normalizeGC-methods
 #'
 #'@export
 
@@ -85,8 +91,8 @@ setMethod("normalizeGC",
                                  gff_dir = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
-                                 feature = c("all","background"),
-                                 qtnorm = TRUE,
+                                 feature = c("All","Modification","Background"),
+                                 qtnorm = FALSE,
                                  effective_GC = FALSE
                                  ) {
 feature <- match.arg(feature)
@@ -138,10 +144,14 @@ rownames(GC_size_factors) = rownames(sep)
 GC_na_index <- is.na(elementMetadata( sep )$GC_content)
 
 
-if(feature == "all"){
+if(feature == "All"){
   Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 )
 } else {
-  Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 & grepl("control",rownames(sep))[!GC_na_index] )
+  if(feature == "Modification") {
+    Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 & grepl("mod",rownames(sep))[!GC_na_index] )
+  }else{
+    Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 & grepl("control",rownames(sep))[!GC_na_index] )
+  }
 }
 
 if(!qtnorm) {

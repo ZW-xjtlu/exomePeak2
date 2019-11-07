@@ -2,13 +2,9 @@
 #'
 #' @param x a \code{MeripBamFileList} object.
 #'
-#' @return a \code{ScanBamParam} object.
+#' @aliases Parameter
 #'
-#' @docType methods
-#'
-#' @name Parameter
-#'
-#' @rdname Parameter
+#' @rdname Parameter-methods
 #'
 #' @export
 #'
@@ -22,13 +18,9 @@ setMethod("Parameter",
 #'
 #' @param x a \code{MeripBamFileList} object.
 #'
-#' @return a logical vector.
+#' @aliases LibraryType
 #'
-#' @docType methods
-#'
-#' @name LibraryType
-#'
-#' @rdname LibraryType
+#' @rdname LibraryType-methods
 #'
 #' @export
 #'
@@ -41,79 +33,69 @@ setMethod("LibraryType",
 
 #' @title Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
 #'
-#' @param x A \code{SummarizedExomePeak} object.
+#' @param x1 A \code{SummarizedExomePeak} object.
 #'
-#' @return A matrix.
+#' @aliases GCsizeFactors
 #'
-#' @docType methods
-#'
-#' @name GCsizeFactors
-#'
-#' @rdname GCsizeFactors
+#' @rdname GCsizeFactors-methods
 #'
 #' @export
 #'
 setMethod("GCsizeFactors",
           "SummarizedExomePeak",
-          function(x) {
-            return(assays(x)$GCsizeFactors)
+          function(x1) {
+            return(assays(x1)$GCsizeFactors)
           })
 
 #' @title Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
 #'
-#' @param x A \code{matrix} object.
+#' @param x2 A \code{SummarizedExomePeak} object.
+#' @param value A \code{matrix} object.
 #'
-#' @docType methods
+#' @aliases GCsizeFactors<-
 #'
-#' @name GCsizeFactors<-
-#'
-#' @rdname GCsizeFactors<-
+#' @rdname GCsizeFactors-methods
 #'
 #' @export
 #'
 setMethod("GCsizeFactors<-",
           "SummarizedExomePeak",
-          function(x,value) {
-            assays(x)$GCsizeFactors <- value
-            return(x)
+          function(x2,value) {
+            assays(x2)$GCsizeFactors <- value
+            return(x2)
           })
 
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
 #'
-#' @param x A \code{data.frame} object.
+#' @param x1 A \code{data.frame} object.
 #'
-#' @docType methods
+#' @aliases DESeq2Results
 #'
-#' @name DESeq2Results<-
-#'
-#' @rdname DESeq2Results<-
+#' @rdname DESeq2Results-methods
 #'
 #' @export
 #'
 setMethod("DESeq2Results",
           "SummarizedExomePeak",
-          function(x) {
-            return(x@DESeq2Results)
+          function(x1) {
+            return(x1@DESeq2Results)
           })
 
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
 #'
-#' @param x A \code{SummarizedExomePeak} object.
+#' @param x2 A \code{SummarizedExomePeak} object.
+#' @param value A \code{data.frame} object.
 #'
-#' @return A data.frame.
+#' @aliases DESeq2Results<-
 #'
-#' @docType methods
-#'
-#' @name DESeq2Results
-#'
-#' @rdname DESeq2Results
+#' @rdname DESeq2Results-methods
 #'
 #' @export
 #'
 setMethod("DESeq2Results<-",
           "SummarizedExomePeak",
-          function(x,value) {
-            x@DESeq2Results <- value
-            return(x)
+          function(x2,value) {
+            x2@DESeq2Results <- value
+            return(x2)
           })
 

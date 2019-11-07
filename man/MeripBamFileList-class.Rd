@@ -3,6 +3,7 @@
 \docType{class}
 \name{MeripBamFileList-class}
 \alias{MeripBamFileList-class}
+\alias{MeripBamFileList}
 \title{MeripBamFileList}
 \description{
 An object that summarizes the BAM files used in a MeRIP-Seq experiment.

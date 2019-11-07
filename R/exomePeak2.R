@@ -42,10 +42,13 @@
 #' }
 #'
 #' @param txdb a \code{\link{TxDb}} object for the transcript annotation,
-#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.
+#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}; example: \code{"hg19"}.
 #'
-#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information,
-#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.
+#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information.
+#'
+#' @param genome_assembly a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
+#'
+#' By default, the argument = NA, it should be provided when the \code{BSgenome} object is not available.
 #'
 #' @param gff_dir optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
 #'
@@ -83,7 +86,7 @@
 #'
 #' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
 #'
-#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.
 #'
 #' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
 #'
@@ -101,7 +104,7 @@
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 #'
 #' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
@@ -130,8 +133,6 @@
 #'  It can lead to biases on the estimation of the technical factors.
 #'  }
 #' }
-#'
-#' @param bp_param optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.
 #'
 #' @param LFC_shrinkage a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "ashr", "Gaussian", "none")}; Default \code{= "apeglm"}.
 #'
@@ -273,7 +274,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        parallel = FALSE,
                        background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
                        manual_background = NULL,
-                       correct_GC_bg = TRUE,
+                       correct_GC_bg = FALSE,
                        qtnorm = TRUE,
                        glm_type = c("DESeq2","Poisson","NB"),
                        LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),
@@ -391,7 +392,7 @@ if(!is.null(bsgenome)) {
   message("Estimating linear effects between GC contents and reads abundancies on bins...")
 
   sep <- normalizeGC(sep,
-                     feature = ifelse(correct_GC_bg,"background","all"),
+                     feature = ifelse(correct_GC_bg,"Background","All"),
                      qtnorm = qtnorm)
 
 }
@@ -400,7 +401,6 @@ if(any(sep$design_Treatment)){
   message("Differential modification analysis using interactive GLM...")
   sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage) )
 } else {
-  message("Calculating peak statistics using DESeq2...")
   sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage)
 }
 
@@ -417,7 +417,6 @@ if( export_results ) {
 }
 
 if( !is.null(bsgenome) & save_plot_GC ) {
-message("Saving plot for GC content bias assessments...")
 
 suppressMessages(
 plotLfcGC(sep = sep,
@@ -429,7 +428,6 @@ plotLfcGC(sep = sep,
 
 
 if (save_plot_analysis) {
-  message("Saving plots for RNA modification analysis...")
 
   # if (!require(Guitar)) {
   #   warning(

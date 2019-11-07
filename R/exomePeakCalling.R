@@ -51,7 +51,7 @@
 #'
 #' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
 #'
-#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.
 #'
 #' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
 #'
@@ -152,11 +152,10 @@
 #' @import GenomicRanges
 #' @import BiocParallel
 #' @import SummarizedExperiment
-#' @docType methods
 #'
-#' @name exomePeakCalling
+#' @aliases exomePeakCalling
 #'
-#' @rdname exomePeakCalling
+#' @rdname exomePeakCalling-methods
 #'
 #' @export
 #'
@@ -542,16 +541,29 @@ setMethod("exomePeakCalling",
                 index_flank = FALSE
               ) )
 
-              mod_annot_count <- suppressWarnings( disj_background(
-                mod_gr = mod_annot_flanked,
-                txdb = txdb,
-                cut_off_num = 30,
-                background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
-                background_types = background,
-                control_width = peak_width
-              ) )
+              mod_annot_flanked <- split_by_name(mod_annot_flanked)
 
-              rm(SE_Peak_counts,mod_annot_flanked)
+              names(mod_annot_flanked) <- paste0("mod_", names(mod_annot_flanked))
+
+              # mod_annot_count <- suppressWarnings( disj_background(
+              #   mod_gr = mod_annot_flanked,
+              #   txdb = txdb,
+              #   cut_off_num = 30,
+              #   background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
+              #   background_types = background,
+              #   control_width = peak_width
+              # ) )
+
+              SE_Peak_counts_bg <- SE_Peak_counts[rowData(SE_Peak_counts)$indx_bg, ]
+
+              rm(SE_Peak_counts)
+
+              SE_Peak_counts_bg <- SE_Peak_counts_bg[rowMeans(assay(SE_Peak_counts_bg)[,colData(SE_Peak_counts_bg)$design_IP]) >= 50 &
+                                                       rowMeans(assay(SE_Peak_counts_bg)[,!colData(SE_Peak_counts_bg)$design_IP]) >= 50 ]
+
+              SE_Peak_counts_bg <- SE_Peak_counts_bg[!rowRanges(SE_Peak_counts_bg)%over%mod_annot, ]
+
+              rownames(SE_Peak_counts_bg) <- paste0("control_", seq_len(dim(SE_Peak_counts_bg)[1]))
 
               message("Counting reads on the single based annotation...")
 
@@ -572,7 +584,7 @@ setMethod("exomePeakCalling",
               yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SE_temp <- summarizeOverlaps(
-                features = mod_annot_count,
+                features = c(mod_annot_flanked,rowRanges(SE_Peak_counts_bg)),
                 reads = merip_bams,
                 param = Parameter(merip_bams),
                 mode = "Union",
@@ -582,6 +594,8 @@ setMethod("exomePeakCalling",
                 ignore.strand = (LibraryType(merip_bams) == "unstranded"),
                 fragments = any(asMates(merip_bams))
               )
+
+              rm(SE_Peak_counts_bg)
 
               #Replace the rowRanges with the single based GRangesList.
               index_mod <- grepl("mod_", rownames(SE_temp))
@@ -611,7 +625,7 @@ setMethod("exomePeakCalling",
 
               mcols(mod_annot_gr)$gene_id <-
                 mcols(SE_temp_gr)$gene_id[match(as.numeric(names(mod_annot_gr)),
-                                            as.numeric(gsub("mod_", "", names(SE_temp_gr))))]
+                                            as.numeric(gsub("mod_.*\\.", "", names(SE_temp_gr))))]
 
               rm(SE_temp_gr)
 

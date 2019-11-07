@@ -92,11 +92,9 @@
 #' @importFrom rtracklayer export
 #' @import GenomicRanges
 #'
-#' @docType methods
+#' @aliases exportResults
 #'
-#' @name exportResults
-#'
-#' @rdname exportResults
+#' @rdname exportResults-methods
 #'
 #' @export
 #'
@@ -367,6 +365,6 @@ setMethod("exportResults",
                                           file = file.path(save_dir,"ADDInfo","ADDInfo_SizeFactors.csv")
                                           )
 
-message(paste0("Result files have saved under the directory: '", file.path(save_dir)), "'...")
+message(paste0("Result files have saved under the directory: '", file.path(save_dir)), "'.")
 
 })

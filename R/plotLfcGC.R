@@ -4,9 +4,9 @@
 #'@details By default, this function will generate a scatter plot between GC content and the log2FC value.
 #'The significant modification sites will be lebeled in different colours.
 #'
-#'@param sep a \code{\link{summarizedExomePeak}} object.
+#'@param sep a \code{\link{SummarizedExomePeak}} object.
 #'
-#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenom}}.
+#'@param bsgenome a \code{\link{BSgenome}} object for the genome sequence, it could be the name of the reference genome recognized by \code{\link{getBSgenome}}.
 #'
 #'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
 #'
@@ -16,7 +16,7 @@
 #'
 #'@param binding_length a \code{numeric} value for the expected antibody binding length in IP samples; Default \code{= 25}.
 #'
-#'@param effective_gc a \code{logical} value of whether to calculate the weighted GC content by the probability of reads alignment; default \code{= FALSE}.
+#'@param effective_GC a \code{logical} value of whether to calculate the weighted GC content by the probability of reads alignment; default \code{= FALSE}.
 #'
 #'@param save_dir a \code{character} for the directory to save the plot; default ".".
 #'
@@ -32,10 +32,8 @@
 #'@import ggplot2
 #'@import BSgenome
 #'
-#'@docType methods
-#'
-#'@name plotLfcGC
-#'@rdname plotLfcGC
+#'@aliases plotLfcGC
+#'@rdname plotLfcGC-methods
 #'
 #'@export
 setMethod("plotLfcGC",

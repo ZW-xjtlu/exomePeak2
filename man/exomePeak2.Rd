@@ -16,7 +16,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, background = c("all",
   "Gaussian_mixture", "m6Aseq_prior", "manual"),
-  manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
   glm_type = c("DESeq2", "Poisson", "NB"), LFC_shrinkage = c("apeglm",
   "ashr", "Gaussian", "none"), export_results = TRUE,
   export_format = c("CSV", "BED", "RDS"), table_style = c("bed",
@@ -36,10 +36,13 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
 If the bam files do not contain treatment group, user should only fill the arguments of \code{BAM_ip} and \code{BAM_input}.}
 
 \item{txdb}{a \code{\link{TxDb}} object for the transcript annotation,
-If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.}
+If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}; example: \code{"hg19"}.}
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information,
-If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.}
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information.}
+
+\item{genome_assembly}{a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
+
+By default, the argument = NA, it should be provided when the \code{BSgenome} object is not available.}
 
 \item{gff_dir}{optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.}
 
@@ -79,7 +82,7 @@ If user provides the single based RNA modification annotation, this function wil
 
 \item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
 
-\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \link{\code{ctest}}.}
+\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.}
 
 \item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
 
@@ -115,7 +118,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 \item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
 
-\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 
 If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 
@@ -164,8 +167,6 @@ see \code{\link{lfcShrink}} for more details; if "none" is selected, only the ML
 }
 
 P.S. The full transcript mode and the whole genome mode demand big memory size (> 4GB) for large genomes.}
-
-\item{bp_param}{optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.}
 }
 \value{
 a \code{\link{SummarizedExomePeak}} object.
