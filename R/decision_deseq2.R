@@ -85,22 +85,22 @@ decision_deseq2 <- function(Inf_RES,
       result_df$Cut_By_ctrl = "pvalue"
 
       if( sum(!EXP_idx) <= Min_mod ) {
-        result_df$Cut_Val_ctrl = sort( Inf_RES$pvalue[!EXP_idx])[ sum(!EXP_idx) + 1 ]
-        result_df$Discoveries_ctrl = sum(Inf_RES$pvalue[!EXP_idx] < result_df$Cut_Val_ctrl)
+        result_df$Cut_Val_ctrl = sort( Inf_RES$pvalue[!EXP_idx])[ sum(!EXP_idx) ]
+        result_df$Discoveries_ctrl = sum(Inf_RES$pvalue[!EXP_idx] <= result_df$Cut_Val_ctrl)
       } else {
-        result_df$Cut_Val_ctrl = sort( Inf_RES$pvalue[!EXP_idx])[ Min_mod + 1 ]
-        result_df$Discoveries_ctrl = sum(Inf_RES$pvalue[!EXP_idx] < result_df$Cut_Val_ctrl)
+        result_df$Cut_Val_ctrl = sort( Inf_RES$pvalue[!EXP_idx])[ Min_mod ]
+        result_df$Discoveries_ctrl = sum(Inf_RES$pvalue[!EXP_idx] <= result_df$Cut_Val_ctrl)
       }
     }
 
     if(result_df$Discoveries_expected < Min_mod) {
       result_df$Cut_By_expected = "pvalue"
       if( sum(EXP_idx) <= Min_mod ) {
-        result_df$Cut_Val_expected = sort( Inf_RES$pvalue[EXP_idx])[ sum(EXP_idx) + 1 ]
-        result_df$Discoveries_expected = sum(Inf_RES$pvalue[EXP_idx] < result_df$Cut_Val_expected)
+        result_df$Cut_Val_expected = sort( Inf_RES$pvalue[EXP_idx])[ sum(EXP_idx)]
+        result_df$Discoveries_expected = sum(Inf_RES$pvalue[EXP_idx] <= result_df$Cut_Val_expected)
       } else {
-        result_df$Cut_Val_expected = sort( Inf_RES$pvalue[EXP_idx])[ Min_mod + 1 ]
-        result_df$Discoveries_expected = sum(Inf_RES$pvalue[EXP_idx] < result_df$Cut_Val_expected)
+        result_df$Cut_Val_expected = sort( Inf_RES$pvalue[EXP_idx])[ Min_mod ]
+        result_df$Discoveries_expected = sum(Inf_RES$pvalue[EXP_idx] <= result_df$Cut_Val_expected)
       }
     }
   }

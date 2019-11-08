@@ -11,11 +11,17 @@
 #'
 #' @param merip_bams a \code{MeripBamFileList} object returned by \code{\link{scanMeripBAM}}.
 #'
-#' @param txdb a \code{\link{TxDb}} object for the transcript annotation,
-#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.
+#' @param txdb a \code{\link{TxDb}} object for the transcript annotation.
 #'
-#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information,
-#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.
+#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#'
+#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information.
+#'
+#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
+#'
+#' @param genome_assembly a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#'
+#' By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.
 #'
 #' @param gff_dir optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
 #'
@@ -53,7 +59,7 @@
 #'
 #' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.
 #'
-#' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
+#' @param alpha a \code{numeric} for the binomial quantile used in the consistent peak filter; default\code{ = 0.05}.
 #'
 #' @param p0 a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
 #'
@@ -164,6 +170,7 @@ setMethod("exomePeakCalling",
           function(merip_bams = NULL,
                    txdb = NULL,
                    bsgenome = NULL,
+                   genome_assembly = NA,
                    mod_annot = NULL,
                    glm_type = c("DESeq2", "NB", "Poisson"),
                    background = c("all",
@@ -217,19 +224,18 @@ setMethod("exomePeakCalling",
             stopifnot(is(mod_annot,"GRanges")|is(mod_annot,"GRangesList"))
             }
 
-            if (is.null(bsgenome)) {
-              warning(
-                "Missing BSgenome, peak calling without GC content correction...",
-                call. = FALSE,
-                immediate. = TRUE
-              )
+            if(!is.na(genome_assembly)) {
+              if(!is(bsgenome,"BSgenome")) bsgenome = genome_assembly
+              if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome_assembly
             }
 
             if (!is.null(gff_dir)) {
-              txdb <- makeTxDbFromGFF(gff_dir)
+              message("Make the TxDb object ... ", appendLF = FALSE)
+              txdb <- suppressMessages( makeTxDbFromGFF(gff_dir) )
+              message("OK")
             } else {
               if (is.null(txdb)) {
-                stop("Missing transcript annotation, please provide TxDb object or GFF/GTF file...")
+                stop("Missing transcript annotation, please provide the genome name or the transcript annotation package/files.")
               }
 
               if (!is(txdb, "TxDb")) {
@@ -237,7 +243,18 @@ setMethod("exomePeakCalling",
               }
             }
 
-              message("Generating bins on exons...")
+            if(is.character(bsgenome)) {
+              bsgenome <- getBSgenome(bsgenome)
+            }
+
+            if (is.null(bsgenome)) {
+              warning(
+                "Missing BSgenome or UCSC genome name, peak calling without GC content correction.",
+                call. = FALSE,
+                immediate. = TRUE
+              )
+            }
+              message("Generate bins on exons ... ", appendLF = F)
 
 
               ######################################################
@@ -251,7 +268,9 @@ setMethod("exomePeakCalling",
                 step_size = step_length
               )
 
-              message("Counting reads on bins...")
+              message("OK")
+
+              message("Count reads on bins ... ", appendLF = F)
 
 
               ######################################################
@@ -288,6 +307,8 @@ setMethod("exomePeakCalling",
                 fragments = any(asMates(merip_bams))
               ) )
 
+              message("OK")
+
               ######################################################
               #               Reads count annotation               #
               ######################################################
@@ -300,6 +321,8 @@ setMethod("exomePeakCalling",
               if (is.null(bsgenome)) {
 
               } else{
+                message("Calculate GC contents on exons ... ", appendLF = F)
+
                 flanked_gr <- unlist(rowRanges(SE_Peak_counts))
                 names(flanked_gr) <-
                   gsub("\\..*$", "", names(flanked_gr))
@@ -310,6 +333,8 @@ setMethod("exomePeakCalling",
                 rowData(SE_Peak_counts)$gc_contents <-
                   sum_freq / sum(width(rowRanges(SE_Peak_counts)))
                 rm(flanked_gr, GC_freq, sum_freq)
+
+                message("OK")
               }
 
               #Bin width calculation
@@ -329,9 +354,11 @@ setMethod("exomePeakCalling",
               m6A_prior = F
 
               if (background == "Gaussian_mixture") {
-                message("Identifying background with Gaussian Mixture Model...")
+                message("Identify background with Gaussian Mixture Model ... ", appendLF = F)
 
                 rowData(SE_Peak_counts)$indx_bg <- quiet( mclust_bg(se_peak_counts = SE_Peak_counts) )
+
+                message("OK")
 
                 if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                         rowData(SE_Peak_counts)$indx_bg) < 30) {
@@ -403,24 +430,14 @@ setMethod("exomePeakCalling",
 
               rm(exome_bins_grl,rowData_tmp)
 
-              if (glm_type == "Poisson") {
-                message("Peak calling with Poisson GLM...")
-              }
-
-              if (glm_type == "NB") {
-                message("Peak calling with NB GLM...")
-              }
-
               if (glm_type == "DESeq2") {
                 if (any(table(SE_Peak_counts$design_IP) == 1)) {
                   warning(
-                    "At least one of the IP or input group has no replicates. Peak calling method changed to Poisson GLM.",
-                    call. = FALSE,
-                    immediate. = TRUE
+                    "At least one of the IP or input group has no replicates. Peak calling method changed to Poisson GLM.\n",
+                    call. = TRUE,
+                    immediate. = FALSE
                   )
                   glm_type = "Poisson"
-                } else{
-                  message("Peak calling with DESeq2...")
                 }
               }
 
@@ -470,7 +487,7 @@ setMethod("exomePeakCalling",
 
               rm(SE_Peak_counts, gr_mod_flanked)
 
-              message("Counting reads on the merged peaks and the control regions...")
+              message("Count reads on the merged peaks and the control regions ... ", appendLF = F)
 
               if (!parallel) {
                 register(SerialParam(), default = FALSE)
@@ -499,6 +516,8 @@ setMethod("exomePeakCalling",
                 ignore.strand = (LibraryType(merip_bams) == "unstranded"),
                 fragments = any(asMates(merip_bams))
               ) )
+
+              message("OK")
 
               #retrieve the set of unflanked modification sites to replace the row ranges.
 
@@ -565,7 +584,7 @@ setMethod("exomePeakCalling",
 
               rownames(SE_Peak_counts_bg) <- paste0("control_", seq_len(dim(SE_Peak_counts_bg)[1]))
 
-              message("Counting reads on the single based annotation...")
+              message("Count reads on the single based annotation ... ", appendLF = F)
 
               if (!parallel) {
                 register(SerialParam())
@@ -596,6 +615,8 @@ setMethod("exomePeakCalling",
               )
 
               rm(SE_Peak_counts_bg)
+
+              message("OK")
 
               #Replace the rowRanges with the single based GRangesList.
               index_mod <- grepl("mod_", rownames(SE_temp))

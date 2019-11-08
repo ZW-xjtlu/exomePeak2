@@ -45,14 +45,14 @@
 #' @export
 GLM_inference <- function(SE_bins,
                           glm_type = c("Poisson", "NB", "DESeq2"),
-                          p_cutoff = NULL,
-                          p_adj_cutoff = 0.01,
+                          p_cutoff = 0.0001,
+                          p_adj_cutoff = NULL,
                           count_cutoff = 5,
                           log2FC_mod = 1,
                           min_mod_number = floor(nrow(SE_bins) * 0.0001),
                           correct_GC_bg = FALSE,
                           qtnorm = TRUE,
-                          consistent_peak = TRUE,
+                          consistent_peak = FALSE,
                           consistent_log2FC_cutoff = 1,
                           consistent_fdr_cutoff = 0.05,
                           alpha = 0.05,
@@ -73,10 +73,10 @@ GLM_inference <- function(SE_bins,
 
   dds$sizeFactor = estimateSizeFactorsForMatrix(assay(dds))
 
+  message("Estimate offsets of GC content biases on bins ... ", appendLF = F)
+
   if (!is.null(rowData(SE_bins)$gc_contents)) {
     indx_IP <- dds$design_IP == "IP"
-
-    message("Estimating offsets of GC content biases in IP samples...")
 
     if(correct_GC_bg) {
       subindex = which(rowData(dds)$indx_bg & rowData(dds)$indx_gc_est)
@@ -101,8 +101,6 @@ GLM_inference <- function(SE_bins,
       )
     )
 
-    message("Estimating offsets of GC content biases in input samples...")
-
     cqnObject_input <- quiet(
       suppressMessages(
       suppressWarnings(
@@ -120,6 +118,8 @@ GLM_inference <- function(SE_bins,
     )
     )
 
+    message("OK")
+
     rm(subindex)
 
     glm_off_sets <- matrix(NA, nrow = nrow(dds), ncol = ncol(dds))
@@ -134,8 +134,7 @@ GLM_inference <- function(SE_bins,
 
     #normalization to make the row geometric means = 0 (since DESeq2 only cares about the difference).
     #and this norm factor is still under the original scale (not log scale glm off set).
-    centered_off_sets <-
-      exp(glm_off_sets) / exp(rowMeans(glm_off_sets))
+    centered_off_sets <- exp(glm_off_sets) / exp(rowMeans(glm_off_sets))
 
     normalizationFactors(dds) <- centered_off_sets
 
@@ -146,6 +145,19 @@ GLM_inference <- function(SE_bins,
   ######################################################
   #             Generalized Linear Model               #
   ######################################################
+
+  if (glm_type == "Poisson") {
+    message("Peak Calling with Poisson GLM ... ",appendLF = F)
+  }
+
+  if (glm_type == "NB") {
+    message("Peak Calling with NB GLM ... ",appendLF = F)
+  }
+
+  if (glm_type == "DESeq2") {
+    message("Peak Calling with DESeq2 ... ", appendLF = F)
+  }
+
 
   if (glm_type == "Poisson") {
     dispersions(dds) = 0
@@ -175,10 +187,9 @@ GLM_inference <- function(SE_bins,
 
   if (sum(sig_indx) < min_mod_number) {
     warning(
-      "The number of positive bins is too small using DESeq2 under the current filter,
-      the filter is changed into p value < 0.05 and log2FC > 0, please consider using Poisson GLM.",
+      "Insufficient positive bins under the current filter, the filter in peak calling is changed into p value < 0.05 and log2FC > 0, please consider using Poisson GLM.\n",
       call. = FALSE,
-      immediate. = TRUE
+      immediate. = FALSE
     )
 
     sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
@@ -192,9 +203,11 @@ GLM_inference <- function(SE_bins,
 
   sig_peak_mod <- as.numeric(rownames(res)[sig_indx])
 
+  message("OK")
+
   if (consistent_peak) {
 
-    message("Evaluating peak consistency with C-tests...")
+    message("Evaluating peak consistency with C-tests ... ", appendLF = F)
 
     cons_indx <- consDESeq2_M(dds,
                               consistent_log2FC_cutoff = consistent_log2FC_cutoff,
@@ -203,7 +216,10 @@ GLM_inference <- function(SE_bins,
                               p0 = p0)
 
     sig_peak_mod <- sig_peak_mod[ sig_peak_mod%in%rownames(dds)[cons_indx] ]
+
     rm(cons_indx)
+
+    message("OK")
   }
 
   return(sig_peak_mod)

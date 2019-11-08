@@ -136,7 +136,7 @@ scanMeripBAM <- function(bam_ip = NULL,
         immediate. = T
       )
     } else {
-      message("Sorting and indexing BAM files with Rsamtools...")
+      message("Sorting and indexing BAM files with Rsamtools...", appendLF = FALSE)
 
       sorted_bam_names <- gsub(".bam$", "_sorted", bam_files)
 
@@ -151,6 +151,7 @@ scanMeripBAM <- function(bam_ip = NULL,
 
       index(bam.list) = normalizePath(paste0(sorted_bam_names, ".bam.bai"))
 
+      message("OK")
     }
 
   } else {

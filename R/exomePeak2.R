@@ -1,17 +1,17 @@
 #' @title Peak Calling and Peak Statistics Quantification on MeRIP-seq Dataset.
 #'
-#' @description \code{\link{exomePeak2}} conduct peak calling and peak statistics calculation from BAM files of a MeRIP-seq experiment.
-#' The function integrates the following steps of a standardized MeRIP-seq pipeline in one step.
+#' @description \code{exomePeak2} conducts peak calling and peak statistics calculation from BAM files of a MeRIP-seq experiment.
+#' The function integrates the following steps of a standard MeRIP-seq pipeline.
 #'
 #' \enumerate{
 #' \item Check and index the BAM files with \code{\link{scanMeripBAM}}.
 #' \item Call modification peaks on exons with \code{\link{exomePeakCalling}}.
-#' \item Calculate GC content bias correction factors on the background regions with \code{\link{normalizeGC}}.
-#' \item Calculate (differential) modification statistics with generalized linear model (GLM) with \code{\link{glmM}} and \code{\link{glmDM}}
-#' \item Export the peak/site statistics with user defined format by \code{\link{exportResults}}.
+#' \item Calculate offset factors of GC content biases with \code{\link{normalizeGC}}.
+#' \item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} and \code{\link{glmDM}}
+#' \item Export the peaks/sites statistics with user defined format by \code{\link{exportResults}}.
 #' }
 #'
-#' See the help pages of the corresponding functions for the complete documentations at each step.
+#' See the help pages of the corresponding functions for the complete documentation.
 #'
 #' @details \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from BAM files of a MeRIP-seq experiment.
 #' The transcript annotation (from either the \code{\link{TxDb}} object or the GFF file) must be provided to perform analysis on exons.
@@ -41,14 +41,17 @@
 #' \item{\strong{2nd_strand}}{The second strand-specific RNA-seq library, only the strand generated during the second strand sythesis is sequenced; examples: Ligation, Standard SOLiD.}
 #' }
 #'
-#' @param txdb a \code{\link{TxDb}} object for the transcript annotation,
-#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}; example: \code{"hg19"}.
+#' @param txdb a \code{\link{TxDb}} object for the transcript annotation.
+#'
+#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
 #'
 #' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information.
 #'
-#' @param genome_assembly a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
+#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
 #'
-#' By default, the argument = NA, it should be provided when the \code{BSgenome} object is not available.
+#' @param genome_assembly a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#'
+#' By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.
 #'
 #' @param gff_dir optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
 #'
@@ -114,11 +117,15 @@
 #'
 #' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "all"}.
 #'
-#' In order to accurately account for the technical variations, it is often neccessary to estimate the sequencing depth and GC content linear effects on windows without modification signals.
+#' In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 #'
 #' The following methods are supported in \code{ExomePeak2} to differentiate the no modification background windows from the modification containig windows.
 #'
 #' \describe{
+#'
+#'  \item{\strong{\code{all}}}{Use all windows as the background.
+#'  This choise assumes no differences in the effects of technical features between the background and the modification regions.}
+#'
 #'  \item{\strong{\code{Gaussian_mixture}}}{The background is identified by Multivariate Gaussian Mixture Model (MGMM) with 2 mixing components on the vectors containing methylation level estimates and GC content, the background regions are predicted by the Bayes Classifier on the learned GMM.}
 #'
 #'  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
@@ -129,10 +136,8 @@
 #'
 #'  \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
 #'
-#'  \item{\strong{\code{all}}}{Use all windows as the background. This is equivalent to not differentiating background and signal.
-#'  It can lead to biases on the estimation of the technical factors.
 #'  }
-#' }
+#'
 #'
 #' @param LFC_shrinkage a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "ashr", "Gaussian", "none")}; Default \code{= "apeglm"}.
 #'
@@ -319,25 +324,32 @@ if(!is.na(genome_assembly)) {
    if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome_assembly
 }
 
+if(!is.null(bsgenome)) {
+  bsgenome <- getBSgenome(bsgenome)
+}
+
 if(!is.null(gff_dir)) {
-  txdb <- makeTxDbFromGFF(gff_dir)
+  message("Make the TxDb object ... ", appendLF = FALSE)
+  txdb <- suppressMessages( makeTxDbFromGFF(gff_dir) )
+  message("OK")
 } else {
   if (is.null(txdb)) {
     stop("Require argument of txdb or gff_dir for transcript annotation.")
   }
 
   if (!is(txdb, "TxDb")) {
-    txdb <- makeTxDbFromUCSC(txdb)
+
+    message("Make the TxDb object ... ", appendLF = FALSE)
+
+    txdb <- suppressMessages( makeTxDbFromUCSC(txdb) )
+
+    message("OK")
+
   }
 }
 
 if( peak_calling_mode != "exon") {
    txdb <- convertTxDb(txdb, type = peak_calling_mode)
-}
-
-
-if(!is.null(bsgenome)) {
-  bsgenome <- getBSgenome(bsgenome)
 }
 
 argg <- as.list(environment()) #Get arguments information
@@ -389,17 +401,19 @@ sep <- estimateSeqDepth(sep)
 
 if(!is.null(bsgenome)) {
 
-  message("Estimating linear effects between GC contents and reads abundancies on bins...")
+  message("Estimate offsets of GC content biases on modification peaks/sites... ", appendLF = F)
 
   sep <- normalizeGC(sep,
                      feature = ifelse(correct_GC_bg,"Background","All"),
                      qtnorm = qtnorm)
 
+  message("OK")
 }
 
 if(any(sep$design_Treatment)){
-  message("Differential modification analysis using interactive GLM...")
+  message("Differential modification analysis with interactive GLM ... ", appendLF = F)
   sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage) )
+  message("OK")
 } else {
   sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage)
 }
@@ -429,12 +443,14 @@ plotLfcGC(sep = sep,
 
 if (save_plot_analysis) {
 
+  # The function of Guitar plot is currently inhibited in exomePeak2, it will be recovered when the Guitar package has fixed some critical issues.
+  #
   # if (!require(Guitar)) {
   #   warning(
   #     "the 'Guitar' package is not installed, skipping the distribution plot on travis coordinate."
   #   )
   # } else {
-  #   message("Generating the distribution plot on travis coordinate...")
+  #   message("Generating the distribution plot on travis coordinate ...")
   #   plotGuitar(
   #     sep,
   #     txdb = txdb,

@@ -91,15 +91,15 @@ setMethod("glmM",
   }
 
   if(glm_type == "Poisson") {
-    message("Calculating peak statistics with Poisson GLM...")
+    message("Calculate peaks/sites statistics with Poisson GLM ... ", appendLF = FALSE)
   }
 
   if(glm_type == "NB") {
-    message("Calculating peak statistics with NB GLM...")
+    message("Calculate peaks/sites statistics with NB GLM ... ", appendLF = FALSE)
   }
 
   if(glm_type == "DESeq2") {
-    message("Calculating peak statistics with DESeq2...")
+    message("Calculate peaks/sites statistics with DESeq2 ... ", appendLF = FALSE)
   }
 
 
@@ -166,6 +166,8 @@ setMethod("glmM",
     }
 
       dds = suppressMessages( nbinomWaldTest( dds ) )
+
+      message("OK")
 
    #Generation of the DESeq2 report.
 

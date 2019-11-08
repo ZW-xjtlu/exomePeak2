@@ -35,14 +35,17 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
 
 If the bam files do not contain treatment group, user should only fill the arguments of \code{BAM_ip} and \code{BAM_input}.}
 
-\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation,
-If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}; example: \code{"hg19"}.}
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation.
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information.}
+If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.}
 
-\item{genome_assembly}{a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information.
 
-By default, the argument = NA, it should be provided when the \code{BSgenome} object is not available.}
+If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.}
+
+\item{genome_assembly}{a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+
+By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.}
 
 \item{gff_dir}{optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.}
 
@@ -96,11 +99,15 @@ The consistency defined in this way is equivalent to the rejection of an exact b
 
 \item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "all"}.
 
-In order to accurately account for the technical variations, it is often neccessary to estimate the sequencing depth and GC content linear effects on windows without modification signals.
+In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 
 The following methods are supported in \code{ExomePeak2} to differentiate the no modification background windows from the modification containig windows.
 
 \describe{
+
+ \item{\strong{\code{all}}}{Use all windows as the background.
+ This choise assumes no differences in the effects of technical features between the background and the modification regions.}
+
  \item{\strong{\code{Gaussian_mixture}}}{The background is identified by Multivariate Gaussian Mixture Model (MGMM) with 2 mixing components on the vectors containing methylation level estimates and GC content, the background regions are predicted by the Bayes Classifier on the learned GMM.}
 
  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
@@ -111,10 +118,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
  \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
 
- \item{\strong{\code{all}}}{Use all windows as the background. This is equivalent to not differentiating background and signal.
- It can lead to biases on the estimation of the technical factors.
- }
-}}
+ }}
 
 \item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
 
@@ -172,18 +176,18 @@ P.S. The full transcript mode and the whole genome mode demand big memory size (
 a \code{\link{SummarizedExomePeak}} object.
 }
 \description{
-\code{\link{exomePeak2}} conduct peak calling and peak statistics calculation from BAM files of a MeRIP-seq experiment.
-The function integrates the following steps of a standardized MeRIP-seq pipeline in one step.
+\code{exomePeak2} conducts peak calling and peak statistics calculation from BAM files of a MeRIP-seq experiment.
+The function integrates the following steps of a standard MeRIP-seq pipeline.
 
 \enumerate{
 \item Check and index the BAM files with \code{\link{scanMeripBAM}}.
 \item Call modification peaks on exons with \code{\link{exomePeakCalling}}.
-\item Calculate GC content bias correction factors on the background regions with \code{\link{normalizeGC}}.
-\item Calculate (differential) modification statistics with generalized linear model (GLM) with \code{\link{glmM}} and \code{\link{glmDM}}
-\item Export the peak/site statistics with user defined format by \code{\link{exportResults}}.
+\item Calculate offset factors of GC content biases with \code{\link{normalizeGC}}.
+\item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} and \code{\link{glmDM}}
+\item Export the peaks/sites statistics with user defined format by \code{\link{exportResults}}.
 }
 
-See the help pages of the corresponding functions for the complete documentations at each step.
+See the help pages of the corresponding functions for the complete documentation.
 }
 \details{
 \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from BAM files of a MeRIP-seq experiment.

@@ -72,7 +72,7 @@ setClass(
 #' ## Access to the GC content and feature length information
 #' elementMetadata(sep)
 #'
-#' ## Access to the genomic location of the modification peaks/sites and the background control regions
+#' ## Access to the genomic locations of the modification peaks/sites and the background control regions
 #' rowRanges(sep)
 #'
 #' ## Access to the feature specific size factors

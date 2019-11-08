@@ -91,7 +91,7 @@ This argument is useful when the treated group involves the perturbation of a kn
 \description{
 Method exportResults
 
-Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics
+Export the (Differential) Modification Peaks/Sites and their associated Statistics
 }
 \examples{
 

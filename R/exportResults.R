@@ -1,4 +1,4 @@
-#' @title Export the (Differential) Modification Peaks/Sites and their associated LFC Statistics
+#' @title Export the (Differential) Modification Peaks/Sites and their associated Statistics
 #' @param sep a \code{\link{SummarizedExomePeak}} object.
 #' @param format a \code{character} for the exported format, could be a vector that contains \code{c("CSV", "BED", "RDS")}.
 #'
@@ -169,7 +169,7 @@ setMethod("exportResults",
               #P.S. If no sites are reported, export all the p values that are not NA
               index_keep <-
                 which(
-                  (DESeq2Results(sep)[[decision_mod$Cut_By_expected]] < decision_mod$Cut_Val_expected) &
+                  (DESeq2Results(sep)[[decision_mod$Cut_By_expected]] <= decision_mod$Cut_Val_expected) &
                     (DESeq2Results(sep)$log2FoldChange > cut_off_log2FC)
                 )
 

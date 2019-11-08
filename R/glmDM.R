@@ -96,15 +96,15 @@ setMethod("glmDM",
   }
 
   if(glm_type == "Poisson") {
-    message("Differential modification analysis with Poisson GLM...")
+    message("Differential modification analysis with Poisson GLM ... ", appendLF = FALSE)
   }
 
   if(glm_type == "NB") {
-    message("Differential modification analysis with NB GLM...")
+    message("Differential modification analysis with NB GLM ... ", appendLF = FALSE)
   }
 
   if(glm_type == "DESeq2") {
-    message("Differential modification analysis with DESeq2...")
+    message("Differential modification analysis with DESeq2 ... ", appendLF = FALSE)
   }
 
   if(is.null(colData( sep )$sizeFactor)) {
@@ -177,6 +177,9 @@ setMethod("glmDM",
 
   #Generation of the DESeq2 report.
   DS_result <- as.data.frame( suppressMessages( results( dds ) ) )
+
+  message("OK")
+
   DS_result <- DS_result[,c("log2FoldChange","lfcSE","pvalue","padj")]
   colnames(DS_result) <- c("log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE","log2fcDiffMod.pvalue","log2fcDiffMod.padj")
 

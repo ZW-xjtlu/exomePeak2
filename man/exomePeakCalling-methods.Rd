@@ -8,20 +8,21 @@
 \title{Method exomePeakCalling}
 \usage{
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
-  mod_annot = NULL, glm_type = c("DESeq2", "NB", "Poisson"),
-  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
-  gff_dir = NULL, fragment_length = 100, binding_length = 25,
-  step_length = binding_length, peak_width = fragment_length/2,
-  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
-  p_adj_cutoff = NULL, log2FC_cutoff = 0, consistent_peak = FALSE,
+  genome_assembly = NA, mod_annot = NULL, glm_type = c("DESeq2",
+  "NB", "Poisson"), background = c("Gaussian_mixture", "m6Aseq_prior",
+  "manual", "all"), manual_background = NULL, correct_GC_bg = FALSE,
+  qtnorm = FALSE, gff_dir = NULL, fragment_length = 100,
+  binding_length = 25, step_length = binding_length,
+  peak_width = fragment_length/2, pc_count_cutoff = 5,
+  bg_count_cutoff = 50, p_cutoff = 1e-04, p_adj_cutoff = NULL,
+  log2FC_cutoff = 0, consistent_peak = FALSE,
   consistent_log2FC_cutoff = 0, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, bp_param = NULL)
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
-  txdb = NULL, bsgenome = NULL, mod_annot = NULL,
-  glm_type = c("DESeq2", "NB", "Poisson"), background = c("all",
-  "Gaussian_mixture", "m6Aseq_prior", "manual"),
+  txdb = NULL, bsgenome = NULL, genome_assembly = NA,
+  mod_annot = NULL, glm_type = c("DESeq2", "NB", "Poisson"),
+  background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
@@ -33,11 +34,17 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
 \arguments{
 \item{merip_bams}{a \code{MeripBamFileList} object returned by \code{\link{scanMeripBAM}}.}
 
-\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation,
-If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}, example: \code{"hg19"}.}
+\item{txdb}{a \code{\link{TxDb}} object for the transcript annotation.
 
-\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information,
-If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}, example: \code{"hg19"}.}
+If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.}
+
+\item{bsgenome}{a \code{\link{BSgenome}} object for the genome sequence information.
+
+If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.}
+
+\item{genome_assembly}{a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+
+By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.}
 
 \item{mod_annot}{a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
 
@@ -113,7 +120,7 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.}
 
-\item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
+\item{alpha}{a \code{numeric} for the binomial quantile used in the consistent peak filter; default\code{ = 0.05}.}
 
 \item{p0}{a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
 
