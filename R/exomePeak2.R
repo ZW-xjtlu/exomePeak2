@@ -108,7 +108,7 @@
 #'
 #' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
-#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= FALSE}.
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
@@ -275,7 +275,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
                        manual_background = NULL,
                        correct_GC_bg = FALSE,
-                       qtnorm = TRUE,
+                       qtnorm = FALSE,
                        glm_type = c("DESeq2","Poisson","NB"),
                        LFC_shrinkage = c("apeglm","ashr","Gaussian","none"),
                        export_results = TRUE,

@@ -71,11 +71,11 @@
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 #'
 #' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
-#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= TRUE}.
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= FASLE}.
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
@@ -171,8 +171,8 @@ setMethod("exomePeakCalling",
                                   "m6Aseq_prior",
                                   "manual"),
                    manual_background = NULL,
-                   correct_GC_bg = TRUE,
-                   qtnorm = TRUE,
+                   correct_GC_bg = FALSE,
+                   qtnorm = FALSE,
                    gff_dir = NULL,
                    fragment_length = 100,
                    binding_length = 25,

@@ -16,7 +16,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, background = c("all",
   "Gaussian_mixture", "m6Aseq_prior", "manual"),
-  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = TRUE,
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
   glm_type = c("DESeq2", "Poisson", "NB"), LFC_shrinkage = c("apeglm",
   "ashr", "Gaussian", "none"), export_results = TRUE,
   export_format = c("CSV", "BED", "RDS"), table_style = c("bed",
@@ -122,7 +122,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 
-\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= FALSE}.
 
 If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 

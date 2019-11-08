@@ -10,7 +10,7 @@
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   mod_annot = NULL, glm_type = c("DESeq2", "NB", "Poisson"),
   background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
-  manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
   pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
@@ -22,7 +22,7 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   txdb = NULL, bsgenome = NULL, mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"), background = c("all",
   "Gaussian_mixture", "m6Aseq_prior", "manual"),
-  manual_background = NULL, correct_GC_bg = TRUE, qtnorm = TRUE,
+  manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
   pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
@@ -79,11 +79,11 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 \item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
 
-\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 
 If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 
-\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= TRUE}.
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= FASLE}.
 
 If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 
