@@ -24,10 +24,15 @@
 #'
 #'@examples
 #'
-#'\dontrun{
-#'sep #a SummarizedExomePeak object
-#'plotLfcGC(sep)
-#'}
+#' @examples
+#'
+#' ### Load the example SummarizedExomPeak object
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+#'
+#' sep <- readRDS(f1)
+#'
+#' ### Visualize the relationship between GC content and the (differential) LFC
+#' plotLfcGC(sep)
 #'
 #'@import ggplot2
 #'@import BSgenome

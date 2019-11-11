@@ -71,11 +71,11 @@ decision_deseq2 <- function(Inf_RES,
       result_df$Cut_By_expected = "pvalue"
 
       if( nrow(Inf_RES) <= Min_mod ) {
-        result_df$Cut_Val_expected = sort( Inf_RES$pvalue )[ nrow(Inf_RES) + 1 ]
-        result_df$Discoveries_expected = sum(Inf_RES$pvalue < result_df$Cut_Val_expected)
+        result_df$Cut_Val_expected = sort( Inf_RES$pvalue )[ nrow(Inf_RES) ]
+        result_df$Discoveries_expected = sum(Inf_RES$pvalue <= result_df$Cut_Val_expected)
       } else {
-        result_df$Cut_Val_expected = sort( Inf_RES$pvalue )[ Min_mod + 1 ]
-        result_df$Discoveries_expected = sum(Inf_RES$pvalue < result_df$Cut_Val_expected)
+        result_df$Cut_Val_expected = sort( Inf_RES$pvalue )[ Min_mod ]
+        result_df$Discoveries_expected = sum(Inf_RES$pvalue <= result_df$Cut_Val_expected)
       }
     }
 

@@ -24,11 +24,19 @@
 #'
 #' @examples
 #'
-#'\dontrun{
-#'sep #a SummarizedExomePeak object
-#'txdb #a TxDb object
-#'plotExonLength(sep,txdb)
-#'}
+#' ### Make TxDb object from the gff file
+#' library(GenomicFeatures)
+#' GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
+#'
+#' txdb <- makeTxDbFromGFF(GENE_ANNO_GTF)
+#'
+#' ### Load the example SummarizedExomPeak object
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+#'
+#' sep <- readRDS(f1)
+#'
+#' ### Visualize the linear relationships between GC content and normalized reads count under different regions
+#' plotExonLength(sep,txdb)
 #'
 #' @export
 #'

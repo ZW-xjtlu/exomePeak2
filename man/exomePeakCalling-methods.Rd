@@ -8,8 +8,8 @@
 \title{Method exomePeakCalling}
 \usage{
 exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
-  genome_assembly = NA, mod_annot = NULL, glm_type = c("DESeq2",
-  "NB", "Poisson"), background = c("Gaussian_mixture", "m6Aseq_prior",
+  genome = NA, mod_annot = NULL, glm_type = c("DESeq2", "NB",
+  "Poisson"), background = c("Gaussian_mixture", "m6Aseq_prior",
   "manual", "all"), manual_background = NULL, correct_GC_bg = FALSE,
   qtnorm = FALSE, gff_dir = NULL, fragment_length = 100,
   binding_length = 25, step_length = binding_length,
@@ -20,9 +20,9 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, bp_param = NULL)
 
 \S4method{exomePeakCalling}{MeripBamFileList}(merip_bams = NULL,
-  txdb = NULL, bsgenome = NULL, genome_assembly = NA,
-  mod_annot = NULL, glm_type = c("DESeq2", "NB", "Poisson"),
-  background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
+  txdb = NULL, bsgenome = NULL, genome = NA, mod_annot = NULL,
+  glm_type = c("DESeq2", "NB", "Poisson"), background = c("all",
+  "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
@@ -42,13 +42,13 @@ If the \code{TxDb} object is not available, it could be a \code{character} strin
 
 If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.}
 
-\item{genome_assembly}{a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+\item{genome}{a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
 
 By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.}
 
-\item{mod_annot}{a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
+\item{mod_annot}{a \code{\link{GRanges}} or \code{\link{GRangesList}} object for user provided single based RNA modification annotation, the widths of the ranged object should be all equal to 1.
 
-If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.}
+If the user provides single based RNA modification annotation, exomePeak2 will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.}
 
 \item{glm_type}{a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 
@@ -148,44 +148,66 @@ The significantly modified peaks are selected using the cutoff of p value < 0.00
 }
 \examples{
 
-# Load packages for the genome sequence and transcript annotation
+### Define File Directories
 
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(BSgenome.Hsapiens.UCSC.hg19)
+GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
 
-# Peak Calling
+f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+IP_BAM = c(f1,f2,f3,f4)
+f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+INPUT_BAM = c(f1,f2,f3)
 
-exomePeakCalling(
-  merip_bams = scanMeripBAM(
-  bam_ip = c("IP_rep1.bam",
-             "IP_rep2.bam",
-             "IP_rep3.bam"),
-  bam_input = c("input_rep1.bam",
-                "input_rep2.bam",
-                "input_rep3.bam"),
-  paired_end = TRUE),
-  txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-  bsgenome = Hsapiens)
+f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+TREATED_IP_BAM = c(f1)
+f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+TREATED_INPUT_BAM = c(f1)
 
-# Analysis with single based modification annotation
+### Peak Calling
 
-annot_dir <- system.file("extdata", "m6A_hg19_annot.rds", package = "exomePeak2")
+MeRIP_Seq_Alignment <- scanMeripBAM(
+                         bam_ip = IP_BAM,
+                         bam_input = INPUT_BAM,
+                         paired_end = FALSE
+                        )
 
-m6A_hg19_gr <- readRDS(annot_dir)
+sep <- exomePeakCalling(
+            merip_bams = MeRIP_Seq_Alignment,
+            gff_dir = GENE_ANNO_GTF,
+            genome = "hg19"
+            )
 
-exomePeakCalling(
-  merip_bams = scanMeripBAM(
-  bam_ip = c("IP_rep1.bam",
-             "IP_rep2.bam",
-             "IP_rep3.bam"),
-  bam_input = c("input_rep1.bam",
-                "input_rep2.bam",
-                "input_rep3.bam"),
- paired_end = TRUE),
- txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
- bsgenome = Hsapiens,
- mod_annot = m6A_hg19_gr)
+sep <- normalizeGC(sep)
 
+sep <- glmM(sep)
+
+exportResults(sep)
+
+### Differential Modification Analysis (Comparison of Two Conditions)
+
+MeRIP_Seq_Alignment <- scanMeripBAM(
+                         bam_ip = IP_BAM,
+                         bam_input = INPUT_BAM,
+                         bam_treated_ip = TREATED_IP_BAM,
+                         bam_treated_input = TREATED_INPUT_BAM,
+                         paired_end = FALSE
+                        )
+
+sep <- exomePeakCalling(
+            merip_bams = MeRIP_Seq_Alignment,
+            gff_dir = GENE_ANNO_GTF,
+            genome = "hg19"
+            )
+
+sep <- normalizeGC(sep)
+
+sep <- glmDM(sep)
+
+exportResults(sep)
 
 }
 \seealso{

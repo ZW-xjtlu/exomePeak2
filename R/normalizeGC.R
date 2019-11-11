@@ -52,24 +52,13 @@
 #'
 #'@examples
 #'
-#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' ### Load the example SummarizedExomPeak object
+#' f1 = system.file("extdata", "sep_ex.rds", package="exomePeak2")
 #'
-#'aln <- scanMeripBAM(
-#'bam_ip = c("IP_rep1.bam",
-#'           "IP_rep2.bam",
-#'           "IP_rep3.bam"),
-#'bam_input = c("input_rep1.bam",
-#'              "input_rep2.bam",
-#'              "input_rep3.bam"),
-#'paired_end = TRUE
-#')
+#' sep <- readRDS(f1)
 #'
-#'sep <- exomePeakCalling(merip_bams = aln,
-#'                        txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'                        bsgenome = Hsapiens)
-#'
-#'sep <- normalizeGC(sep)
+#' ### Normalize the GC content biases
+#' sep <- normalizeGC(sep)
 #'
 #'@import SummarizedExperiment
 #'@import cqn

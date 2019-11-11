@@ -4,7 +4,7 @@
 \alias{disj_background}
 \title{Find the background of the user provided mod_gration.}
 \usage{
-disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
+disj_background(mod_gr, txdb, background_bins = NULL,
   background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual",
   "all"), control_width = 50, rename_mod = FALSE)
 }
@@ -12,8 +12,6 @@ disj_background(mod_gr, txdb, cut_off_num = 30, background_bins = NULL,
 \item{mod_gr}{A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).}
 
 \item{txdb}{A \code{TxDb} object that define the transcript mod_gration.}
-
-\item{cut_off_num}{A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.}
 
 \item{background_bins}{A Granges object for background binds.}
 

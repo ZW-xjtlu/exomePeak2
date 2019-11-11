@@ -41,32 +41,39 @@
 #'
 #' @examples
 #'
-#' ###For MeRIP-seq experiment without treatment group
+#' ### Define BAM File Directories
+#'
+#' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+#' f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+#' IP_BAM = c(f1,f2,f3,f4)
+#' f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+#' INPUT_BAM = c(f1,f2,f3)
+#'
+#' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM = c(f1)
+#' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM = c(f1)
+#'
+#' ### For MeRIP-Seq Experiment Without the Treatment Group
 #'
 #' MeRIP_Seq_Alignment <- scanMeripBAM(
-#'   bam_ip = c("IP_rep1.bam",
-#'              "IP_rep2.bam",
-#'              "IP_rep3.bam"),
-#'   bam_input = c("input_rep1.bam",
-#'                 "input_rep2.bam",
-#'                 "input_rep3.bam"),
-#'   paired_end = TRUE
+#'   bam_ip = IP_BAM,
+#'   bam_input = INPUT_BAM,
+#'   paired_end = FALSE
 #' )
 #'
-#' ###For MeRIP-seq experiment with treatment group
+#' ### For MeRIP-Seq Experiment With the Treatment Group
 #'
 #' MeRIP_Seq_Alignment <- scanMeripBAM(
-#' bam_ip = c("IP_rep1.bam",
-#'            "IP_rep2.bam",
-#'            "IP_rep3.bam"),
-#' bam_input = c("input_rep1.bam",
-#'               "input_rep2.bam",
-#'               "input_rep3.bam"),
-#' bam_treated_ip = c("IP_treated_rep1.bam",
-#'                    "IP_treated_rep2.bam"),
-#' bam_treated_input = c("input_treated_rep1.bam",
-#'                       "input_treated_rep2.bam"),
-#' paired_end = TRUE
+#' bam_ip = IP_BAM,
+#' bam_input = INPUT_BAM,
+#' bam_treated_ip = TREATED_IP_BAM,
+#' bam_treated_input = TREATED_INPUT_BAM,
+#' paired_end = FALSE
 #' )
 #'
 #' @seealso \code{\link{exomePeakCalling}}

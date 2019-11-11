@@ -52,9 +52,12 @@ the read counts are normalized using the following method:
 }
 \examples{
 
-\dontrun{
-sep #a SummarizedExomePeak object
+### Load the example SummarizedExomPeak object
+f1 = system.file("extdata", "sep_ex.rds", package="exomePeak2")
+
+sep <- readRDS(f1)
+
+### Visualize the linear relationships between GC content and normalized reads count under different regions
 plotReadsGC(sep)
-}
 
 }

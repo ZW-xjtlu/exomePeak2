@@ -44,9 +44,13 @@ The significant modification sites will be lebeled in different colours.
 }
 \examples{
 
-\dontrun{
-sep #a SummarizedExomePeak object
+
+### Load the example SummarizedExomPeak object
+f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+
+sep <- readRDS(f1)
+
+### Visualize the relationship between GC content and the (differential) LFC
 plotLfcGC(sep)
-}
 
 }

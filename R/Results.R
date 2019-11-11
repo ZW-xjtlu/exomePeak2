@@ -48,28 +48,16 @@
 #'
 #' @examples
 #'
-#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' ### Load the example SummarizedExomPeak object
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
 #'
-#' aln <- scanMeripBAM(
-#' bam_ip = c("IP_rep1.bam",
-#'            "IP_rep2.bam",
-#'            "IP_rep3.bam"),
-#' bam_input = c("input_rep1.bam",
-#'               "input_rep2.bam",
-#'               "input_rep3.bam"),
-#' paired_end = TRUE
-#' )
+#' sep <- readRDS(f1)
 #'
-#' sep <- exomePeakCalling(merip_bams = aln,
-#'                         txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'                         bsgenome = Hsapiens)
-#'
+#' ### Normalize the GC contents biases
 #' sep <- normalizeGC(sep)
 #'
-#' sep <- glmM(sep)
-#'
-#' exportResults(sep)
+#' ### Calculate GLM Statistics on the Modification Peaks
+#' sep <- glmDM(sep)
 #'
 #' @importFrom rtracklayer export
 #' @import GenomicRanges
@@ -89,10 +77,11 @@ setMethod("Results",
                    cut_off_log2FC = 0,
                    min_num_of_positive = 30,
                    expected_direction = c("both", "hyper", "hypo"),
-                   inhibit_filter = TRUE,
+                   inhibit_filter = FALSE,
                    table_style = c("bed", "granges")
                    ) {
 
+            expected_direction <- match.arg(expected_direction)
             table_style <- match.arg(table_style)
 
             if (table_style == "bed") {

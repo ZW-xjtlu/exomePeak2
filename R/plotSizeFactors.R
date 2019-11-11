@@ -2,6 +2,16 @@
 #'
 #'@param sep a \code{\link{SummarizedExomePeak}} object.
 #'
+#' @examples
+#'
+#' ### Load the example SummarizedExomPeak object
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+#'
+#' sep <- readRDS(f1)
+#'
+#' ### Visualize the size factors estimated using different regions
+#' plotSizeFactors(sep)
+#'
 #'@import ggplot2
 #'@import reshape2
 #'

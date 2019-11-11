@@ -17,7 +17,7 @@ setGeneric("LibraryType", function(x) standardGeneric("LibraryType"))
 setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         txdb = NULL,
                                         bsgenome = NULL,
-                                        genome_assembly = NA,
+                                        genome = NA,
                                         mod_annot = NULL,
                                         glm_type = c("DESeq2", "NB", "Poisson"),
                                         background = c("Gaussian_mixture",

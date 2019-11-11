@@ -10,7 +10,7 @@
 #' @param log2FC_mod a non negative \code{numeric} for the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).
 #' @param min_mod_number a non negative \code{numeric} for the minimum number of the reported modification containing bins.
 #' If the bins are filtered less than this number by the p values or effect sizes,
-#' more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(SE_bins)*0.002 ).
+#' more sites will be reported by the order of the p value until it reaches this number; Default to be floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ).
 #'
 #' @param correct_GC_bg a \code{logical} of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 #'
@@ -42,14 +42,14 @@
 #'
 #' @import cqn
 #'
-#' @export
+#'
 GLM_inference <- function(SE_bins,
                           glm_type = c("Poisson", "NB", "DESeq2"),
                           p_cutoff = 0.0001,
                           p_adj_cutoff = NULL,
                           count_cutoff = 5,
                           log2FC_mod = 1,
-                          min_mod_number = floor(nrow(SE_bins) * 0.0001),
+                          min_mod_number = floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ),
                           correct_GC_bg = FALSE,
                           qtnorm = TRUE,
                           consistent_peak = FALSE,

@@ -2,7 +2,6 @@
 #'
 #' @param mod_gr A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).
 #' @param txdb A \code{TxDb} object that define the transcript mod_gration.
-#' @param cut_off_num  A non-negative integer indicate the leat total number of the disjoint exons used as the background; Default 30.
 #' @param background_bins A Granges object for background binds.
 #' @param background_types A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
 #' @param control_width A integer for the minimum width of the control region returned; default 50.
@@ -21,7 +20,6 @@
 
 disj_background <- function(mod_gr,
                             txdb,
-                            cut_off_num = 30,
                             background_bins = NULL,
                             background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
                             control_width = 50,
@@ -96,8 +94,6 @@ disj_background <- function(mod_gr,
   control_ranges <-
     control_ranges[width(control_ranges) >= control_width]
 
-  if (length(control_ranges) >= cut_off_num) {
-
     #Annotat the control with gene ids
 
     control_ranges$gene_id = NA
@@ -110,28 +106,6 @@ disj_background <- function(mod_gr,
                            seq_along(control_ranges))
 
     names(control_ranges) = paste0("control_", names(control_ranges))
-
-  } else {
-
-    #Return background control as total exons
-
-    warning("Not enough control regions, use total exon as background",
-            call. = FALSE)
-
-    control_ranges = unlist(exbyug)
-
-    control_ranges$gene_id = names(control_ranges)
-
-    names(control_ranges) <- NULL
-
-    control_ranges = split(control_ranges,
-                           seq_along(control_ranges))
-
-    names(control_ranges) = paste0("control_", names(control_ranges))
-
-    seqlengths(control_ranges) = NA
-
-  }
 
   #organize the granges
 

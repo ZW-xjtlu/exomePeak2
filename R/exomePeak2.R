@@ -1,29 +1,29 @@
 #' @title Peak Calling and Peak Statistics Quantification on MeRIP-seq Dataset.
 #'
-#' @description \code{exomePeak2} conducts peak calling and peak statistics calculation from BAM files of a MeRIP-seq experiment.
-#' The function integrates the following steps of a standard MeRIP-seq pipeline.
+#' @description \code{exomePeak2} conducts peak calling and peak statistics calculation from \strong{BAM} files of a MeRIP-seq experiment.
+#' The function integrates the following steps of a standard MeRIP-seq data analysis pipeline.
 #'
 #' \enumerate{
 #' \item Check and index the BAM files with \code{\link{scanMeripBAM}}.
 #' \item Call modification peaks on exons with \code{\link{exomePeakCalling}}.
 #' \item Calculate offset factors of GC content biases with \code{\link{normalizeGC}}.
-#' \item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} and \code{\link{glmDM}}
+#' \item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} or \code{\link{glmDM}}
 #' \item Export the peaks/sites statistics with user defined format by \code{\link{exportResults}}.
 #' }
 #'
 #' See the help pages of the corresponding functions for the complete documentation.
 #'
-#' @details \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from BAM files of a MeRIP-seq experiment.
-#' The transcript annotation (from either the \code{\link{TxDb}} object or the GFF file) must be provided to perform analysis on exons.
+#' @details \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from \strong{BAM} files of a MeRIP-seq experiment.
+#'
+#' The transcript annotation (from either the \code{\link{TxDb}} object or the \strong{GFF} file) should be provided to perform analysis on exons.
 #'
 #' The \code{\link{BSgenome}} object is also required to perform the GC content bias adjustment.
-#' If the \code{bsgenome} argument is not provided (\code{= NULL}), the downstream analysis will proceed without GC content bias corrections.
+#' If the \code{bsgenome} and the \code{genome} arguments are not provided (\code{= NULL}), the downstream analysis will proceed without GC content bias corrections.
 #'
-#' If the BAM files in treated samples are provided at the arguments \code{bam_treated_ip} and \code{bam_treated_input}, the statistics of differential modification analysis will be reported.
+#' If the \strong{BAM} files in treated samples are provided at the arguments \code{bam_treated_ip} and \code{bam_treated_input}, the statistics of differential modification analysis on peaks/sites will be reported.
 #'
 #' Under default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named by \code{'exomePeak2_output'}.
-#' The results generated include a BED file and a CSV table that store the locations and statistics of (differential) modified peaks/sites.
-#'
+#' The results generated include a \strong{BED} file and a \strong{CSV} table that store the locations and statistics of the (differential) modified peaks/sites.
 #'
 #' @param bam_ip a \code{character} vector for the BAM file directories of the (control) IP samples.
 #' @param bam_input a \code{character} vector for the BAM file directories of the (control) input samples.
@@ -49,7 +49,7 @@
 #'
 #' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
 #'
-#' @param genome_assembly a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#' @param genome a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
 #'
 #' By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.
 #'
@@ -173,68 +173,71 @@
 #' a \code{\link{SummarizedExomePeak}} object.
 #'
 #' @examples
-#' # Load packages for the genome sequence and transcript annotation
 #'
-#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' #Specify File Directories
+#'
+#' GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
+#'
+#' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+#' f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+#' IP_BAM = c(f1,f2,f3,f4)
+#' f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+#' INPUT_BAM = c(f1,f2,f3)
 #'
 #' # Peak Calling
 #'
-#' exomePeak2(bam_ip = c("IP_rep1.bam",
-#'                       "IP_rep2.bam",
-#'                       "IP_rep3.bam"),
-#'            bam_input = c("input_rep1.bam",
-#'                          "input_rep2.bam",
-#'                          "input_rep3.bam"),
-#'            txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'            bsgenome = Hsapiens)
+#' sep <- exomePeak2(bam_ip = IP_BAM,
+#'                   bam_input = INPUT_BAM,
+#'                   gff_dir = GENE_ANNO_GTF,
+#'                   genome = "hg19",
+#'                   paired_end = FALSE)
+#' sep
 #'
-#' # Differential Modification Analysis
+#' # Differential Modification Analysis on Modification Peaks (Comparison of Two Conditions)
 #'
-#' exomePeak2(bam_ip = c("IP_rep1.bam",
-#'                       "IP_rep2.bam",
-#'                       "IP_rep3.bam"),
-#'            bam_input = c("input_rep1.bam",
-#'                          "input_rep2.bam",
-#'                          "input_rep3.bam"),
-#'            bam_treated_ip = c("IP_treated_rep1.bam",
-#'                               "IP_treated_rep2.bam"),
-#'            bam_treated_input = c("input_treated_rep1.bam",
-#'                                  "input_treated_rep2.bam"),
-#'            txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'            bsgenome = Hsapiens)
+#' f1=system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM=c(f1)
+#' f1=system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM=c(f1)
 #'
-#' # Modification Quantification with Single Based Modification Annotation
+#' sep <- exomePeak2(bam_ip = IP_BAM,
+#'                   bam_input = INPUT_BAM,
+#'                   bam_treated_input = TREATED_INPUT_BAM,
+#'                   bam_treated_ip = TREATED_IP_BAM,
+#'                   gff_dir = GENE_ANNO_GTF,
+#'                   genome = "hg19",
+#'                   paired_end = FALSE)
+#' sep
 #'
-#' annot_dir <- system.file("extdata", "m6A_hg19_annot.rds", package = "exomePeak2")
+#' # Modification Level Quantification on Single Based Modification Annotation
 #'
-#' m6A_hg19_gr <- readRDS(annot_dir)
+#' f2 = system.file("extdata", "mod_annot.rds", package="exomePeak2")
 #'
-#' exomePeak2(bam_ip = c("IP_rep1.bam",
-#'                       "IP_rep2.bam",
-#'                       "IP_rep3.bam"),
-#'            bam_input = c("input_rep1.bam",
-#'                          "input_rep2.bam",
-#'                          "input_rep3.bam"),
-#'            txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'            bsgenome = Hsapiens,
-#'            mod_annot = m6A_hg19_gr)
+#' MOD_ANNO_GRANGE <- readRDS(f2)
 #'
-#' # Differential Modification Analysis with Single Based Modification Annotation
+#' sep <- exomePeak2(bam_ip = IP_BAM,
+#'                   bam_input = INPUT_BAM,
+#'                   gff_dir = GENE_ANNO_GTF,
+#'                   genome = "hg19",
+#'                   paired_end = FALSE,
+#'                   mod_annot = MOD_ANNO_GRANGE)
+#' sep
 #'
-#' exomePeak2(bam_ip = c("IP_rep1.bam",
-#'                       "IP_rep2.bam",
-#'                       "IP_rep3.bam"),
-#'            bam_input = c("input_rep1.bam",
-#'                          "input_rep2.bam",
-#'                          "input_rep3.bam"),
-#'            bam_treated_ip = c("IP_treated_rep1.bam",
-#'                               "IP_treated_rep2.bam"),
-#'            bam_treated_input = c("input_treated_rep1.bam",
-#'                                  "input_treated_rep2.bam"),
-#'            txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'            bsgenome = Hsapiens,
-#'            mod_annot = m6A_hg19_gr)
+#' # Differential Modification Analysis on Single Based Modification Annotation
+#'
+#' sep <- exomePeak2(bam_ip = IP_BAM,
+#'                   bam_input = INPUT_BAM,
+#'                   bam_treated_input = TREATED_INPUT_BAM,
+#'                   bam_treated_ip = TREATED_IP_BAM,
+#'                   gff_dir = GENE_ANNO_GTF,
+#'                   genome = "hg19",
+#'                   paired_end = FALSE,
+#'                   mod_annot = MOD_ANNO_GRANGE)
+#' sep
 #'
 #'
 #' @seealso \code{\link{exomePeakCalling}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}, \code{\link{plotLfcGC}}
@@ -257,7 +260,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        bam_treated_input = NULL,
                        txdb = NULL,
                        bsgenome = NULL,
-                       genome_assembly = NA,
+                       genome = NA,
                        gff_dir = NULL,
                        mod_annot = NULL,
                        paired_end = FALSE,
@@ -319,16 +322,16 @@ stopifnot(log2FC_cutoff >= 0)
 
 stopifnot(pc_count_cutoff >= 0)
 
-if(!is.na(genome_assembly)) {
-   if(!is(bsgenome,"BSgenome")) bsgenome = genome_assembly
-   if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome_assembly
+if(!is.na(genome)) {
+   if(!is(bsgenome,"BSgenome")) bsgenome = genome
+   if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome
 }
 
 if(!is.null(bsgenome)) {
   bsgenome <- getBSgenome(bsgenome)
 }
 
-if(!is.null(gff_dir)) {
+if(!is.null(gff_dir) & is.null(txdb)) {
   message("Make the TxDb object ... ", appendLF = FALSE)
   txdb <- suppressMessages( makeTxDbFromGFF(gff_dir) )
   message("OK")

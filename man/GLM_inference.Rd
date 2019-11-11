@@ -6,10 +6,10 @@
 \usage{
 GLM_inference(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
   p_cutoff = 1e-04, p_adj_cutoff = NULL, count_cutoff = 5,
-  log2FC_mod = 1, min_mod_number = floor(nrow(SE_bins) * 1e-04),
-  correct_GC_bg = FALSE, qtnorm = TRUE, consistent_peak = FALSE,
-  consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
-  alpha = 0.05, p0 = 0.8)
+  log2FC_mod = 1, min_mod_number = floor(sum(rowSums(assay(SE_bins)) >
+  0) * 0.001), correct_GC_bg = FALSE, qtnorm = TRUE,
+  consistent_peak = FALSE, consistent_log2FC_cutoff = 1,
+  consistent_fdr_cutoff = 0.05, alpha = 0.05, p0 = 0.8)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,
@@ -28,7 +28,7 @@ The DESeq2 method is only recommended for high power experiments with more than 
 
 \item{min_mod_number}{a non negative \code{numeric} for the minimum number of the reported modification containing bins.
 If the bins are filtered less than this number by the p values or effect sizes,
-more sites will be reported by the order of the p value until it reaches this number; Default to be floor( nrow(SE_bins)*0.002 ).}
+more sites will be reported by the order of the p value until it reaches this number; Default to be floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ).}
 
 \item{correct_GC_bg}{a \code{logical} of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 

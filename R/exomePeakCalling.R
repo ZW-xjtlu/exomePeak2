@@ -19,7 +19,7 @@
 #'
 #' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
 #'
-#' @param genome_assembly a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#' @param genome a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
 #'
 #' By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.
 #'
@@ -71,9 +71,9 @@
 #'
 #' @param parallel a \code{logical} value of whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.
 #'
-#' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
+#' @param mod_annot a \code{\link{GRanges}} or \code{\link{GRangesList}} object for user provided single based RNA modification annotation, the widths of the ranged object should be all equal to 1.
 #'
-#' If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
+#' If the user provides single based RNA modification annotation, exomePeak2 will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
@@ -113,44 +113,66 @@
 #'
 #' @examples
 #'
-#' # Load packages for the genome sequence and transcript annotation
+#' ### Define File Directories
 #'
-#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
 #'
-#' # Peak Calling
+#' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+#' f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+#' IP_BAM = c(f1,f2,f3,f4)
+#' f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+#' INPUT_BAM = c(f1,f2,f3)
 #'
-#' exomePeakCalling(
-#'   merip_bams = scanMeripBAM(
-#'   bam_ip = c("IP_rep1.bam",
-#'              "IP_rep2.bam",
-#'              "IP_rep3.bam"),
-#'   bam_input = c("input_rep1.bam",
-#'                 "input_rep2.bam",
-#'                 "input_rep3.bam"),
-#'   paired_end = TRUE),
-#'   txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'   bsgenome = Hsapiens)
+#' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM = c(f1)
+#' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM = c(f1)
 #'
-#' # Analysis with single based modification annotation
+#' ### Peak Calling
 #'
-#' annot_dir <- system.file("extdata", "m6A_hg19_annot.rds", package = "exomePeak2")
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
+#'                          bam_ip = IP_BAM,
+#'                          bam_input = INPUT_BAM,
+#'                          paired_end = FALSE
+#'                         )
 #'
-#' m6A_hg19_gr <- readRDS(annot_dir)
+#' sep <- exomePeakCalling(
+#'             merip_bams = MeRIP_Seq_Alignment,
+#'             gff_dir = GENE_ANNO_GTF,
+#'             genome = "hg19"
+#'             )
 #'
-#' exomePeakCalling(
-#'   merip_bams = scanMeripBAM(
-#'   bam_ip = c("IP_rep1.bam",
-#'              "IP_rep2.bam",
-#'              "IP_rep3.bam"),
-#'   bam_input = c("input_rep1.bam",
-#'                 "input_rep2.bam",
-#'                 "input_rep3.bam"),
-#'  paired_end = TRUE),
-#'  txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'  bsgenome = Hsapiens,
-#'  mod_annot = m6A_hg19_gr)
+#' sep <- normalizeGC(sep)
 #'
+#' sep <- glmM(sep)
+#'
+#' exportResults(sep)
+#'
+#' ### Differential Modification Analysis (Comparison of Two Conditions)
+#'
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
+#'                          bam_ip = IP_BAM,
+#'                          bam_input = INPUT_BAM,
+#'                          bam_treated_ip = TREATED_IP_BAM,
+#'                          bam_treated_input = TREATED_INPUT_BAM,
+#'                          paired_end = FALSE
+#'                         )
+#'
+#' sep <- exomePeakCalling(
+#'             merip_bams = MeRIP_Seq_Alignment,
+#'             gff_dir = GENE_ANNO_GTF,
+#'             genome = "hg19"
+#'             )
+#'
+#' sep <- normalizeGC(sep)
+#'
+#' sep <- glmDM(sep)
+#'
+#' exportResults(sep)
 #'
 #' @seealso \code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}
 #' @import GenomicAlignments
@@ -170,7 +192,7 @@ setMethod("exomePeakCalling",
           function(merip_bams = NULL,
                    txdb = NULL,
                    bsgenome = NULL,
-                   genome_assembly = NA,
+                   genome = NA,
                    mod_annot = NULL,
                    glm_type = c("DESeq2", "NB", "Poisson"),
                    background = c("all",
@@ -224,12 +246,12 @@ setMethod("exomePeakCalling",
             stopifnot(is(mod_annot,"GRanges")|is(mod_annot,"GRangesList"))
             }
 
-            if(!is.na(genome_assembly)) {
-              if(!is(bsgenome,"BSgenome")) bsgenome = genome_assembly
-              if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome_assembly
+            if(!is.na(genome)) {
+              if(!is(bsgenome,"BSgenome")) bsgenome = genome
+              if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome
             }
 
-            if (!is.null(gff_dir)) {
+            if (!is.null(gff_dir) & is.null(txdb)) {
               message("Make the TxDb object ... ", appendLF = FALSE)
               txdb <- suppressMessages( makeTxDbFromGFF(gff_dir) )
               message("OK")
@@ -313,11 +335,12 @@ setMethod("exomePeakCalling",
               #               Reads count annotation               #
               ######################################################
 
-              #Experimental design
+              #Add Experimental design
               colData(SE_Peak_counts) <- DataFrame(metadata(merip_bams))
 
 
               #GC content calculation
+
               if (is.null(bsgenome)) {
 
               } else{
@@ -345,7 +368,6 @@ setMethod("exomePeakCalling",
               rowData(SE_Peak_counts)$indx_gc_est <-
                 rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
 
-
               ######################################################
               #                 Background search                  #
               ######################################################
@@ -364,11 +386,11 @@ setMethod("exomePeakCalling",
                         rowData(SE_Peak_counts)$indx_bg) < 30) {
 
                   warning(
-                    "Number of the background bins < 30. Background method changed to the uniform.",
+                    "Number of the background bins < 30. Background method changed to 'All'.",
                     call. = FALSE,
                     immediate. = FALSE
                   )
-                  rowData(SE_Peak_counts)$indx_bg = T
+                  rowData(SE_Peak_counts)$indx_bg = rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
                 }
 
               }
@@ -398,19 +420,20 @@ setMethod("exomePeakCalling",
 
               if (background == "all") {
 
-                rowData(SE_Peak_counts)$indx_bg = T
+                rowData(SE_Peak_counts)$indx_bg = rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
 
-              }
+              } else {
 
               #Check for minimum background number
               if (sum(rowData(SE_Peak_counts)$indx_gc_est &
                       rowData(SE_Peak_counts)$indx_bg) < 30) {
                 warning(
-                  "Number of the background bins < 30. Background method changed to the uniform.\n",
+                  'Number of the background bins < 30. Background method changed to "All".\n',
                   call. = FALSE,
                   immediate. = FALSE
                 )
-                rowData(SE_Peak_counts)$indx_bg = T
+                rowData(SE_Peak_counts)$indx_bg = rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
+               }
               }
 
 
@@ -479,7 +502,6 @@ setMethod("exomePeakCalling",
               count_row_features <- disj_background(
                 mod_gr = gr_mod_flanked,
                 txdb = txdb,
-                cut_off_num = 30,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background,
                 control_width = peak_width
@@ -544,14 +566,17 @@ setMethod("exomePeakCalling",
 
 
               if (is(mod_annot, "GRanges")) {
+
+                names(mod_annot) <- NULL
+
                 mod_annot <-
                   split(mod_annot , seq_along(mod_annot))
 
-              } else {
-                names(mod_annot) <-
-                  seq_along(mod_annot) #make sure the annotation is indexed by integer sequence
-
               }
+
+                names(mod_annot) <-
+                  paste0("mod_",seq_along(mod_annot)) #make sure the annotation is indexed by integer sequence
+
 
               mod_annot_flanked <- suppressWarnings( flank_on_exons(
                 grl = mod_annot,
@@ -562,12 +587,9 @@ setMethod("exomePeakCalling",
 
               mod_annot_flanked <- split_by_name(mod_annot_flanked)
 
-              names(mod_annot_flanked) <- paste0("mod_", names(mod_annot_flanked))
-
               # mod_annot_count <- suppressWarnings( disj_background(
               #   mod_gr = mod_annot_flanked,
               #   txdb = txdb,
-              #   cut_off_num = 30,
               #   background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
               #   background_types = background,
               #   control_width = peak_width
@@ -576,9 +598,6 @@ setMethod("exomePeakCalling",
               SE_Peak_counts_bg <- SE_Peak_counts[rowData(SE_Peak_counts)$indx_bg, ]
 
               rm(SE_Peak_counts)
-
-              SE_Peak_counts_bg <- SE_Peak_counts_bg[rowMeans(assay(SE_Peak_counts_bg)[,colData(SE_Peak_counts_bg)$design_IP]) >= 50 &
-                                                       rowMeans(assay(SE_Peak_counts_bg)[,!colData(SE_Peak_counts_bg)$design_IP]) >= 50 ]
 
               SE_Peak_counts_bg <- SE_Peak_counts_bg[!rowRanges(SE_Peak_counts_bg)%over%mod_annot, ]
 
@@ -603,7 +622,7 @@ setMethod("exomePeakCalling",
               yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SE_temp <- summarizeOverlaps(
-                features = c(mod_annot_flanked,rowRanges(SE_Peak_counts_bg)),
+                features = mod_annot_flanked,
                 reads = merip_bams,
                 param = Parameter(merip_bams),
                 mode = "Union",
@@ -614,57 +633,46 @@ setMethod("exomePeakCalling",
                 fragments = any(asMates(merip_bams))
               )
 
-              rm(SE_Peak_counts_bg)
+              #rm(SE_Peak_counts_bg)
+              rm(mod_annot_flanked)
 
               message("OK")
 
               #Replace the rowRanges with the single based GRangesList.
-              index_mod <- grepl("mod_", rownames(SE_temp))
 
-              index_se <- match(as.numeric(names(mod_annot)),
-                                as.numeric(gsub("mod_", "", rownames(SE_temp)[index_mod])))
+              mod_annot <- unlist(mod_annot)
 
-              mod_count <-
-                assay(SE_temp)[index_mod, ][index_se, ]
+              mod_annot$gene_id <- NA
 
-              rm(index_se)
+              indx_modc <- as.numeric(gsub("mod_","",rownames(SE_temp)))
 
-              rownames(mod_count) <-
-                paste0("mod_", seq_len(nrow(mod_count)))
+              mod_annot$gene_id[rep(indx_modc,elementNROWS(rowRanges(SE_temp)))] <- unlist(rowRanges( SE_temp ))$gene_id
 
-              #Fill the rows that are not on exons with zero counts.
-              mod_count[is.na(mod_count)] <- 0
+              names(mod_annot) <- NULL
 
-              control_count <- assay(SE_temp)[!index_mod, ]
-
-              #replace the metadata collumn with gene_ids
-              mod_annot_gr <- unlist(mod_annot)
-
-              mcols(mod_annot_gr) <- DataFrame(gene_id = NA)
-
-              SE_temp_gr <- unlist(rowRanges(SE_temp)[index_mod])
-
-              mcols(mod_annot_gr)$gene_id <-
-                mcols(SE_temp_gr)$gene_id[match(as.numeric(names(mod_annot_gr)),
-                                            as.numeric(gsub("mod_.*\\.", "", names(SE_temp_gr))))]
-
-              rm(SE_temp_gr)
-
-              mod_annot <- split(mod_annot_gr, names(mod_annot_gr))
-
-              mod_annot <- mod_annot[order(as.numeric(names(mod_annot)))]
+              mod_annot <- split(mod_annot, seq_along(mod_annot))
 
               names(mod_annot) <- paste0("mod_", names(mod_annot))
 
               SummarizedExomePeaks <- SummarizedExperiment(
-                assay = rbind(mod_count, control_count),
+                assay = matrix(0,nrow = nrow(SE_Peak_counts_bg)+length(mod_annot),
+                                 ncol = ncol(SE_Peak_counts_bg)),
 
-                rowRanges = c(mod_annot,
-                              rowRanges(SE_temp)[!index_mod]),
+                rowRanges = c(mod_annot,rowRanges(SE_Peak_counts_bg)),
 
                 colData = DataFrame(metadata(merip_bams))
 
               )
+
+              indx_ctl <- grepl("control",rownames(SummarizedExomePeaks))
+
+              assay(SummarizedExomePeaks)[indx_ctl,] <- assay(SE_Peak_counts_bg)
+
+              rm(SE_Peak_counts_bg, indx_ctl)
+
+              assay(SummarizedExomePeaks)[indx_modc,] <- assay(SE_temp)
+
+              rm(SE_temp, indx_modc)
 
               colnames(SummarizedExomePeaks) <- names(merip_bams)
 

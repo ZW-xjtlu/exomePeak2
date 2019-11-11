@@ -19,7 +19,7 @@ estimateSeqDepth(sep, from = c("Background", "Modification", "All"), ...)
 
 \describe{
  \item{\strong{\code{Background}}}{
- The sequencing depths are estimated from the background regions. This could make the IP/input LFC estimates become a rescaled version of the real modification proportion.
+ The sequencing depths are estimated from the background control regions. This method could make the IP/input LFC estimates become closer to the true modification proportion.
  }
 
  \item{\strong{\code{Modification}}}{
@@ -27,7 +27,7 @@ estimateSeqDepth(sep, from = c("Background", "Modification", "All"), ...)
  }
 
  \item{\strong{\code{All}}}{
- The sequencing depths are estimated from both the background and modification regions.
+ The sequencing depths are estimated from both the background and the modification regions.
  }
 }
 
@@ -40,7 +40,7 @@ This function will return a \code{\link{SummarizedExomePeak}} object containing 
 }
 \description{
 \code{estimateSeqDepth} estimate sequencing depth size factors for each MeRIP-seq samples.
-Under default setting, the sequencing depth are estimated by the robust estimator defined in package DESeq2.
+Under default setting, the sequencing depth are estimated by the robust estimator defined in package \code{DESeq}.
 i.e. the median of the ratios to the row geometric means.
 }
 \details{
@@ -49,23 +49,12 @@ and it estimates the sequencing depth size factors by the columns of its \link{a
 }
 \examples{
 
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(BSgenome.Hsapiens.UCSC.hg19)
+### Load the example SummarizedExomPeak object
+f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
 
-aln <- scanMeripBAM(
-bam_ip = c("IP_rep1.bam",
-           "IP_rep2.bam",
-           "IP_rep3.bam"),
-bam_input = c("input_rep1.bam",
-              "input_rep2.bam",
-              "input_rep3.bam"),
-paired_end = TRUE
-)
+sep <- readRDS(f1)
 
-sep <- exomePeakCalling(merip_bams = aln,
-                       txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-                       bsgenome = Hsapiens)
-
+### Estimate the sequencing depth size factors
 sep <- estimateSeqDepth(sep)
 
 }

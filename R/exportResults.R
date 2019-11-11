@@ -66,27 +66,12 @@
 #'
 #' @examples
 #'
-#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' ### Load the example SummarizedExomPeak object
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
 #'
-#' aln <- scanMeripBAM(
-#' bam_ip = c("IP_rep1.bam",
-#'            "IP_rep2.bam",
-#'            "IP_rep3.bam"),
-#' bam_input = c("input_rep1.bam",
-#'               "input_rep2.bam",
-#'               "input_rep3.bam"),
-#' paired_end = TRUE
-#' )
+#' sep <- readRDS(f1)
 #'
-#' sep <- exomePeakCalling(merip_bams = aln,
-#'                         txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-#'                         bsgenome = Hsapiens)
-#'
-#' sep <- normalizeGC(sep)
-#'
-#' sep <- glmM(sep)
-#'
+#' ### Save the modification peaks/sites statistics on the current directory.
 #' exportResults(sep)
 #'
 #' @importFrom rtracklayer export
@@ -151,7 +136,7 @@ setMethod("exportResults",
             if (inhibit_filter) {
 
               #Do not filter the rows on modification
-              index_keep <- rep(T, sum(grepl("mod_", rownames(sep))))
+              index_keep <- T
 
             } else {
 
@@ -236,9 +221,12 @@ setMethod("exportResults",
             rownames(result_stat) = NULL
 
             #Generate the GRangesList file that is ready to export
-            result_grl <- split(result_gr, names(result_gr))
+            indx_split <- names(result_gr)
+            names(result_gr) <- NULL
+            result_gr$gene_id[is.na(result_gr$gene_id)] <- " "
+            result_grl <- split(result_gr, indx_split)
             mcols(result_grl) <- result_stat
-            rm(result_gr,result_stat)
+            rm(result_gr,result_stat,indx_split)
 
             id_num <- as.numeric(gsub("^.*_", "", names(result_grl)))
             id_index <- order(id_num)
@@ -303,7 +291,7 @@ setMethod("exportResults",
 
             #Retrieve the index for columns
             indx_range_info <- colnames(result_df) %in% colnames_range_info
-            indx_reads_count <- grepl("Count",colnames(result_df))
+            indx_reads_count <- grepl("ReadsCount",colnames(result_df))
             indx_major_stat <- colnames(result_df) %in% c("log2FoldChange","pvalue","padj")
 
             #Export the estimates and statistics of all DESeq2 design
