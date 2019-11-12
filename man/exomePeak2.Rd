@@ -51,7 +51,9 @@ By default, the argument = NA, it should be provided when the \code{BSgenome} or
 
 \item{mod_annot}{a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
 
-If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.}
+If user provides the single based RNA modification annotation, exomePeak2 will perform reads count and (differential) modification quantification on the provided annotation.
+
+The single base annotation will be flanked by length = floor(fragment_length - binding_length/2) to account for the fragment length of the sequencing library.}
 
 \item{paired_end}{a \code{logical} of whether the data comes from the Paired-End Library, \code{TRUE} if the data is Paired-End sequencing; default \code{FALSE}.}
 
@@ -97,7 +99,7 @@ The consistency defined in this way is equivalent to the rejection of an exact b
 
 \item{parallel}{a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.}
 
-\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "all"}.
+\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 
 In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 
@@ -126,7 +128,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 
-\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= FALSE}.
+\item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= FALSE}.
 
 If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
 

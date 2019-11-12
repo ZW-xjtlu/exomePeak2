@@ -103,7 +103,9 @@
 #'
 #' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
 #'
-#' If user provides the single based RNA modification annotation, this function will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
+#' If user provides the single based RNA modification annotation, exomePeak2 will perform reads count and (differential) modification quantification on the provided annotation.
+#'
+#' The single base annotation will be flanked by length = floor(fragment_length - binding_length/2) to account for the fragment length of the sequencing library.
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
@@ -111,11 +113,11 @@
 #'
 #' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
-#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= FALSE}.
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= FALSE}.
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "all"}.
+#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 #'
 #' In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 #'

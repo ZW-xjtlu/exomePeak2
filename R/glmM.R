@@ -26,7 +26,7 @@
 #'
 #' \deqn{log2(Q) = intercept + I(IP)}
 #'
-#' The log2FC and the associated statistics are based on the coefficient estimate of the dummy variable term： \eqn{I(IP)}.
+#' The log2FC and the associated statistics are based on the coefficient estimate of the dummy variable term: \eqn{I(IP)}.
 #'
 #' Under default setting, the returned log2FC are the RR estimates with Couchey priors defined in \code{\link{apeglm}}.
 #'

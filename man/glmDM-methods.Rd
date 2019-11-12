@@ -42,7 +42,7 @@ GLMs with interactive design between dummy variables of IP/input and Treatment/c
 
 \deqn{log2(Q) = intercept + I(Treatment) + I(IP) + I(IP)*I(Treatment)}
 
-The log2FC and the associated statistics are based on the coefficient estimate of the interactive term： \eqn{I(IP)*I(Treated)}.
+The log2FC and the associated statistics are based on the coefficient estimate of the interactive term: \eqn{I(IP)*I(Treated)}.
 
 Under default setting, the returned log2FC are the RR estimates with Couchey priors defined in \code{\link{apeglm}}.
 }

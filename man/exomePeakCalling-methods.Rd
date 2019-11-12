@@ -48,7 +48,9 @@ By default, the argument = NA, it should be provided when the \code{BSgenome} or
 
 \item{mod_annot}{a \code{\link{GRanges}} or \code{\link{GRangesList}} object for user provided single based RNA modification annotation, the widths of the ranged object should be all equal to 1.
 
-If the user provides single based RNA modification annotation, exomePeak2 will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.}
+If user provides the single based RNA modification annotation, exomePeak2 will perform reads count and (differential) modification quantification on the provided annotation.
+
+The single base annotation will be flanked by length = floor(fragment_length - binding_length/2) to account for the fragment length of the sequencing library.}
 
 \item{glm_type}{a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 
@@ -62,7 +64,7 @@ If the user provides single based RNA modification annotation, exomePeak2 will p
 
 By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.}
 
-\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
+\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "Gaussian_mixture"}.
 
 In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 

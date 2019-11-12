@@ -15,9 +15,9 @@
 #'
 #' The one-sided statistical test (C-test) is conducted with the following hypothesis pair:
 #'
-#' \deqn{H_0: mean_IP/mean_input <= fold}
+#' \deqn{H_0: mean(IP)/mean(input) <= fold}
 #'
-#' \deqn{H_1: mean_IP/mean_input > fold}
+#' \deqn{H_1: mean(IP)/mean(input) > fold}
 #'
 #' The exact p-values will be generated using binomial test, check \code{\link{poisson.test}} for more details.
 #'

@@ -32,7 +32,7 @@
 #'
 #' }
 #'
-#'@param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= FALSE}.
+#'@param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= FALSE}.
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'

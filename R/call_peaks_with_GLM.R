@@ -20,7 +20,7 @@
 #'
 #' If \code{correct_GC_bg = TRUE}, it could result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.
 #'
-#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction； default \code{= TRUE}.
+#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= TRUE}.
 #'
 #' Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'

@@ -73,7 +73,9 @@
 #'
 #' @param mod_annot a \code{\link{GRanges}} or \code{\link{GRangesList}} object for user provided single based RNA modification annotation, the widths of the ranged object should be all equal to 1.
 #'
-#' If the user provides single based RNA modification annotation, exomePeak2 will perform reads count on the provided annotation flanked by length \code{= floor(fragment_length - binding_length/2)}.
+#' If user provides the single based RNA modification annotation, exomePeak2 will perform reads count and (differential) modification quantification on the provided annotation.
+#'
+#' The single base annotation will be flanked by length = floor(fragment_length - binding_length/2) to account for the fragment length of the sequencing library.
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
@@ -85,7 +87,7 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of \code{c("Gaussian_mixture", "m6Aseq_prior", "manual", "all")};  default \code{= "Gaussian_mixture"}.
+#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "Gaussian_mixture"}.
 #'
 #' In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 #'

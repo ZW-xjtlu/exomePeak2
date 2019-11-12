@@ -53,11 +53,8 @@
 #'
 #' sep <- readRDS(f1)
 #'
-#' ### Normalize the GC contents biases
-#' sep <- normalizeGC(sep)
-#'
-#' ### Calculate GLM Statistics on the Modification Peaks
-#' sep <- glmDM(sep)
+#' ### Check the modification peaks/sites statistics.
+#' head(Results(sep))
 #'
 #' @importFrom rtracklayer export
 #' @import GenomicRanges
