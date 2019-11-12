@@ -53,7 +53,7 @@
 #'@examples
 #'
 #' ### Load the example SummarizedExomPeak object
-#' f1 = system.file("extdata", "sep_ex.rds", package="exomePeak2")
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
 #'
 #' sep <- readRDS(f1)
 #'

@@ -41,19 +41,25 @@ It has 2 additional accessors:
 }
 \examples{
 
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(BSgenome.Hsapiens.UCSC.hg19)
+# Generate the SummarizedExomePeak object by peak calling
 
-# Construct the SummarizedExomePeak object
+GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
 
-sep <- exomePeak2(bam_ip = c("IP_rep1.bam",
-                             "IP_rep2.bam",
-                             "IP_rep3.bam"),
-                  bam_input = c("input_rep1.bam",
-                                "input_rep2.bam",
-                                "input_rep3.bam"),
-                  txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-                  bsgenome = Hsapiens)
+f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+IP_BAM = c(f1,f2,f3,f4)
+f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+INPUT_BAM = c(f1,f2,f3)
+
+sep <- exomePeak2(bam_ip = IP_BAM,
+                  bam_input = INPUT_BAM,
+                  gff_dir = GENE_ANNO_GTF,
+                  genome = "hg19",
+                  paired_end = FALSE)
 
 #Access to the slots in the SummarizedExomePeak object
 

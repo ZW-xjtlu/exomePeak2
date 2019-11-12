@@ -45,7 +45,7 @@ a \code{ggplot} object
 The read abundances of both the control and the modification site regions are plotted,
 the read counts are normalized using the following method:
 
-\deqn{normalized_feature_abundance = ( ( read_count / size_factor) / region_length ) * 500}
+\deqn{normalized feature abundance = ( ( read count / size factor) / region length ) * 500}
 
  By default, it will use the sequencing depth size factor defined in the \code{\link{SummarizedExomePeak}} object,
  if the sequencing depth size factor is not found, new size factors will be estimated with the default method in \code{\link{estimateSeqDepth}}.
@@ -53,11 +53,11 @@ the read counts are normalized using the following method:
 \examples{
 
 ### Load the example SummarizedExomPeak object
-f1 = system.file("extdata", "sep_ex.rds", package="exomePeak2")
+f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
 
 sep <- readRDS(f1)
 
-### Visualize the linear relationships between GC content and normalized reads count under different regions
+### Visualize the linear relationships between GC content and normalized reads count
 plotReadsGC(sep)
 
 }
