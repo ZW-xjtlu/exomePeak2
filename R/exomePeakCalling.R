@@ -303,7 +303,7 @@ setMethod("exomePeakCalling",
 
               if (!parallel) {
                 register(SerialParam())
-                register(MulticoreParam(workers = 1))
+                suppressWarnings( register(MulticoreParam(workers = 1)) )
                 register(SnowParam(workers = 1))
               } else {
                 if (!is.null(bp_param)) {
@@ -515,14 +515,14 @@ setMethod("exomePeakCalling",
 
               if (!parallel) {
                 register(SerialParam(), default = FALSE)
-                register(MulticoreParam(workers = 1))
+                suppressWarnings( register(MulticoreParam(workers = 1)) )
                 register(SnowParam(workers = 1))
               } else {
                 if (!is.null(bp_param)) {
                   register(bp_param, default = TRUE)
                 } else {
                   register(SerialParam(), default = FALSE)
-                  register(MulticoreParam(workers = 3))
+                 suppressWarnings( register(MulticoreParam(workers = 3)) )
                   register(SnowParam(workers = 3))
                 }
               }
@@ -609,14 +609,14 @@ setMethod("exomePeakCalling",
 
               if (!parallel) {
                 register(SerialParam())
-                register(MulticoreParam(workers = 1))
+                suppressWarnings( register(MulticoreParam(workers = 1)) )
                 register(SnowParam(workers = 1))
               } else {
                 if (!is.null(bp_param)) {
                   register(bp_param, default = TRUE)
                 } else {
                   register(SerialParam(), default = FALSE)
-                  register(MulticoreParam(workers = 3))
+                  suppressWarnings( register(MulticoreParam(workers = 3)) )
                   register(SnowParam(workers = 3))
                 }
               }

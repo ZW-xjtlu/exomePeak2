@@ -64,7 +64,7 @@ GLM_inference <- function(SE_bins,
 
   indx_count <- which(rowMeans(assay(SE_bins)) > count_cutoff)
 
-  if(is.na(min_mod_number)) min_mod_number = floor( sum(rowSums( assay(SE_bins) , na.rm = T) > 0, na.rm = T)*0.001 )
+  if(is.na(min_mod_number)) min_mod_number = floor( sum(rowSums( assay(SE_bins) , na.rm = TRUE) > 0, na.rm = TRUE)*0.001 )
 
   dds = DESeqDataSet(se = SE_bins[indx_count, ],
                      design = ~ design_IP)
@@ -77,7 +77,7 @@ GLM_inference <- function(SE_bins,
 
   if (!is.null(rowData(SE_bins)$gc_contents)) {
 
-    message("Estimate offsets of GC content biases on bins ... ", appendLF = F)
+    message("Estimate offsets of GC content biases on bins ... ", appendLF = FALSE)
 
     indx_IP <- dds$design_IP == "IP"
 
@@ -150,15 +150,15 @@ GLM_inference <- function(SE_bins,
   ######################################################
 
   if (glm_type == "Poisson") {
-    message("Peak Calling with Poisson GLM ... ",appendLF = F)
+    message("Peak Calling with Poisson GLM ... ",appendLF = FALSE)
   }
 
   if (glm_type == "NB") {
-    message("Peak Calling with NB GLM ... ",appendLF = F)
+    message("Peak Calling with NB GLM ... ",appendLF = FALSE)
   }
 
   if (glm_type == "DESeq2") {
-    message("Peak Calling with DESeq2 ... ", appendLF = F)
+    message("Peak Calling with DESeq2 ... ", appendLF = FALSE)
   }
 
 
@@ -188,7 +188,7 @@ GLM_inference <- function(SE_bins,
     sig_indx <- res$pvalue < p_cutoff & res$log2FoldChange > log2FC_mod
   }
 
-  if (sum(sig_indx,na.rm = T) < min_mod_number) {
+  if (sum(sig_indx,na.rm = TRUE) < min_mod_number) {
     warning(
       "Insufficient positive bins under the current filter, the filter in peak calling is changed into p value < 0.05 and log2FC > 0, please consider using Poisson GLM.\n",
       call. = FALSE,
@@ -197,7 +197,7 @@ GLM_inference <- function(SE_bins,
 
     sig_indx <- res$pvalue < 0.05 & res$log2FoldChange > 0
 
-    if (sum(sig_indx,na.rm = T) < min_mod_number) {
+    if (sum(sig_indx,na.rm = TRUE) < min_mod_number) {
       stop(
         "The bins are not informative to conduct meaningful peak calling, please check the raw data quality."
       )
@@ -210,7 +210,7 @@ GLM_inference <- function(SE_bins,
 
   if (consistent_peak) {
 
-    message("Evaluating peak consistency with C-tests ... ", appendLF = F)
+    message("Evaluating peak consistency with C-tests ... ", appendLF = FALSE)
 
     cons_indx <- consDESeq2_M(dds,
                               consistent_log2FC_cutoff = consistent_log2FC_cutoff,
