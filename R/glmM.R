@@ -31,8 +31,8 @@
 #' Under default setting, the returned log2FC are the RR estimates with Couchey priors defined in \code{\link{apeglm}}.
 #'
 #' @import SummarizedExperiment
-#'
 #' @import DESeq2
+#' @import apeglm
 #'
 #' @aliases glmM
 #'

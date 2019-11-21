@@ -23,7 +23,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 if (!requireNamespace(c("TxDb.Hsapiens.UCSC.hg19.knownGene",
                         "BSgenome.Hsapiens.UCSC.hg19"), quietly = TRUE))
     BiocManager::install(c("TxDb.Hsapiens.UCSC.hg19.knownGene",
-                           "BSgenome.Hsapiens.UCSC.hg19"), version = "3.8")
+                           "BSgenome.Hsapiens.UCSC.hg19"))
 ```
 
 For R version below 3.4.0, use the following code.

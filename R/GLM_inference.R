@@ -10,7 +10,7 @@
 #' @param log2FC_mod a non negative \code{numeric} for the log2 fold change cutoff used in DESeq inferene for modification containing peaks (IP > input).
 #' @param min_mod_number a non negative \code{numeric} for the minimum number of the reported modification containing bins.
 #' If the bins are filtered less than this number by the p values or effect sizes,
-#' more sites will be reported by the order of the p value until it reaches this number; Default to be floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ).
+#' more sites will be reported by the order of the p value until it reaches this number; Default to be calculated by floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ).
 #'
 #' @param correct_GC_bg a \code{logical} of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
 #'
@@ -49,7 +49,7 @@ GLM_inference <- function(SE_bins,
                           p_adj_cutoff = NULL,
                           count_cutoff = 5,
                           log2FC_mod = 1,
-                          min_mod_number = floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ),
+                          min_mod_number = NA,
                           correct_GC_bg = FALSE,
                           qtnorm = TRUE,
                           consistent_peak = FALSE,
@@ -64,6 +64,8 @@ GLM_inference <- function(SE_bins,
 
   indx_count <- which(rowMeans(assay(SE_bins)) > count_cutoff)
 
+  if(is.na(min_mod_number)) min_mod_number = floor( sum(rowSums( assay(SE_bins) , na.rm = T) > 0, na.rm = T)*0.001 )
+
   dds = DESeqDataSet(se = SE_bins[indx_count, ],
                      design = ~ design_IP)
 
@@ -73,9 +75,10 @@ GLM_inference <- function(SE_bins,
 
   dds$sizeFactor = estimateSizeFactorsForMatrix(assay(dds))
 
-  message("Estimate offsets of GC content biases on bins ... ", appendLF = F)
-
   if (!is.null(rowData(SE_bins)$gc_contents)) {
+
+    message("Estimate offsets of GC content biases on bins ... ", appendLF = F)
+
     indx_IP <- dds$design_IP == "IP"
 
     if(correct_GC_bg) {

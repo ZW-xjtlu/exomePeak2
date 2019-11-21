@@ -248,6 +248,8 @@
 #' @import GenomicRanges
 #' @import BiocParallel
 #' @import SummarizedExperiment
+#' @import RMariaDB
+#'
 #' @docType methods
 #'
 #' @name exomePeak2

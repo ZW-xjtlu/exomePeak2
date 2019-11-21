@@ -11,7 +11,7 @@
 setMethod("Parameter",
           "MeripBamFileList",
           function(x) {
-            return(x@Parameter)
+              return(x@Parameter)
           })
 
 #' @title Accessor to the slot \code{LibraryType} in class \code{MeripBamFileList}.
@@ -27,7 +27,7 @@ setMethod("Parameter",
 setMethod("LibraryType",
           "MeripBamFileList",
           function(x) {
-            return(x@LibraryType)
+              return(x@LibraryType)
           })
 
 
@@ -44,7 +44,7 @@ setMethod("LibraryType",
 setMethod("GCsizeFactors",
           "SummarizedExomePeak",
           function(x1) {
-            return(assays(x1)$GCsizeFactors)
+              return(assays(x1)$GCsizeFactors)
           })
 
 #' @title Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
@@ -61,8 +61,8 @@ setMethod("GCsizeFactors",
 setMethod("GCsizeFactors<-",
           "SummarizedExomePeak",
           function(x2,value) {
-            assays(x2)$GCsizeFactors <- value
-            return(x2)
+              assays(x2)$GCsizeFactors <- value
+              return(x2)
           })
 
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
@@ -78,7 +78,7 @@ setMethod("GCsizeFactors<-",
 setMethod("DESeq2Results",
           "SummarizedExomePeak",
           function(x1) {
-            return(x1@DESeq2Results)
+              return(x1@DESeq2Results)
           })
 
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
@@ -95,7 +95,7 @@ setMethod("DESeq2Results",
 setMethod("DESeq2Results<-",
           "SummarizedExomePeak",
           function(x2,value) {
-            x2@DESeq2Results <- value
-            return(x2)
+              x2@DESeq2Results <- value
+              return(x2)
           })
 
