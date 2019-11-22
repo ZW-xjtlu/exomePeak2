@@ -301,3 +301,6 @@ inst/extdata/SRR1182621_toy_sorted_sorted.bam
 inst/extdata/SRR1182621_toy_sorted_sorted.bam.bai
 inst/extdata/SRR1182622_toy_sorted.bam
 subsetting.R
+inst/doc
+doc
+Meta

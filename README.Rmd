@@ -6,16 +6,14 @@ author: |
   | Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China &
   | Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
 date: "`r Sys.Date()`"
-output:
-  BiocStyle::html_document:
-    toc: true
 graphics: yes
-vignette: >
-  %\VignetteIndexEntry{The exomePeak2 user's guide}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignettePackage{exomePeak2}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 
 ```{r para, echo = FALSE, results='hide'}
 BiocStyle::markdown()
@@ -56,7 +54,6 @@ Transcript annotation is provided using GFF files in this example.  The transcri
 The genome sequence is required to conduct GC content bias correction. If the `genome` argument is missing ( `= NULL` ), exomPeak2 will perform peak calling without correcting the GC content bias.
 
 ```{r, eval = TRUE}
-
 library(exomePeak2)
 
 GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
@@ -80,6 +77,44 @@ exomePeak2(bam_ip = IP_BAM,
 ```
 
 exomePeak2 will export the modification peaks in formats of **BED** file and **CSV** table, the data will be saved automatically under a folder named by `exomePeak2_output`.
+
+Explaination over the columns of the exported table:
+
+- `chr`: the chromosomal name of the peak.
+
+- `chromStart`: the start of the peak on the chromosome.
+
+- `chromEnd`: the end of the peak on the chromosome.
+
+- `name`: the unique ID of the modification peak.
+
+- `score`: the -log2 p value of the peak.
+
+- `strand`: the strand of the peak on genome.
+
+- `thickStart`: the start position of the peak.
+
+- `thickEnd`: the end position of the peak.
+
+- `itemRgb`: the column for the RGB encoded color in BED file visualization.
+
+- `blockCount`: the block (exon) number within the peak.
+
+- `blockSizes`: the widths of blocks.
+
+- `blockStarts`: the start positions of blocks.
+
+- `geneID`: the gene ID of the peak.
+
+- `ReadsCount.input`: the reads count of the input sample.
+
+- `ReadsCount.IP`: the reads count of the IP sample.
+
+- `log2FoldChange`: the log2 IP over input fold enrichment.
+
+- `pvalue`: the p value of the enrichment.
+
+- `padj`: the adjusted p value using BH approach.
 
 
 # Differential Modification Analysis 
@@ -105,6 +140,17 @@ exomePeak2(bam_ip = IP_BAM,
 
 In differential modification mode, exomePeak2 will export the differential modification peaks in formats of **BED** file and **CSV** table, the data will also be saved automatically under a folder named by `exomePeak2_output`.
 
+Explaination for the additional table columns:
+
+- `ModLog2FC_control`: the modification log2 fold enrichment in the control condition.
+
+- `ModLog2FC_treated`: the modification log2 fold enrichment in the treatment condition.
+
+- `DiffModLog2FC`: the log2 Fold Change of differential modification.
+
+- `pvalue`: the p value of the differential modification.
+
+- `padj`: the adjusted p value using BH approach.
 
 # Quantification and Statistical Analysis with Single Based Modification Annotation
 
@@ -129,9 +175,7 @@ exomePeak2(bam_ip = IP_BAM,
            mod_annot = MOD_ANNO_GRANGE)
 ```
 
-The results generated here include the **BED** file and the **CSV** table with rows correspond to the input annotation sites, the files will also be saved under a folder named by `exomePeak2_output`.
-
-The contents of the columns in the **CSV** table is documented below:
+In this mode, exomePeak2 will export the analysis result also in formats of **BED** file and **CSV** table, while each row of the table corresponds to the sites of the annotation `GRanges`.
 
 
 # Peak Calling and Visualization in Multiple Steps
