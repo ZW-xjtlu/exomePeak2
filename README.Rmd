@@ -223,7 +223,7 @@ plotReadsGC(SummarizedExomePeaks)
 
 **6.  Generate the scatter plot between GC content and log2 Fold Change (LFC).**
 
-```{r, eval = TRUE, fig.height = 2.8, fig.width = 5}
+```{r, eval = TRUE, fig.align='center', fig.height = 2.8, fig.width = 5}
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
