@@ -1,9 +1,5 @@
 The *exomePeak2* user's guide
 ================
-Zhen Wei <ZhenWei@xjtlu.edu.cn>
-Jia Meng <JiaMeng@xjtlu.edu.cn>
-Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China &
-Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
 2019-11-22
 
 Package Installation
@@ -72,41 +68,24 @@ exomePeak2 will export the modification peaks in formats of **BED** file and **C
 
 Explaination over the columns of the exported table:
 
--   `chr`: the chromosomal name of the peak.
-
--   `chromStart`: the start of the peak on the chromosome.
-
--   `chromEnd`: the end of the peak on the chromosome.
-
--   `name`: the unique ID of the modification peak.
-
--   `score`: the -log2 p value of the peak.
-
--   `strand`: the strand of the peak on genome.
-
--   `thickStart`: the start position of the peak.
-
--   `thickEnd`: the end position of the peak.
-
--   `itemRgb`: the column for the RGB encoded color in BED file visualization.
-
--   `blockCount`: the block (exon) number within the peak.
-
--   `blockSizes`: the widths of blocks.
-
--   `blockStarts`: the start positions of blocks.
-
--   `geneID`: the gene ID of the peak.
-
--   `ReadsCount.input`: the reads count of the input sample.
-
--   `ReadsCount.IP`: the reads count of the IP sample.
-
--   `log2FoldChange`: the log2 IP over input fold enrichment.
-
--   `pvalue`: the p value of the enrichment.
-
--   `padj`: the adjusted p value using BH approach.
+-   ***chr***: the chromosomal name of the peak.
+-   ***chromStart***: the start of the peak on the chromosome.
+-   ***chromEnd***: the end of the peak on the chromosome.
+-   ***name***: the unique ID of the modification peak.
+-   ***score***: the -log2 p value of the peak.
+-   ***strand***: the strand of the peak on genome.
+-   ***thickStart***: the start position of the peak.
+-   ***thickEnd***: the end position of the peak.
+-   ***itemRgb***: the column for the RGB encoded color in BED file visualization.
+-   ***blockCount***: the block (exon) number within the peak.
+-   ***blockSizes***: the widths of blocks.
+-   ***blockStarts***: the start positions of blocks.
+-   ***geneID***: the gene ID of the peak.
+-   ***ReadsCount.input***: the reads count of the input sample.
+-   ***ReadsCount.IP***: the reads count of the IP sample.
+-   ***log2FoldChange***: the log2 IP over input fold enrichment.
+-   ***pvalue***: the p value of the enrichment.
+-   ***padj***: the adjusted p value using BH approach.
 
 Differential Modification Analysis
 ==================================
@@ -143,15 +122,11 @@ In differential modification mode, exomePeak2 will export the differential modif
 
 Explaination for the additional table columns:
 
--   `ModLog2FC_control`: the modification log2 fold enrichment in the control condition.
-
--   `ModLog2FC_treated`: the modification log2 fold enrichment in the treatment condition.
-
--   `DiffModLog2FC`: the log2 Fold Change of differential modification.
-
--   `pvalue`: the p value of the differential modification.
-
--   `padj`: the adjusted p value using BH approach.
+-   ***ModLog2FC\_control***: the modification log2 fold enrichment in the control condition.
+-   ***ModLog2FC\_treated***: the modification log2 fold enrichment in the treatment condition.
+-   ***DiffModLog2FC***: the log2 Fold Change of differential modification.
+-   ***pvalue***: the p value of the differential modification.
+-   ***padj***: the adjusted p value using BH approach.
 
 Quantification and Statistical Analysis with Single Based Modification Annotation
 =================================================================================
@@ -255,7 +230,7 @@ SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 plotReadsGC(SummarizedExomePeaks)
 ```
 
-<img src="README_files/figure-markdown_github/unnamed-chunk-12-1.png" style="display: block; margin: auto auto auto 0;" />
+<img src="README_files/figure-markdown_github/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
 
 **6. Generate the scatter plot between GC content and log2 Fold Change (LFC).**
 
@@ -285,10 +260,6 @@ Contact
 Please contact the maintainer of exomePeak2 if you have encountered any problems:
 
 **ZhenWei**: <zhen.wei@xjtlu.edu.cn>
-
-Please visit the github page of exomePeak2:
-
-<https://github.com/ZhenWei10/exomePeak2>
 
 Session Info
 ============
