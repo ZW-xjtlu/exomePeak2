@@ -6,8 +6,8 @@ Author: Zhen Wei
 Maintainer: Zhen Wei <zhen.wei10@icloud.com>
 Description: This package can conduct peak calling and quantification for MeRIP-seq data sets while considering the biological variabilities and the GC-content bias corrections. 
 License: GPL (>= 2)
-Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,mclust,genefilter,BSgenome,BiocParallel,IRanges,S4Vectors,quantreg,reshape2,rtracklayer,apeglm,RMariaDB
-Depends: SummarizedExperiment,cqn
+Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,mclust,genefilter,BSgenome,BiocParallel,IRanges,S4Vectors,quantreg,reshape2,rtracklayer,apeglm,RMariaDB,knitr
+Depends: SummarizedExperiment,cqn,knitr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
