@@ -10,6 +10,8 @@
 #'
 #' @import GenomicRanges
 #'
+#' @importFrom IRanges IRanges
+#'
 #' @import rtracklayer
 #'
 #' @name convertTxDb

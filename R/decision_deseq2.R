@@ -80,11 +80,11 @@ decision_deseq2 <- function(Inf_RES,
     }
 
   } else {
-    if(result_df$Discoveries_ctrl < Min_mod) {
+    if(result_df$Discoveries_ctrl < Min_mod ) {
 
       result_df$Cut_By_ctrl = "pvalue"
 
-      if( sum(!EXP_idx) <= Min_mod ) {
+      if( sum(!EXP_idx) <= Min_mod & sum(!EXP_idx) > 0 ) {
         result_df$Cut_Val_ctrl = sort( Inf_RES$pvalue[!EXP_idx])[ sum(!EXP_idx) ]
         result_df$Discoveries_ctrl = sum(Inf_RES$pvalue[!EXP_idx] <= result_df$Cut_Val_ctrl)
       } else {
@@ -93,7 +93,7 @@ decision_deseq2 <- function(Inf_RES,
       }
     }
 
-    if(result_df$Discoveries_expected < Min_mod) {
+    if(result_df$Discoveries_expected < Min_mod & sum(EXP_idx) > 0 ) {
       result_df$Cut_By_expected = "pvalue"
       if( sum(EXP_idx) <= Min_mod ) {
         result_df$Cut_Val_expected = sort( Inf_RES$pvalue[EXP_idx])[ sum(EXP_idx)]

@@ -13,6 +13,8 @@
 #'
 #' @import GenomicRanges
 #'
+#' @importFrom S4Vectors queryHits subjectHits
+#'
 #'
 
 replace_bg <- function(grl,

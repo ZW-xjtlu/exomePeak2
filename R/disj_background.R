@@ -16,6 +16,7 @@
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures
+#' @importFrom S4Vectors queryHits subjectHits
 #'
 
 disj_background <- function(mod_gr,

@@ -47,7 +47,7 @@
 #'
 #' @param bg_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.
 #'
-#' @param p_cutoff a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 0.0001}.
+#' @param p_cutoff a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 1e-05}.
 #'
 #' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
 #'
@@ -211,7 +211,7 @@ setMethod("exomePeakCalling",
                    peak_width = fragment_length / 2,
                    pc_count_cutoff = 5,
                    bg_count_cutoff = 50,
-                   p_cutoff = 0.0001,
+                   p_cutoff = 1e-05,
                    p_adj_cutoff = NULL,
                    log2FC_cutoff = 1,
                    consistent_peak = FALSE,
@@ -345,7 +345,7 @@ setMethod("exomePeakCalling",
 
               if (is.null(bsgenome)) {
 
-              } else{
+              } else {
                 message("Calculate GC contents on exons ... ", appendLF = F)
 
                 flanked_gr <- unlist(rowRanges(SE_Peak_counts))
@@ -360,6 +360,7 @@ setMethod("exomePeakCalling",
                 rm(flanked_gr, GC_freq, sum_freq)
 
                 message("OK")
+
               }
 
               #Bin width calculation

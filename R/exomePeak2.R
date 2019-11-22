@@ -79,9 +79,9 @@
 #'
 #' @param bg_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.
 #'
-#' @param p_cutoff a \code{numeric} value for the cutoff on p values in peak calling; default \code{= NULL}.
+#' @param p_cutoff a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 1e-05}.
 #'
-#' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= 0.05}.
+#' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
 #'
 #' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
 #'
@@ -201,10 +201,10 @@
 #'
 #' # Differential Modification Analysis on Modification Peaks (Comparison of Two Conditions)
 #'
-#' f1=system.file("extdata", "treated_IP1.bam", package="exomePeak2")
-#' TREATED_IP_BAM=c(f1)
-#' f1=system.file("extdata", "treated_Input1.bam", package="exomePeak2")
-#' TREATED_INPUT_BAM=c(f1)
+#' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM = c(f1)
+#' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM = c(f1)
 #'
 #' sep <- exomePeak2(bam_ip = IP_BAM,
 #'                   bam_input = INPUT_BAM,
@@ -275,7 +275,7 @@ exomePeak2 <- function(bam_ip = NULL,
                        peak_width = fragment_length/2,
                        pc_count_cutoff = 5,
                        bg_count_cutoff = 50,
-                       p_cutoff = 0.0001,
+                       p_cutoff = 1e-05,
                        p_adj_cutoff = NULL,
                        log2FC_cutoff = 1,
                        consistent_peak = FALSE,
@@ -408,13 +408,14 @@ sep <- estimateSeqDepth(sep)
 
 if(!is.null(bsgenome)) {
 
-  message("Estimate offsets of GC content biases on modification peaks/sites... ", appendLF = F)
+  message("Estimate offsets of GC content biases on modification peaks/sites ... ", appendLF = F)
 
   sep <- normalizeGC(sep,
                      feature = ifelse(correct_GC_bg,"Background","All"),
                      qtnorm = qtnorm)
 
   message("OK")
+
 }
 
 if(any(sep$design_Treatment)){

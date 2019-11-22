@@ -11,7 +11,7 @@ exomePeak2(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
   paired_end = FALSE, library_type = c("unstranded", "1st_strand",
   "2nd_strand"), fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
-  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
+  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-05,
   p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = FALSE,
   consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, background = c("all",
@@ -77,9 +77,9 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 
 \item{bg_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.}
 
-\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= NULL}.}
+\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 1e-05}.}
 
-\item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= 0.05}.}
+\item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
 \item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
 
@@ -231,10 +231,10 @@ sep
 
 # Differential Modification Analysis on Modification Peaks (Comparison of Two Conditions)
 
-f1=system.file("extdata", "treated_IP1.bam", package="exomePeak2")
-TREATED_IP_BAM=c(f1)
-f1=system.file("extdata", "treated_Input1.bam", package="exomePeak2")
-TREATED_INPUT_BAM=c(f1)
+f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+TREATED_IP_BAM = c(f1)
+f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+TREATED_INPUT_BAM = c(f1)
 
 sep <- exomePeak2(bam_ip = IP_BAM,
                   bam_input = INPUT_BAM,

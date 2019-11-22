@@ -11,6 +11,9 @@
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #'
+#' @importFrom IRanges IRanges
+#' @importFrom S4Vectors queryHits subjectHits
+#'
 exome_bins_from_txdb <- function(txdb,
                                  window_size = 25,
                                  step_size = 25) {

@@ -1,8 +1,10 @@
 #' @title plot the distribution for the length of the overlapped exons.
+#'
 #' @param gfeatures a list of GRanges or GRangesList.
 #' @param txdb a txdb object.
 #' @param save_pdf_prefix provided to save a pdf file.
 #' @param save_dir a character indicating the directory to save the plot; default ".".
+#'
 #' @importFrom GenomicFeatures exons
 #' @importFrom IRanges subsetByOverlaps
 #' @import ggplot2

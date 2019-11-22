@@ -14,7 +14,7 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   qtnorm = FALSE, gff_dir = NULL, fragment_length = 100,
   binding_length = 25, step_length = binding_length,
   peak_width = fragment_length/2, pc_count_cutoff = 5,
-  bg_count_cutoff = 50, p_cutoff = 1e-04, p_adj_cutoff = NULL,
+  bg_count_cutoff = 50, p_cutoff = 1e-05, p_adj_cutoff = NULL,
   log2FC_cutoff = 0, consistent_peak = FALSE,
   consistent_log2FC_cutoff = 0, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, bp_param = NULL)
@@ -26,7 +26,7 @@ exomePeakCalling(merip_bams = NULL, txdb = NULL, bsgenome = NULL,
   manual_background = NULL, correct_GC_bg = FALSE, qtnorm = FALSE,
   gff_dir = NULL, fragment_length = 100, binding_length = 25,
   step_length = binding_length, peak_width = fragment_length/2,
-  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-04,
+  pc_count_cutoff = 5, bg_count_cutoff = 50, p_cutoff = 1e-05,
   p_adj_cutoff = NULL, log2FC_cutoff = 1, consistent_peak = FALSE,
   consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
   alpha = 0.05, p0 = 0.8, parallel = FALSE, bp_param = NULL)
@@ -110,7 +110,7 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{bg_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.}
 
-\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 0.0001}.}
+\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 1e-05}.}
 
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 

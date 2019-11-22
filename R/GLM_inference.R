@@ -40,6 +40,8 @@
 #'
 #' @importFrom DESeq2 DESeqDataSet estimateDispersions estimateSizeFactors nbinomWaldTest results
 #'
+#' @importFrom S4Vectors na.omit
+#'
 #' @import cqn
 #'
 #'

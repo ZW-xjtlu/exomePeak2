@@ -327,7 +327,8 @@ setMethod("exportResults",
 
             if (any(format == "CSV")) write.csv(x = result_df,
                                                 file = file.path(save_dir,
-                                                                 paste0(file_name, ".csv"))
+                                                                 paste0(file_name, ".csv")),
+                                                row.names = FALSE
                                                 )
 
                 scores <- -1 * log2(mcols(result_grl)$padj)

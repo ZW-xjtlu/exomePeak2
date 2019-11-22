@@ -27,177 +27,161 @@ set.seed(1)
 
 # Package Installation
 
-To install exomePeak2 from Github, use the following code:
-```{r, eval = FALSE}
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
-devtools::install_github("ZhenWei10/exomePeak2")
-library(exomePeak2)
-```
+To install exomePeak2 from Github, use the following codes.
 
-The packages of transcript annotation and genome sequence are recommended for peak calling in exomePeak2. The packages for human genome hg19 are used here as an example.
-
-For R versions higher than 3.5, use the following code:
 ```{r, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-if (!requireNamespace(c("TxDb.Hsapiens.UCSC.hg19.knownGene",
-                        "BSgenome.Hsapiens.UCSC.hg19"), quietly = TRUE))
-    BiocManager::install(c("TxDb.Hsapiens.UCSC.hg19.knownGene",
-                           "BSgenome.Hsapiens.UCSC.hg19"), version = "3.8")
-```
+BiocManager::install(c("SummarizedExperiment","cqn","Rsamtools",
+                       "GenomicAlignments","GenomicRanges","GenomicFeatures",
+                       "DESeq2","ggplot2","mclust",
+                       "genefilter","BSgenome","BiocParallel",
+                       "IRanges","S4Vectors","quantreg",
+                       "reshape2","rtracklayer","apeglm","RMariaDB"))
 
-For R versions below 3.5, use the following code:
-```{r, eval = FALSE}
-source("http://www.bioconductor.org/biocLite.R")
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
 
-biocLite(c("TxDb.Hsapiens.UCSC.hg19.knownGene",
-           "BSgenome.Hsapiens.UCSC.hg19"))
-```
-
-Load the packages for transcript annotation and genome sequence of hg19:
-```{r, eval = FALSE}
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(BSgenome.Hsapiens.UCSC.hg19)
+devtools::install_github("ZhenWei10/exomePeak2")
 ```
 
 
 # Peak Calling
 
-Use the code below to conduct peak calling on exon regions defined by the `TxDb` object.
+Users need to specify the bam file directories of IP and input samples separately using the arguments of `bam_ip` and `bam_input`; the biological replicates are represented by a character vector of the **BAM** file directories.
 
-Users need to specify the bam file directories of IP and input samples separately using the arguments of `bam_ip` and `bam_input`, the biological replicates are represented by a character vector of their bam file directories.
+Transcript annotation is provided using GFF files in this example.  The transcript annotation can also come from the `TxDb` object. exomePeak2 will automatically download the TxDb if you fill the `genome` argument with the UCSC genome name.
 
-The `BSgenome` object is used to conduct GC content bias correction, if the `bsgenome` argument is missing, peak calling will be performed without correcting the GC content bias.
+The genome sequence is required to conduct GC content bias correction. If the `genome` argument is missing ( `= NULL` ), exomPeak2 will perform peak calling without correcting the GC content bias.
 
-```{r, eval = FALSE}
-exomePeak2(bam_ip = c("IP_rep1.bam", 
-                      "IP_rep2.bam", 
-                      "IP_rep3.bam"), 
-           bam_input = c("input_rep1.bam",                 
-                         "input_rep2.bam",
-                         "input_rep3.bam"),
-           txdb = TxDb.Hsapiens.UCSC.hg19.knownGene, 
-           bsgenome = Hsapiens,
-           paired_end = TRUE)
+```{r, eval = TRUE}
+
+library(exomePeak2)
+
+GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
+
+f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+IP_BAM = c(f1,f2,f3,f4)
+
+f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+INPUT_BAM = c(f1,f2,f3)
+
+exomePeak2(bam_ip = IP_BAM,
+           bam_input = INPUT_BAM,
+           gff_dir = GENE_ANNO_GTF,
+           genome = "hg19",
+           paired_end = FALSE)
 ```
 
-The results include a BED file and a TSV table for the modification peaks, the files will be saved automatically under a folder named by `exomePeak2_output`.
+exomePeak2 will export the modification peaks in formats of **BED** file and **CSV** table, the data will be saved automatically under a folder named by `exomePeak2_output`.
 
-# Differential Modification Analysis
 
-The code below could conduct differential modification analysis on exon regions defined by the `TxDb` object.
+# Differential Modification Analysis 
 
-It will first perform Peak calling on exon regions using both the control and treated samples, then, the differential modification will be performed on peaks reported from peak calling using an interactive GLM.
+The code below could conduct differential modification analysis (Comparison of Two Conditions) on exon regions defined by the transcript annotation.
 
-At this step, the `BSgenome` object is also necessary to conduct the GC content bias correction, if the bsgenome argument is missing, the differential modification analysis will be performed without GC content bias correction.
+In differential modification mode, exomePeak2 will first perform Peak calling on exon regions using both the control and treated samples. Then, it will conduct the differential modification analysis on peaks reported from peak calling using an interactive GLM.
 
-```{r, eval = FALSE}
-exomePeak2(bam_ip = c("IP_rep1.bam", 
-                      "IP_rep2.bam", 
-                      "IP_rep3.bam"), 
-           bam_input =c("input_rep1.bam", 
-                        "input_rep2.bam", 
-                        "input_rep3.bam"),
-           bam_treated_ip = c("IP_treated_rep1.bam", 
-                              "IP_treated_rep2.bam"),
-           bam_treated_input = c("input_treated_rep1.bam", 
-                                 "input_treated_rep2.bam"), 
-           txdb = TxDb.Hsapiens.UCSC.hg19.knownGene, 
-           bsgenome = Hsapiens,
-           paired_end = TRUE)
+```{r, eval = TRUE}
+f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+TREATED_IP_BAM = c(f1)
+f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+TREATED_INPUT_BAM = c(f1)
+
+exomePeak2(bam_ip = IP_BAM,
+           bam_input = INPUT_BAM,
+           bam_treated_input = TREATED_INPUT_BAM,
+           bam_treated_ip = TREATED_IP_BAM,
+           gff_dir = GENE_ANNO_GTF,
+           genome = "hg19",
+           paired_end = FALSE)
 ```
 
-The results generated here include a BED file and a TSV table for the differentially modified peaks, the files will also be saved automatically under a folder named by `exomePeak2_output`.
+In differential modification mode, exomePeak2 will export the differential modification peaks in formats of **BED** file and **CSV** table, the data will also be saved automatically under a folder named by `exomePeak2_output`.
 
 
 # Quantification and Statistical Analysis with Single Based Modification Annotation
 
-exomePeak2 supports the modification quantification and differential modification analysis on single based modification annotation. The modification sites with single based resolution can provide a more accurate mapping on modification locations compared with the peaks called directly from the MeRIP-seq datasets. 
+exomePeak2 supports the modification quantification and differential modification analysis on single based modification annotation. The modification sites with single based resolution can provide a more accurate mapping of modification locations compared with the peaks called directly from the MeRIP-seq datasets. 
 
-Using the datasets with single based resolution (e.x. data generated by m6A-CLIP-seq or m6A-miCLIP-seq techniques) as the reference sites, exomePeak2 could provide a more accurate and consistent quantification from MeRIP-seq data.
+Some of the datasets in epitranscriptomics have a single based resolution, e.x. Data generated by the m6A-CLIP-seq or m6A-miCLIP-seq techniques. exomePeak2 could provide a more accurate and consistent quantification and modification status inference for MeRIP-seq experiments using single based annotation.
 
-This mode of analysis will be automatically initiated by adding a sigle based annotation file under the argument `mod_annot`.
+exomePeak2 will automatically initiate the mode of single based modification quantification by providing a sigle based annotation file under the argument `mod_annot`.
 
-The single based annotation information should be provided to exomePeak2 function in the format of a `GRanges` object.
+The single based annotation information should be provided to the exomePeak2 function in the format of a `GRanges` object.
 
-```{r,eval = FALSE}
-annot_dir <- system.file("extdata", "m6A_hg19_annot.rds", package = "exomePeak2")
+```{r, eval = TRUE}
+f2 = system.file("extdata", "mod_annot.rds", package="exomePeak2")
 
-m6A_hg19_gr <- readRDS(annot_dir) # m6A_hg19_gr is the GRanges object containing the m6A single based resolution sites on hg19
+MOD_ANNO_GRANGE <- readRDS(f2)
 
-exomePeak2(bam_ip = c("IP_rep1.bam", 
-                      "IP_rep2.bam", 
-                      "IP_rep3.bam"), 
-           bam_input = c("input_rep1.bam",                 
-                         "input_rep2.bam",
-                         "input_rep3.bam"),
-           txdb = TxDb.Hsapiens.UCSC.hg19.knownGene, 
-           bsgenome = Hsapiens,
-           mod_annot = m6A_hg19_gr,
-           paired_end = TRUE)
+exomePeak2(bam_ip = IP_BAM,
+           bam_input = INPUT_BAM,
+           gff_dir = GENE_ANNO_GTF,
+           genome = "hg19",
+           paired_end = FALSE,
+           mod_annot = MOD_ANNO_GRANGE)
 ```
 
-The results generated here include the BED file and the TSV table with rows correspond to the input annotation sites, the files will also be saved under a folder named by `exomePeak2_output`.
+The results generated here include the **BED** file and the **CSV** table with rows correspond to the input annotation sites, the files will also be saved under a folder named by `exomePeak2_output`.
+
+The contents of the columns in the **CSV** table is documented below:
+
 
 # Peak Calling and Visualization in Multiple Steps
 
-The exomePeak2 package can achieve peak calling and peak statistics calulation using multiple functions.
+The exomePeak2 package can achieve peak calling and peak statistics calulation with multiple functions.
 
 **1. Check the bam files of MeRIP-seq data before peak calling.**
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 MeRIP_Seq_Alignment <- scanMeripBAM(
-    bam_ip = c("IP_rep1.bam", 
-               "IP_rep2.bam", 
-               "IP_rep3.bam"), 
-    bam_input = c("input_rep1.bam",                 
-                  "input_rep2.bam",
-                  "input_rep3.bam"),
-    paired_end = TRUE
-  ) 
+                         bam_ip = IP_BAM,
+                         bam_input = INPUT_BAM,
+                         paired_end = FALSE
+                        )
 ```
 
 For MeRIP-seq experiment with interactive design (contain control and treatment groups), use the following code.
-```{r, eval = FALSE}
+
+```{r, eval = TRUE}
 MeRIP_Seq_Alignment <- scanMeripBAM(
-    bam_ip = c("IP_rep1.bam", 
-               "IP_rep2.bam", 
-               "IP_rep3.bam"), 
-    bam_input = c("input_rep1.bam",                 
-                  "input_rep2.bam",
-                  "input_rep3.bam"),
-    bam_treated_ip = c("IP_treated_rep1.bam", 
-                       "IP_treated_rep2.bam"),
-    bam_treated_input = c("input_treated_rep1.bam", 
-                          "input_treated_rep2.bam"), 
-    paired_end = TRUE
+    bam_ip = IP_BAM,
+    bam_input = INPUT_BAM,
+    bam_treated_input = TREATED_INPUT_BAM,
+    bam_treated_ip = TREATED_IP_BAM,
+    paired_end = FALSE
   ) 
 ```
 
 
 **2. Conduct peak calling analysis on exons using the provided bam files.**
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment,
-                                         txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-                                         bsgenome = Hsapiens) 
+                                         gff_dir = GENE_ANNO_GTF,
+                                         genome = "hg19") 
 ```
 
 Alternatively, use the following code to quantify MeRIP-seq data on single based modification annotation.
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 SummarizedExomePeaks <- exomePeakCalling(merip_bams = MeRIP_Seq_Alignment,
-                                         txdb = TxDb.Hsapiens.UCSC.hg19.knownGene,
-                                         bsgenome = Hsapiens,
-                                         mod_annot = m6A_hg19_gr) 
+                                         gff_dir = GENE_ANNO_GTF,
+                                         genome = "hg19",
+                                         mod_annot = MOD_ANNO_GRANGE) 
 ```
 
 
 **3. Estimate size factors that are required for GC content bias correction.**
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 SummarizedExomePeaks <- normalizeGC(SummarizedExomePeaks)
 ```
 
@@ -209,46 +193,32 @@ SummarizedExomePeaks <- glmM(SummarizedExomePeaks)
 
 Alternatively, If the treated IP and input bam files are provided, `glmDM` function could be used to conduct differential modification analysis on modification Peaks with interactive GLM.  
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 ```
 
 **5.  Generate plots for the linear relationships between GC content and reads abundence.**
 
-```{r, eval = FALSE}
+```{r, eval = TRUE, fig.align = 'left', fig.height = 7, fig.width = 12}
 plotReadsGC(SummarizedExomePeaks)
 ```
 
 **6.  Generate the scatter plot between GC content and log2 Fold Change (LFC).**
 
-```{r, eval = FALSE}
+```{r, eval = TRUE, fig.align = 'center', fig.height = 2.8, fig.width = 5}
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-**8. Generate the bar plot for the sequencing depth size factors.**
+**7. Generate the bar plot for the sequencing depth size factors.**
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 plotSizeFactors(SummarizedExomePeaks)
 ```
 
 **8. Export the modification peaks and the peak statistics with user decided format.**
 
-```{r, eval = FALSE}  
+```{r, eval = TRUE}  
 exportResults(SummarizedExomePeaks, format = "BED") 
-```
-
-**9. Generate plots for the genomic features analysis.**
-
-Plot the distribution of the lengths of exons.
-
-```{r, eval = FALSE}
-plotExonLength(SummarizedExomePeaks,txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
-```
-
-Plot the distribution of modification peaks on travis coordinate.
-
-```{r, eval = FALSE}
-plotGuitar(SummarizedExomePeaks, txdb = TxDb.Hsapiens.UCSC.hg19.knownGene)
 ```
 
 # Contact

@@ -5,6 +5,8 @@
 #'
 #' @import GenomicRanges
 #'
+#' @importFrom S4Vectors queryHits subjectHits
+#'
 
 remove_introns <- function(gr_bins, grl_exbg){
   #Calculate intronic regions
