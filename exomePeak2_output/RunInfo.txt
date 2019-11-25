@@ -57,7 +57,7 @@ peak_calling_mode = "exon"
 # exon_nrow: 199
 # cds_nrow: 184
 # Db created by: GenomicFeatures package from Bioconductor
-# Creation time: 2019-11-22 23:31:38 +0800 (Fri, 22 Nov 2019)
+# Creation time: 2019-11-25 19:20:41 +0800 (Mon, 25 Nov 2019)
 # GenomicFeatures version at creation time: 1.34.8
 # RSQLite version at creation time: 2.1.2
 # DBSCHEMAVERSION: 1.2
@@ -85,4 +85,4 @@ peak_calling_mode = "exon"
 #   chrUn_gl000247        chrUn_gl000248        chrUn_gl000249       
 
 --------------------------------------------------------
-exomePeak2 Version: 1.0.0
+exomePeak2 Version: 0.9.9

@@ -93,6 +93,8 @@ setClass(
 #' @aliases SummarizedExomePeak
 #' @exportClass SummarizedExomePeak
 #'
+#' @return SummarizedExomePeak object
+#'
 
 setClass(
   Class = "SummarizedExomePeak",

@@ -36,6 +36,8 @@
 #'
 #' @docType methods
 #'
+#' @return a \code{SummarizedExomPeak} object.
+#'
 #' @examples
 #'
 #' ### Load the example SummarizedExomPeak object

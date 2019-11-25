@@ -81,6 +81,8 @@
 #'
 #' @rdname exportResults-methods
 #'
+#' @return none, a folder will be saved on the disk.
+#'
 #' @export
 #'
 

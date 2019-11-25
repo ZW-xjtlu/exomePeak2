@@ -9,6 +9,9 @@ quiet(x)
 \arguments{
 \item{x}{any R expression.}
 }
+\value{
+none.
+}
 \description{
 Silencing unwanted function output.
 }

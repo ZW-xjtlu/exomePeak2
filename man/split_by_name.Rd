@@ -9,6 +9,9 @@ split_by_name(x)
 \arguments{
 \item{x}{a list like object.}
 }
+\value{
+the list split by its names.
+}
 \description{
 a function to split a GRanges into GRangesList by its names.
 }

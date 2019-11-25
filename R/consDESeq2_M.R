@@ -18,7 +18,7 @@
 #' This is equivalent to the rejection of an exact binomial test with null hypothesis of p < 0.8 and N = number of possible pairs.
 #' @import SummarizedExperiment
 #'
-#'@return a logical index for the consistently modified rows in the DESeqDataSet.
+#' @return a logical index for the consistently modified rows in the DESeqDataSet.
 #'
 consDESeq2_M <- function(dds,
                         consistent_log2FC_cutoff = 1,
@@ -28,7 +28,7 @@ consDESeq2_M <- function(dds,
 
 #normalize the count with size factors
 if(is.null(normalizationFactors(dds))){
-  sizeFactor_M <- matrix(dds$sizeFactor,nrow = nrow(dds), ncol = ncol(dds), byrow = T)
+  sizeFactor_M <- matrix(dds$sizeFactor,nrow = nrow(dds), ncol = ncol(dds), byrow = TRUE)
 }else{
   sizeFactor_M <- normalizationFactors(dds)
 }

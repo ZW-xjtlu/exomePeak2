@@ -21,8 +21,9 @@ DESeq2Results(x2) <- value
 \item{x1}{A \code{data.frame} object.}
 
 \item{x2}{A \code{SummarizedExomePeak} object.}
-
-\item{value}{A \code{data.frame} object.}
+}
+\value{
+A \code{data.frame} object for the DESeq2 Results.
 }
 \description{
 Method DESeq2Results
@@ -32,4 +33,13 @@ Method DESeq2Results<-
 Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
 
 Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
+}
+\examples{
+
+f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+
+sep <- readRDS(f1)
+
+head(DESeq2Results(sep))
+
 }

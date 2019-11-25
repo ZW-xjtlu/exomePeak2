@@ -34,6 +34,9 @@ see \code{\link{lfcShrink}} for details; if "none" is selected, only the MLE wil
 
 \item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
+\value{
+a \code{SummarizedExomPeak} object.
+}
 \description{
 \code{glmM} performs inference and estimation on IP/input log2FC.
 

@@ -7,6 +7,7 @@
 #'@import GenomicAlignments
 #'@import GenomicRanges
 #'
+#'@return the resized reads GRanges for reversed 5' POS positions.
 #'
 reads_five_POS_rev <- function(reads,
                            width = 1,

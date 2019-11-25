@@ -215,25 +215,19 @@ Alternatively, If the treated IP and input bam files are provided, `glmDM` funct
 SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 ```
 
-**5.  Generate plots for the linear relationships between GC content and reads abundence.**
-
-```{r, eval = TRUE, fig.height = 7, fig.width = 12}
-plotReadsGC(SummarizedExomePeaks)
-```
-
-**6.  Generate the scatter plot between GC content and log2 Fold Change (LFC).**
+**5.  Generate the scatter plot between GC content and log2 Fold Change (LFC).**
 
 ```{r, eval = TRUE, fig.align='center', fig.height = 2.8, fig.width = 5}
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-**7. Generate the bar plot for the sequencing depth size factors.**
+**6. Generate the bar plot for the sequencing depth size factors.**
 
 ```{r, eval = TRUE}
 plotSizeFactors(SummarizedExomePeaks)
 ```
 
-**8. Export the modification peaks and the peak statistics with user decided format.**
+**7. Export the modification peaks and the peak statistics with user decided format.**
 
 ```{r, eval = TRUE}  
 exportResults(SummarizedExomePeaks, format = "BED") 

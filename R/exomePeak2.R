@@ -249,6 +249,7 @@
 #' @import BiocParallel
 #' @import SummarizedExperiment
 #' @import RMariaDB
+#' @import knitr
 #'
 #' @docType methods
 #'
@@ -408,7 +409,7 @@ sep <- estimateSeqDepth(sep)
 
 if(!is.null(bsgenome)) {
 
-  message("Estimate offsets of GC content biases on modification peaks/sites ... ", appendLF = F)
+  message("Estimate offsets of GC content biases on modification peaks/sites ... ", appendLF = FALSE)
 
   sep <- normalizeGC(sep,
                      feature = ifelse(correct_GC_bg,"Background","All"),
@@ -419,7 +420,7 @@ if(!is.null(bsgenome)) {
 }
 
 if(any(sep$design_Treatment)){
-  message("Differential modification analysis with interactive GLM ... ", appendLF = F)
+  message("Differential modification analysis with interactive GLM ... ", appendLF = FALSE)
   sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage) )
   message("OK")
 } else {

@@ -15,6 +15,9 @@ reads_five_POS_rev(reads, width = 1, fix = "start", ...)
 
 \item{...}{arguments path to function resize.}
 }
+\value{
+the resized reads GRanges for reversed 5' POS positions.
+}
 \description{
 extract reads five prime POS and reverse its strand.
 }

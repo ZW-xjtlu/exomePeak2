@@ -88,6 +88,9 @@ This argument is useful when the treated group involves the perturbation of a kn
 
 \item{GC_sizeFactors}{a \code{logical} of whether to export the GC content correction size factors; Default \code{ = TRUE}.}
 }
+\value{
+none, a folder will be saved on the disk.
+}
 \description{
 Method exportResults
 

@@ -11,6 +11,9 @@ SummarizedExomePeak(...)
 \arguments{
 \item{...}{arguments passed to \code{new()}.}
 }
+\value{
+SummarizedExomePeak object
+}
 \description{
 An S4 object defined in exomePeak2 that summarizes the information of modification peaks/sites,
 reads counts, size factors, GC contents, and the LFC related statistics.

@@ -56,6 +56,8 @@
 #' ### Calculate GLM Statistics on the Modification Peaks
 #' sep <- glmM(sep)
 #'
+#' @return a \code{SummarizedExomPeak} object.
+#'
 #' @export
 #'
 setMethod("glmM",

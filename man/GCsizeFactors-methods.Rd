@@ -24,6 +24,9 @@ GCsizeFactors(x2) <- value
 
 \item{value}{A \code{matrix} object.}
 }
+\value{
+a data.frame for the GC content size factors of each sample
+}
 \description{
 Method GCsizeFactors
 
@@ -32,4 +35,13 @@ Method GCsizeFactors<-
 Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
 
 Accessor to the slot \code{GCsizeFactors} in class \code{SummarizedExomePeak}.
+}
+\examples{
+
+f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+
+sep <- readRDS(f1)
+
+head(GCsizeFactors(sep))
+
 }

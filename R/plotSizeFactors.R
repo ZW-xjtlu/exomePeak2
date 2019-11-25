@@ -1,6 +1,6 @@
-#'@title plot the size factors using different strategies.
+#' @title plot the size factors using different strategies.
 #'
-#'@param sep a \code{\link{SummarizedExomePeak}} object.
+#' @param sep a \code{\link{SummarizedExomePeak}} object.
 #'
 #' @examples
 #'
@@ -12,6 +12,8 @@
 #' ### Visualize the size factors estimated using different regions
 #' plotSizeFactors(sep)
 #'
+#' @return A ggplot.
+#'
 #'@import ggplot2
 #'@import reshape2
 #'
@@ -22,6 +24,7 @@
 #'@rdname plotSizeFactors-methods
 #'
 #'@export
+#'
 #'
 setMethod("plotSizeFactors",
           "SummarizedExomePeak",

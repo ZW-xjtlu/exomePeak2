@@ -139,8 +139,8 @@ scanMeripBAM <- function(bam_ip = NULL,
         paste0(
           "The bam files are treated as not indexed."
         ),
-        call. = F,
-        immediate. = T
+        call. = FALSE,
+        immediate. = TRUE
       )
     } else {
       message("Sorting and indexing BAM files with Rsamtools...", appendLF = FALSE)
@@ -189,14 +189,14 @@ scanMeripBAM <- function(bam_ip = NULL,
   if (is.null(design_ip)) {
     design_ip = vector(length = length(bam_files))
     names(design_ip) = bam_files
-    design_ip[c(bam_ip, bam_treated_ip)] = T
+    design_ip[c(bam_ip, bam_treated_ip)] = TRUE
     names(design_ip) = NULL
   }
 
   if (is.null(design_treatment)) {
     design_treatment = vector(length = length(bam_files))
     names(design_treatment) = bam_files
-    design_treatment[c(bam_treated_ip, bam_treated_input)] = T
+    design_treatment[c(bam_treated_ip, bam_treated_input)] = TRUE
     names(design_treatment) = NULL
   }
 

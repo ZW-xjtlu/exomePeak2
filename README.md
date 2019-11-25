@@ -1,6 +1,6 @@
 The *exomePeak2* user's guide
 ================
-2019-11-22
+2019-11-25
 
 Package Installation
 ====================
@@ -224,31 +224,23 @@ Alternatively, If the treated IP and input bam files are provided, `glmDM` funct
 SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 ```
 
-**5. Generate plots for the linear relationships between GC content and reads abundence.**
-
-``` r
-plotReadsGC(SummarizedExomePeaks)
-```
-
-<img src="README_files/figure-markdown_github/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
-
-**6. Generate the scatter plot between GC content and log2 Fold Change (LFC).**
+**5. Generate the scatter plot between GC content and log2 Fold Change (LFC).**
 
 ``` r
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-<img src="README_files/figure-markdown_github/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-markdown_github/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
 
-**7. Generate the bar plot for the sequencing depth size factors.**
+**6. Generate the bar plot for the sequencing depth size factors.**
 
 ``` r
 plotSizeFactors(SummarizedExomePeaks)
 ```
 
-<img src="README_files/figure-markdown_github/unnamed-chunk-14-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-markdown_github/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
 
-**8. Export the modification peaks and the peak statistics with user decided format.**
+**7. Export the modification peaks and the peak statistics with user decided format.**
 
 ``` r
 exportResults(SummarizedExomePeaks, format = "BED") 
@@ -284,16 +276,16 @@ sessionInfo()
 ## other attached packages:
 ##  [1] BSgenome.Hsapiens.UCSC.hg19_1.4.0 BSgenome_1.50.0                  
 ##  [3] rtracklayer_1.42.2                Biostrings_2.50.2                
-##  [5] XVector_0.22.0                    exomePeak2_1.0.0                 
-##  [7] cqn_1.28.1                        quantreg_5.51                    
-##  [9] SparseM_1.77                      preprocessCore_1.44.0            
-## [11] nor1mix_1.3-0                     mclust_5.4.5                     
-## [13] SummarizedExperiment_1.12.0       DelayedArray_0.8.0               
-## [15] BiocParallel_1.16.6               matrixStats_0.54.0               
-## [17] Biobase_2.42.0                    GenomicRanges_1.34.0             
-## [19] GenomeInfoDb_1.18.2               IRanges_2.16.0                   
-## [21] S4Vectors_0.20.1                  BiocGenerics_0.28.0              
-## [23] BiocStyle_2.10.0                 
+##  [5] XVector_0.22.0                    exomePeak2_0.9.9                 
+##  [7] knitr_1.23                        cqn_1.28.1                       
+##  [9] quantreg_5.51                     SparseM_1.77                     
+## [11] preprocessCore_1.44.0             nor1mix_1.3-0                    
+## [13] mclust_5.4.5                      SummarizedExperiment_1.12.0      
+## [15] DelayedArray_0.8.0                BiocParallel_1.16.6              
+## [17] matrixStats_0.54.0                Biobase_2.42.0                   
+## [19] GenomicRanges_1.34.0              GenomeInfoDb_1.18.2              
+## [21] IRanges_2.16.0                    S4Vectors_0.20.1                 
+## [23] BiocGenerics_0.28.0               BiocStyle_2.10.0                 
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
@@ -328,18 +320,17 @@ sessionInfo()
 ## [59] lattice_0.20-38          GenomicFeatures_1.34.8  
 ## [61] annotate_1.60.1          hms_0.5.0               
 ## [63] locfit_1.5-9.1           zeallot_0.1.0           
-## [65] knitr_1.23               pillar_1.4.2            
-## [67] reshape2_1.4.3           biomaRt_2.38.0          
-## [69] geneplotter_1.60.0       XML_3.98-1.20           
-## [71] glue_1.3.1               evaluate_0.14           
-## [73] latticeExtra_0.6-28      data.table_1.12.2       
-## [75] BiocManager_1.30.4       vctrs_0.2.0             
-## [77] MatrixModels_0.4-1       gtable_0.3.0            
-## [79] purrr_0.3.2              assertthat_0.2.1        
-## [81] emdbook_1.3.11           ggplot2_3.2.1           
-## [83] xfun_0.8                 xtable_1.8-4            
-## [85] coda_0.19-3              survival_2.44-1.1       
-## [87] tibble_2.1.3             memoise_1.1.0           
-## [89] GenomicAlignments_1.18.1 AnnotationDbi_1.44.0    
-## [91] cluster_2.1.0
+## [65] pillar_1.4.2             reshape2_1.4.3          
+## [67] biomaRt_2.38.0           geneplotter_1.60.0      
+## [69] XML_3.98-1.20            glue_1.3.1              
+## [71] evaluate_0.14            latticeExtra_0.6-28     
+## [73] data.table_1.12.2        BiocManager_1.30.4      
+## [75] vctrs_0.2.0              MatrixModels_0.4-1      
+## [77] gtable_0.3.0             purrr_0.3.2             
+## [79] assertthat_0.2.1         emdbook_1.3.11          
+## [81] ggplot2_3.2.1            xfun_0.8                
+## [83] xtable_1.8-4             coda_0.19-3             
+## [85] survival_2.44-1.1        tibble_2.1.3            
+## [87] memoise_1.1.0            GenomicAlignments_1.18.1
+## [89] AnnotationDbi_1.44.0     cluster_2.1.0
 ```

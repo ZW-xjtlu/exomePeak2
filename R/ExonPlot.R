@@ -9,6 +9,7 @@
 #' @importFrom IRanges subsetByOverlaps
 #' @import ggplot2
 #'
+#' @return a plot for the exons length distribution.
 #'
 exonPlot <- function(
   gfeatures,

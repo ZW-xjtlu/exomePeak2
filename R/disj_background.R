@@ -60,7 +60,7 @@ disj_background <- function(mod_gr,
     control_ranges <- subsetByOverlaps(disj_ranges,
                                        mod_gr_tmp,
                                        type = "any",
-                                       invert = T)
+                                       invert = TRUE)
 
     control_ranges <- reduce(control_ranges)
 
@@ -82,7 +82,7 @@ disj_background <- function(mod_gr,
     control_ranges <- subsetByOverlaps(disj_ranges,
                                        mod_gr_tmp,
                                        type = "any",
-                                       invert = T)
+                                       invert = TRUE)
 
     control_ranges <- reduce(control_ranges)
   }

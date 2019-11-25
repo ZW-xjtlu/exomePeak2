@@ -12,7 +12,7 @@ header_bsgenome <- c("########################################################",
                      "#                Genome Reference Info:                #",
                      "########################################################")
 bsgenome_info <- c(header_bsgenome, bsgenome_info)
-bsgenome_info <- grep("seqnames()|given",bsgenome_info,invert = T,value = T)
+bsgenome_info <- grep("seqnames()|given",bsgenome_info,invert = TRUE,value = TRUE)
 package_version_info <- paste0("exomePeak2 Version: ", package.version("exomePeak2") )
 x <- x[!names(x) %in% c("txdb","bsgenome")]
 argument_info <- paste0(names(x), " = " ,x)

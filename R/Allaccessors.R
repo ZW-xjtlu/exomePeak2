@@ -6,7 +6,35 @@
 #'
 #' @rdname Parameter-methods
 #'
+#' @examples
+#' GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
+#'
+#' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+#' f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+#' IP_BAM = c(f1,f2,f3,f4)
+#' f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+#' INPUT_BAM = c(f1,f2,f3)
+#'
+#' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM = c(f1)
+#' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM = c(f1)
+#'
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
+#'   bam_ip = IP_BAM,
+#'   bam_input = INPUT_BAM,
+#'   paired_end = FALSE
+#' )
+#'
+#' Parameter(MeRIP_Seq_Alignment)
+#'
 #' @export
+#'
+#' @return a list for the additional parameters of the MeRIP-seq experiment.
 #'
 setMethod("Parameter",
           "MeripBamFileList",
@@ -21,6 +49,34 @@ setMethod("Parameter",
 #' @aliases LibraryType
 #'
 #' @rdname LibraryType-methods
+#'
+#' @examples
+#' GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
+#'
+#' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+#' f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+#' IP_BAM = c(f1,f2,f3,f4)
+#' f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+#' INPUT_BAM = c(f1,f2,f3)
+#'
+#' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM = c(f1)
+#' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM = c(f1)
+#'
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
+#'   bam_ip = IP_BAM,
+#'   bam_input = INPUT_BAM,
+#'   paired_end = FALSE
+#' )
+#'
+#' LibraryType(MeRIP_Seq_Alignment)
+#'
+#' @return a value for the library type of MeRIP-seq experiment.
 #'
 #' @export
 #'
@@ -37,7 +93,17 @@ setMethod("LibraryType",
 #'
 #' @aliases GCsizeFactors
 #'
+#' @examples
+#'
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+#'
+#' sep <- readRDS(f1)
+#'
+#' head(GCsizeFactors(sep))
+#'
 #' @rdname GCsizeFactors-methods
+#'
+#' @return a data.frame for the GC content size factors of each sample
 #'
 #' @export
 #'
@@ -73,6 +139,15 @@ setMethod("GCsizeFactors<-",
 #'
 #' @rdname DESeq2Results-methods
 #'
+#'
+#' @examples
+#'
+#' f1 = system.file("extdata", "sep_ex_mod.rds", package="exomePeak2")
+#'
+#' sep <- readRDS(f1)
+#'
+#' head(DESeq2Results(sep))
+#'
 #' @export
 #'
 setMethod("DESeq2Results",
@@ -84,7 +159,9 @@ setMethod("DESeq2Results",
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
 #'
 #' @param x2 A \code{SummarizedExomePeak} object.
-#' @param value A \code{data.frame} object.
+#' @value a \code{data.frame} object for the DESeq2 Results.
+#'
+#' @return A \code{data.frame} object for the DESeq2 Results.
 #'
 #' @aliases DESeq2Results<-
 #'

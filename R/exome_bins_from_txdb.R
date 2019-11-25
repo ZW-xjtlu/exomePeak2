@@ -49,7 +49,7 @@ exome_bins_from_txdb <- function(txdb,
 
   bin_starts_on_tx[indx_bin_plus] <-
     unlist(sapply(bin_nums_on_tx[indx_plus], function(x)
-      seq(1, step_size * x, by = step_size)), use.names = F)
+      seq(1, step_size * x, by = step_size)), use.names = FALSE)
 
   bin_starts_on_tx[indx_bin_minus] <-
     unlist(mapply(
@@ -58,7 +58,7 @@ exome_bins_from_txdb <- function(txdb,
       bin_nums_on_tx[indx_minus],
       tx_widths[indx_minus]
     ),
-    use.names = F) - window_size + 1
+    use.names = FALSE) - window_size + 1
 
   rm(bin_nums_on_tx,
      strands_tx,

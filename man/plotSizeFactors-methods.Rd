@@ -14,6 +14,9 @@ plotSizeFactors(sep)
 \arguments{
 \item{sep}{a \code{\link{SummarizedExomePeak}} object.}
 }
+\value{
+A ggplot.
+}
 \description{
 Method plotSizeFactors
 

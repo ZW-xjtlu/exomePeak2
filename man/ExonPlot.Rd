@@ -15,6 +15,9 @@ exonPlot(gfeatures, txdb, save_pdf_prefix = NULL, save_dir = ".")
 
 \item{save_dir}{a character indicating the directory to save the plot; default ".".}
 }
+\value{
+a plot for the exons length distribution.
+}
 \description{
 plot the distribution for the length of the overlapped exons.
 }

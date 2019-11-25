@@ -3,11 +3,11 @@ title: "The *exomePeak2* user's guide"
 author: |
   | Zhen Wei <ZhenWei@xjtlu.edu.cn>
   | Jia Meng <JiaMeng@xjtlu.edu.cn>
-  | Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China &
+  | Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
   | Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
 date: "`r Sys.Date()`"
 output:
-  BiocStyle::html_document:
+  BiocStyle::pdf_document:
     toc: true
 graphics: yes
 vignette: >
@@ -60,24 +60,24 @@ exomePeak2 will export the modification peaks in formats of **BED** file and **C
 
 Explaination over the columns of the exported table:
 
-- ***chr***: the chromosomal name of the peak.
-- ***chromStart***: the start of the peak on the chromosome.
-- ***chromEnd***: the end of the peak on the chromosome.
-- ***name***: the unique ID of the modification peak.
-- ***score***: the -log2 p value of the peak.
-- ***strand***: the strand of the peak on genome.
-- ***thickStart***: the start position of the peak.
-- ***thickEnd***: the end position of the peak.
-- ***itemRgb***: the column for the RGB encoded color in BED file visualization.
-- ***blockCount***: the block (exon) number within the peak.
-- ***blockSizes***: the widths of blocks.
-- ***blockStarts***: the start positions of blocks.
-- ***geneID***: the gene ID of the peak.
-- ***ReadsCount.input***: the reads count of the input sample.
-- ***ReadsCount.IP***: the reads count of the IP sample.
-- ***log2FoldChange***: the log2 IP over input fold enrichment.
-- ***pvalue***: the p value of the enrichment.
-- ***padj***: the adjusted p value using BH approach.
+- ***chr*** : the chromosomal name of the peak.
+- ***chromStart*** : the start of the peak on the chromosome.
+- ***chromEnd*** : the end of the peak on the chromosome.
+- ***name*** : the unique ID of the modification peak.
+- ***score*** : the -log2 p value of the peak.
+- ***strand*** : the strand of the peak on genome.
+- ***thickStart*** : the start position of the peak.
+- ***thickEnd*** : the end position of the peak.
+- ***itemRgb*** : the column for the RGB encoded color in BED file visualization.
+- ***blockCount*** : the block (exon) number within the peak.
+- ***blockSizes*** : the widths of blocks.
+- ***blockStarts*** : the start positions of blocks.
+- ***geneID*** : the gene ID of the peak.
+- ***ReadsCount.input*** : the reads count of the input sample.
+- ***ReadsCount.IP*** : the reads count of the IP sample.
+- ***log2FoldChange*** : the log2 IP over input fold enrichment.
+- ***pvalue*** : the p value of the enrichment.
+- ***padj*** : the adjusted p value using BH approach.
 
 
 # Differential Modification Analysis 
@@ -105,11 +105,11 @@ In differential modification mode, exomePeak2 will export the differential modif
 
 Explaination for the additional table columns:
 
-- ***ModLog2FC_control***: the modification log2 fold enrichment in the control condition.
-- ***ModLog2FC_treated***: the modification log2 fold enrichment in the treatment condition.
-- ***DiffModLog2FC***: the log2 Fold Change of differential modification.
-- ***pvalue***: the p value of the differential modification.
-- ***padj***: the adjusted p value using BH approach.
+- ***ModLog2FC_control*** : the modification log2 fold enrichment in the control condition.
+- ***ModLog2FC_treated*** : the modification log2 fold enrichment in the treatment condition.
+- ***DiffModLog2FC*** : the log2 Fold Change of differential modification.
+- ***pvalue*** : the p value of the differential modification.
+- ***padj*** : the adjusted p value using BH approach.
 
 # Quantification and Statistical Analysis with Single Based Modification Annotation
 
@@ -200,25 +200,19 @@ Alternatively, If the treated IP and input bam files are provided, `glmDM` funct
 SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 ```
 
-**5.  Generate plots for the linear relationships between GC content and reads abundence.**
-
-```{r, eval = TRUE, fig.height = 7, fig.width = 12}
-plotReadsGC(SummarizedExomePeaks)
-```
-
-**6.  Generate the scatter plot between GC content and log2 Fold Change (LFC).**
+**5.  Generate the scatter plot between GC content and log2 Fold Change (LFC).**
 
 ```{r, eval = TRUE, fig.align='center', fig.height = 2.8, fig.width = 5}
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-**7. Generate the bar plot for the sequencing depth size factors.**
+**6. Generate the bar plot for the sequencing depth size factors.**
 
 ```{r, eval = TRUE}
 plotSizeFactors(SummarizedExomePeaks)
 ```
 
-**8. Export the modification peaks and the peak statistics with user decided format.**
+**7. Export the modification peaks and the peak statistics with user decided format.**
 
 ```{r, eval = TRUE}  
 exportResults(SummarizedExomePeaks, format = "BED") 
@@ -228,7 +222,7 @@ exportResults(SummarizedExomePeaks, format = "BED")
 
 Please contact the maintainer of exomePeak2 if you have encountered any problems:
 
-**ZhenWei**:  <zhen.wei@xjtlu.edu.cn>
+**ZhenWei** :  <zhen.wei@xjtlu.edu.cn>
 
 Please visit the github page of exomePeak2:
 

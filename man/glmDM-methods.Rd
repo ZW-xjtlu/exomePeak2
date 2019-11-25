@@ -35,6 +35,9 @@ see \code{\link{lfcShrink}} for details; if "none" is selected, only the MLE wil
 
 \item{...}{Optional arguments passed to \code{\link{DESeq}}}
 }
+\value{
+a \code{SummarizedExomPeak} object.
+}
 \description{
 \code{glmDM} perform inference and estimation on RNA differential modification log2FC.
 
