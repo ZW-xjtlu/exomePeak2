@@ -31,7 +31,7 @@ stopifnot(is(grl,"GRangesList"))
 
 stopifnot(fragment_length > 0)
 
-grl_mod <- grl[grepl("mod_",names(grl))]
+grl_mod <- grl[grepl("peak_",names(grl))]
 
 all_sb <- all(sum(width(grl_mod)) == 1) & all(elementNROWS(grl_mod) == 1)
 
@@ -117,7 +117,7 @@ GC_return[match(names(c(GC_mod,GC_control)), names(grl))] <- c(GC_mod,GC_control
 
 Width_return <- sum( width( grl ) )
 
-Width_return[grepl("mod_", names(grl))] <- 1 + 2*floor( fragment_length - binding_length / 2 )
+Width_return[grepl("peak_", names(grl))] <- 1 + 2*floor( fragment_length - binding_length / 2 )
 
 }
 

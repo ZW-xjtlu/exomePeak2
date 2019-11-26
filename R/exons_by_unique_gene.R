@@ -34,7 +34,7 @@ if(nrow(ol_indx_M) == 0){
   new_gene_names_list <- split(new_gene_names_temp, seq_along(new_gene_names_temp))
 
   #Merge genes that are mutually overlapping
-  for(i in 1:nrow(ol_indx_M)){
+  for(i in seq_len(nrow(ol_indx_M))){
     temp_i <- ol_indx_M[i,1]
     new_gene_names_list[[temp_i]] <- c(new_gene_names_list[[temp_i]],new_gene_names_temp[ol_indx_M[i,2]])
   }

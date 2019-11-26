@@ -106,7 +106,7 @@ setMethod("glmM",
 
   }
 
-  indx_mod <- grepl("mod", rownames( sep ) )
+  indx_mod <- grepl("peak_", rownames( sep ) )
 
   SE_M <- sep
 

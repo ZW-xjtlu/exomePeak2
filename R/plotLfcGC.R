@@ -89,7 +89,7 @@ if(!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
 
 indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
-if( length(indx_sig) < floor( sum(grepl("mod_", rownames(sep))) * 0.01 ) ){
+if( length(indx_sig) < floor( sum(grepl("peak_", rownames(sep))) * 0.01 ) ){
 
 indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
@@ -104,7 +104,7 @@ Decision[indx_sig] <- "padj < 0.05"
 } else {
 
   if(length(which(DESeq2Results(sep)$padj < .05)) <
-     floor(sum(grepl("mod_", rownames(sep))) * 0.1)) {
+     floor(sum(grepl("peak_", rownames(sep))) * 0.1)) {
     Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < 0.05"
 
   } else {
@@ -114,7 +114,7 @@ Decision[indx_sig] <- "padj < 0.05"
 
 }
 
-GC_content_mod <- elementMetadata(sep)$GC_content[grepl("mod_",rownames(sep))]
+GC_content_mod <- elementMetadata(sep)$GC_content[grepl("peak_",rownames(sep))]
 
 na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_content_mod)
 

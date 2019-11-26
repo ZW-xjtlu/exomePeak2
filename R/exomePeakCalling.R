@@ -546,7 +546,7 @@ setMethod("exomePeakCalling",
 
               #retrieve the set of unflanked modification sites to replace the row ranges.
 
-              names(grl_mod) <- paste0("mod_", names(grl_mod))
+              names(grl_mod) <- paste0("peak_", names(grl_mod))
 
               rowRanges(SummarizedExomePeaks)[seq_along(grl_mod)] <- grl_mod
 
@@ -578,7 +578,7 @@ setMethod("exomePeakCalling",
               }
 
                 names(mod_annot) <-
-                  paste0("mod_",seq_along(mod_annot)) #make sure the annotation is indexed by integer sequence
+                  paste0("peak_",seq_along(mod_annot)) #make sure the annotation is indexed by integer sequence
 
 
               mod_annot_flanked <- suppressWarnings( flank_on_exons(
@@ -647,7 +647,7 @@ setMethod("exomePeakCalling",
 
               mod_annot$gene_id <- NA
 
-              indx_modc <- as.numeric(gsub("mod_","",rownames(SE_temp)))
+              indx_modc <- as.numeric(gsub("peak_","",rownames(SE_temp)))
 
               mod_annot$gene_id[rep(indx_modc,elementNROWS(rowRanges(SE_temp)))] <- unlist(rowRanges( SE_temp ))$gene_id
 
@@ -655,7 +655,7 @@ setMethod("exomePeakCalling",
 
               mod_annot <- split(mod_annot, seq_along(mod_annot))
 
-              names(mod_annot) <- paste0("mod_", names(mod_annot))
+              names(mod_annot) <- paste0("peak_", names(mod_annot))
 
               SummarizedExomePeaks <- SummarizedExperiment(
                 assay = matrix(0,nrow = nrow(SE_Peak_counts_bg)+length(mod_annot),
@@ -682,6 +682,7 @@ setMethod("exomePeakCalling",
             }
 
             #Annotate GC content if BSgenome is provided
+
             if (!is.null(bsgenome)) {
               elementMetadata(SummarizedExomePeaks) <- GC_content_over_grl(
                 bsgenome = bsgenome,

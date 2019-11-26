@@ -195,9 +195,9 @@ setMethod("exportResults",
             }
 
             #Subset the SummarizedExomePeak object according to user defined filters
-            sep <- sep[grepl("mod_", rownames(sep)),][index_keep,]
+            sep <- sep[grepl("peak_", rownames(sep)),][index_keep,]
 
-            DESeq2Results(sep) <- DESeq2Results(sep)[grepl("mod_", rownames(sep)),][index_keep,]
+            DESeq2Results(sep) <- DESeq2Results(sep)[grepl("peak_", rownames(sep)),][index_keep,]
 
             id_num <- as.numeric(gsub("^.*_", "", rownames(sep)))
 
@@ -207,7 +207,7 @@ setMethod("exportResults",
 
             DESeq2Results(sep) <- DESeq2Results(sep)[id_index,]
 
-            rownames(sep) <- paste0("mod_", rep(seq_along(id_num), table(id_num[id_index])))
+            rownames(sep) <- paste0("peak_", rep(seq_along(id_num), table(id_num[id_index])))
 
             rm(id_num, id_index)
 
@@ -232,7 +232,7 @@ setMethod("exportResults",
 
             id_num <- as.numeric(gsub("^.*_", "", names(result_grl)))
             id_index <- order(id_num)
-            renamed_id <- paste0("mod_", rep(seq_along(id_num), table(id_num[id_index])))
+            renamed_id <- paste0("peak_", rep(seq_along(id_num), table(id_num[id_index])))
             result_grl <- result_grl[id_index,]
             names(result_grl) <- renamed_id
 
@@ -241,7 +241,7 @@ setMethod("exportResults",
                   result_df <- as.data.frame(result_grl)
                   result_df <-
                     result_df[, colnames(result_df) != "group"]
-                  colnames(result_df)[colnames(result_df) == "group_name"] = "mod_name"
+                  colnames(result_df)[colnames(result_df) == "group_name"] = "peak_name"
                   colnames_range_info <- colnames(result_df)
                   result_df <-
                     cbind(result_df, as.data.frame(mcols(result_grl))[rep(seq_along(result_grl), elementNROWS(result_grl)),])

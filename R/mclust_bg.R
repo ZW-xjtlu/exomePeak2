@@ -71,7 +71,7 @@ rm(mean_input_control, IP_control, indx_IP_treated, indx_input_treated)
 #2. Apply multivariate Gaussian mixture model on all M levels and the GC contents.
 
 model_matrix <- as.data.frame(model_matrix)
-colnames(model_matrix) <- paste0("sample_",1:ncol(model_matrix))
+colnames(model_matrix) <- paste0("sample_",seq_len(ncol(model_matrix)))
 if(!is.null(rowData(se_peak_counts)$gc_contents)) model_matrix$GC <- rowData(se_peak_counts)$gc_contents[rowData(se_peak_counts)$indx_gc_est]
 
 #Apply univariate Gaussian mixture if there is only one column.

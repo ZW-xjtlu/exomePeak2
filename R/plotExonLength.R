@@ -48,7 +48,7 @@ setMethod("plotExonLength",
                            include_control_regions = TRUE,
                            save_dir = ".") {
 
-if( sum(grepl("mod", rownames(sep))) < 10 ) {
+if( sum(grepl("peak", rownames(sep))) < 10 ) {
     stop("exon length plot cannot be performed for total peaks number < 10.")
 }
 
@@ -63,7 +63,7 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
     row_grl <- rowRanges( sep )
 
     gr_list <- list(
-      peaks = row_grl[grepl("mod",names(row_grl) )],
+      peaks = row_grl[grepl("peak",names(row_grl) )],
       control = row_grl[grepl("control",names(row_grl) )]
     )
 
@@ -90,17 +90,17 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
 
       indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
-      gr_lab = "mod padj < .05"
+      gr_lab = "peak padj < .05"
 
-      if( length(indx_sig) < floor( sum(grepl("mod_", rownames(sep))) * 0.01 ) ){
+      if( length(indx_sig) < floor( sum(grepl("peak_", rownames(sep))) * 0.01 ) ){
 
       indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
 
-      gr_lab = "mod p < .05"
+      gr_lab = "peak p < .05"
 
       }
 
-      gr_list <- list(mod_peaks = row_grl[grepl("mod",rownames(sep))][indx_sig],
+      gr_list <- list(mod_peaks = row_grl[grepl("peak",rownames(sep))][indx_sig],
                       control = row_grl[grepl("control",names(row_grl) )]
       )
 
@@ -136,7 +136,7 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
 
       list_names <- c("hyper padj < 0.05", "hypo padj < 0.05")
 
-      min_positive <- floor(sum(grepl("mod_", rownames(sep))) * 0.1)
+      min_positive <- floor(sum(grepl("peak_", rownames(sep))) * 0.1)
 
       if(length(indx_hyper) + length(indx_hypo) < min_positive){
 
@@ -150,8 +150,8 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
 
       }
 
-      gr_list <- list(hyperMod = row_grl[grepl("mod",rownames(sep))][indx_hyper],
-                      hypoMod = row_grl[grepl("mod",rownames(sep))][indx_hypo]
+      gr_list <- list(hyperMod = row_grl[grepl("peak",rownames(sep))][indx_hyper],
+                      hypoMod = row_grl[grepl("peak",rownames(sep))][indx_hypo]
       )
 
       if( any( elementNROWS(gr_list) == 0 ) ){
@@ -161,7 +161,7 @@ if( sum(grepl("mod", rownames(sep))) < 10 ) {
 
       }
 
-      names(gr_list)[1:2] <- list_names
+      names(gr_list)[seq_len(2)] <- list_names
 
       suppressWarnings(
 

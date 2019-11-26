@@ -119,7 +119,7 @@ disj_background <- function(mod_gr,
 
   if(rename_mod == TRUE)  names(mod_grl) <- seq_along(mod_grl)
 
-  names(mod_grl) <- paste0("mod_", names(mod_grl))
+  names(mod_grl) <- paste0("peak_", names(mod_grl))
 
   return(c(mod_grl, control_ranges))
 

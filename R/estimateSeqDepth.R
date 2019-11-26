@@ -70,7 +70,7 @@ setMethod("estimateSeqDepth",
 
   }
   if(from == "Modification"){
-    mod_peaks_indx <- grepl("mod", rownames(sep))
+    mod_peaks_indx <- grepl("peak", rownames(sep))
     sep$sizeFactor <- estimateSizeFactorsForMatrix(assay( sep[mod_peaks_indx,] ) )
   }
 
