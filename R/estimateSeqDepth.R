@@ -38,6 +38,8 @@
 #' ### Estimate the sequencing depth size factors
 #' sep <- estimateSeqDepth(sep)
 #'
+#' sep$sizeFactor
+#'
 #' @seealso \code{\link{normalizeGC}}
 #'
 #' @return This function will return a \code{\link{SummarizedExomePeak}} object containing newly estimated sequencing depth size factors.

@@ -23,7 +23,7 @@ exonPlot <- function(
   list_exlengths <- lapply( gfeatures, function(x) width( subsetByOverlaps( ex_txdb, x) ) )
 
   plot_df <- data.frame( log2_exon_lengths = log2( unlist(list_exlengths,use.names = FALSE) ),
-                         region = rep(names(list_exlengths),sapply(list_exlengths,length) ) )
+                         region = rep(names(list_exlengths), vapply(list_exlengths, length, integer(1)) ) )
 
   plot_df <- plot_df[plot_df$log2_exon_lengths >= 2 &  plot_df$log2_exon_lengths <= 15, ]
 

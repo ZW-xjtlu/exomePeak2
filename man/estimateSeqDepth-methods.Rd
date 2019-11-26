@@ -57,6 +57,8 @@ sep <- readRDS(f1)
 ### Estimate the sequencing depth size factors
 sep <- estimateSeqDepth(sep)
 
+sep$sizeFactor
+
 }
 \seealso{
 \code{\link{normalizeGC}}

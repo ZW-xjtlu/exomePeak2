@@ -100,7 +100,7 @@ weight <- c(seq_len(flank), rep(flank + 1, binding_length), rev(seq_len(flank)))
 
 weight <- weight/sum(weight)
 
-GC_mod <- round(sapply(gcpos, function(x) sum(weight[x])), 3)
+GC_mod <- round(vapply(gcpos, function(x) sum(weight[x]), numeric(1)), 3)
 
 names(GC_mod) <- names(grl_mod)
 

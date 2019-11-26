@@ -159,7 +159,7 @@ setMethod("DESeq2Results",
 #' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
 #'
 #' @param x2 A \code{SummarizedExomePeak} object.
-#' @value a \code{data.frame} object for the DESeq2 Results.
+#' @param value a \code{data.frame} object for the DESeq2 Results.
 #'
 #' @return A \code{data.frame} object for the DESeq2 Results.
 #'

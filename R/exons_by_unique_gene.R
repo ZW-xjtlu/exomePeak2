@@ -43,7 +43,7 @@ if(nrow(ol_indx_M) == 0){
 
   new_gene_names_list <- lapply(new_gene_names_list, sort)
 
-  new_gene_names <- sapply(new_gene_names_list, function(x) paste(x,collapse = ","))
+  new_gene_names <- vapply(new_gene_names_list, function(x) paste(x,collapse = ","), character(1))
 
   names(exbg) <- new_gene_names
 

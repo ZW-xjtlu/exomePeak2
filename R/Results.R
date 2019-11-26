@@ -236,7 +236,7 @@ setMethod("Results",
                 "blockStarts"
               )
 
-              result_df$geneID <- sapply( result_grl , function(x) x$gene_id[1] )
+              result_df$geneID <- vapply( result_grl , function(x) x$gene_id[1] , character(1))
 
               mcols(result_grl) <-
                 mcols(result_grl)[, !colnames(mcols(result_grl)) %in% "score"]

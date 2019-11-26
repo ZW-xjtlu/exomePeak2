@@ -249,7 +249,6 @@
 #' @import BiocParallel
 #' @import SummarizedExperiment
 #' @import RMariaDB
-#' @import knitr
 #'
 #' @docType methods
 #'

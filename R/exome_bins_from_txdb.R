@@ -48,7 +48,7 @@ exome_bins_from_txdb <- function(txdb,
   bin_starts_on_tx <- vector("integer", length = sum(bin_nums_on_tx))
 
   bin_starts_on_tx[indx_bin_plus] <-
-    unlist(sapply(bin_nums_on_tx[indx_plus], function(x)
+    unlist(lapply(bin_nums_on_tx[indx_plus], function(x)
       seq(1, step_size * x, by = step_size)), use.names = FALSE)
 
   bin_starts_on_tx[indx_bin_minus] <-

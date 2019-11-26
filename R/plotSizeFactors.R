@@ -29,7 +29,9 @@
 setMethod("plotSizeFactors",
           "SummarizedExomePeak",
                 function(sep){
- plot_df <- sapply(c("Background","All","Modification"),function(x) estimateSeqDepth(sep,from = x)$sizeFactor)
+ plot_df <- vapply(c("Background","All","Modification"),
+                   function(x) estimateSeqDepth(sep,from = x)$sizeFactor,
+                   numeric(ncol(sep)))
  plot_df <- melt(plot_df)
  colnames(plot_df) <- c("bam_files","Estimation_Methods","size_factors")
  plot_df$Estimation_Methods <- factor(plot_df$Estimation_Methods, levels = c("Background","All","Modification"))

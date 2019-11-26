@@ -278,7 +278,7 @@ setMethod("exportResults",
                     "blockStarts"
                   )
 
-                  result_df$geneID <- sapply( result_grl, function(x) x$gene_id[1] )
+                  result_df$geneID <- vapply( result_grl, function(x) x$gene_id[1] , character(1))
 
                   colnames_range_info <- colnames(result_df)
 

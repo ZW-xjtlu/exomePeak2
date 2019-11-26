@@ -21,6 +21,8 @@ DESeq2Results(x2) <- value
 \item{x1}{A \code{data.frame} object.}
 
 \item{x2}{A \code{SummarizedExomePeak} object.}
+
+\item{value}{a \code{data.frame} object for the DESeq2 Results.}
 }
 \value{
 A \code{data.frame} object for the DESeq2 Results.
