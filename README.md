@@ -68,9 +68,9 @@ exomePeak2 will export the modification peaks in formats of **BED** file and **C
 
 Under the default settings, the peak statistics are derived from the *β*<sub>*i*, 1</sub> terms in the following regression design under the **GLM (Generalized Linear Model)** developed by **DESeq2**:
 
-*l**o**g*2(*Q*<sub>*i*, *j*</sub>)=*β*<sub>*i*, 0</sub> + *β*<sub>*i*, 1</sub>*I*(*ρ*(*j*)=*I**P*)+*t*<sub>*i*, *j*</sub>
+log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j)=IP)+t<sub>i, j</sub>
 
-Where *Q*<sub>*i*, *j*</sub> is the expected value of reads abundence of modification *i* under sample *j*. *β*<sub>*i*, 0</sub> is the intercept coefficient, *β*<sub>*i*, 1</sub> is the coefficient for IP/input log2 fold change, *I*(*ρ*(*j*)=*I**P*) is the regression covariate that is the indicator variable for the sample *j* being IP sample. *t*<sub>*i*, *j*</sub> is the regression offset that account for the sequencing depth variation and the GC content biases.
+Where Q<sub>i, j</sub> is the expected value of reads abundence of modification i under sample j. β<sub>i, 0</sub> is the intercept coefficient, β<sub>i, 1</sub> is the coefficient for IP/input log2 fold change, I(ρ(j)=IP) is the regression covariate which is the indicator variable for the sample j being IP sample. t<sub>i, j</sub> is the regression offset that account for the sequencing depth variation and the GC content biases.
 
 Explaination over the columns of the exported table:
 
@@ -128,7 +128,7 @@ In differential modification mode, exomePeak2 will export the differential modif
 
 The peak statistics in differential modification setting are derived from the interactive coefficient *β*<sub>*i*, 3</sub> in the following regression design of the **DESeq2 GLM**:
 
-*l**o**g*2(*Q*<sub>*i*, *j*</sub>)=*β*<sub>*i*, 0</sub> + *β*<sub>*i*, 1</sub>*I*(*ρ*(*j*)=*I**P*)+*β*<sub>*i*, 2</sub>*I*(*ρ*(*j*)=*T**r**e**a**t**m**e**n**t*)+*β*<sub>*i*, 3</sub>*I*(*ρ*(*j*)=*I**P*&*T**r**e**a**t**m**e**n**t*)+*t*<sub>*i*, *j*</sub>
+log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j)=IP)+β<sub>i, 2</sub>I(ρ(j)=Treatment)+β<sub>i, 3</sub>I(ρ(j)=IP&Treatment)+t<sub>i, j</sub>
 
 Explaination for the additional table columns:
 
