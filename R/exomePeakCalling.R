@@ -658,7 +658,7 @@ setMethod("exomePeakCalling",
               names(mod_annot) <- paste0("peak_", names(mod_annot))
 
               SummarizedExomePeaks <- SummarizedExperiment(
-                assay = matrix(0,nrow = nrow(SE_Peak_counts_bg)+length(mod_annot),
+                assays = matrix(0,nrow = nrow(SE_Peak_counts_bg)+length(mod_annot),
                                  ncol = ncol(SE_Peak_counts_bg)),
 
                 rowRanges = c(mod_annot,rowRanges(SE_Peak_counts_bg)),

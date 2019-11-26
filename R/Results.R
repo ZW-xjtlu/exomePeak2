@@ -108,7 +108,7 @@ setMethod("Results",
             #Decision for modification
 
             if (inhibit_filter){
-              index_keep <- rep(T, sum(grepl("mod_", rownames(sep))))
+              index_keep <- rep(T, sum(grepl("peak_", rownames(sep))))
             } else {
 
             if (!any(sep$design_Treatment)) {
@@ -163,7 +163,7 @@ setMethod("Results",
 
             #Create the final result summary that contain GRangesList with metadata collumns.
             result_grl <-
-              rowRanges(sep)[grepl("mod_", rownames(sep))][index_keep]
+              rowRanges(sep)[grepl("peak_", rownames(sep))][index_keep]
             result_stat <- DESeq2Results(sep)[index_keep, ]
 
 
@@ -191,7 +191,7 @@ setMethod("Results",
               as.numeric(gsub("^.*_", "", names(result_grl)))
             id_index <- order(id_num)
             renamed_id <-
-              paste0("mod_", rep(seq_along(id_num), table(id_num[id_index])))
+              paste0("peak_", rep(seq_along(id_num), table(id_num[id_index])))
             result_grl <- result_grl[id_index, ]
             names(result_grl) <- renamed_id
 

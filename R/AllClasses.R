@@ -70,7 +70,7 @@ setClass(
 #' #Access to the slots in the SummarizedExomePeak object
 #'
 #' ## Access to reads count
-#' assay(sep)
+#' assays(sep)
 #'
 #' ## Access to the sequencing depth size factors and experimental design
 #' colData(sep)
