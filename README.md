@@ -1,6 +1,6 @@
 The *exomePeak2* user's guide
 ================
-2019-11-25
+2019-11-26
 
 Package Installation
 ====================
@@ -27,9 +27,9 @@ devtools::install_github("ZhenWei10/exomePeak2")
 Peak Calling
 ============
 
-Users need to specify the bam file directories of IP and input samples separately using the arguments of `bam_ip` and `bam_input`; the biological replicates are represented by a character vector of the **BAM** file directories.
+For peak calling of *MeRIP-Seq* experiment, exomePeak2 demands the reads alignment results in **BAM** files. Users can specify the biological replicates of the IP and input samples by a character vector of the corresponding **BAM** directories at the arguments `bam_ip` and `bam_input` separately.
 
-Transcript annotation is provided using GFF files in this example. The transcript annotation can also come from the `TxDb` object. exomePeak2 will automatically download the TxDb if you fill the `genome` argument with the UCSC genome name.
+In the following example, the transcript annotation is provided using GFF files. Transcript annotation can also be provided by the `TxDb` object. exomePeak2 will automatically download the TxDb if the `genome` argument is filled with the corresponding UCSC genome name.
 
 The genome sequence is required to conduct GC content bias correction. If the `genome` argument is missing ( `= NULL` ), exomPeak2 will perform peak calling without correcting the GC content bias.
 
@@ -58,13 +58,19 @@ exomePeak2(bam_ip = IP_BAM,
 ## dim: 31 7 
 ## metadata(0):
 ## assays(2): counts GCsizeFactors
-## rownames(31): mod_11 mod_13 ... control_13 control_14
+## rownames(31): peak_11 peak_13 ... control_13 control_14
 ## rowData names(2): GC_content feature_length
 ## colnames(7): IP1.bam IP2.bam ... Input2.bam Input3.bam
 ## colData names(3): design_IP design_Treatment sizeFactor
 ```
 
 exomePeak2 will export the modification peaks in formats of **BED** file and **CSV** table, the data will be saved automatically under a folder named by `exomePeak2_output`.
+
+Under the default settings, the peak statistics are derived from the *β*<sub>*i*, 1</sub> terms in the following regression design under the **GLM (Generalized Linear Model)** developed by **DESeq2**:
+
+*l**o**g*2(*Q*<sub>*i*, *j*</sub>)=*β*<sub>*i*, 0</sub> + *β*<sub>*i*, 1</sub>*I*(*ρ*(*j*)=*I**P*)+*t*<sub>*i*, *j*</sub>
+
+Where *Q*<sub>*i*, *j*</sub> is the expected value of reads abundence of modification *i* under sample *j*. *β*<sub>*i*, 0</sub> is the intercept coefficient, *β*<sub>*i*, 1</sub> is the coefficient for IP/input log2 fold change, *I*(*ρ*(*j*)=*I**P*) is the regression covariate that is the indicator variable for the sample *j* being IP sample. *t*<sub>*i*, *j*</sub> is the regression offset that account for the sequencing depth variation and the GC content biases.
 
 Explaination over the columns of the exported table:
 
@@ -83,9 +89,9 @@ Explaination over the columns of the exported table:
 -   ***geneID***: the gene ID of the peak.
 -   ***ReadsCount.input***: the reads count of the input sample.
 -   ***ReadsCount.IP***: the reads count of the IP sample.
--   ***log2FoldChange***: the log2 IP over input fold enrichment.
--   ***pvalue***: the p value of the enrichment.
--   ***padj***: the adjusted p value using BH approach.
+-   ***log2FoldChange***: the estimates of IP over input log2 fold enrichment (coefficient estimates of *β*<sub>*i*, 1</sub>).
+-   ***pvalue***: the Wald test p value on the modification coefficient.
+-   ***padj***: the adjusted Wald test p value using BH approach.
 
 Differential Modification Analysis
 ==================================
@@ -111,7 +117,7 @@ exomePeak2(bam_ip = IP_BAM,
 ## dim: 23 9 
 ## metadata(0):
 ## assays(2): counts GCsizeFactors
-## rownames(23): mod_10 mod_11 ... control_5 control_6
+## rownames(23): peak_10 peak_11 ... control_5 control_6
 ## rowData names(2): GC_content feature_length
 ## colnames(9): IP1.bam IP2.bam ... treated_IP1.bam
 ##   treated_Input1.bam
@@ -120,20 +126,24 @@ exomePeak2(bam_ip = IP_BAM,
 
 In differential modification mode, exomePeak2 will export the differential modification peaks in formats of **BED** file and **CSV** table, the data will also be saved automatically under a folder named by `exomePeak2_output`.
 
+The peak statistics in differential modification setting are derived from the interactive coefficient *β*<sub>*i*, 3</sub> in the following regression design of the **DESeq2 GLM**:
+
+*l**o**g*2(*Q*<sub>*i*, *j*</sub>)=*β*<sub>*i*, 0</sub> + *β*<sub>*i*, 1</sub>*I*(*ρ*(*j*)=*I**P*)+*β*<sub>*i*, 2</sub>*I*(*ρ*(*j*)=*T**r**e**a**t**m**e**n**t*)+*β*<sub>*i*, 3</sub>*I*(*ρ*(*j*)=*I**P*&*T**r**e**a**t**m**e**n**t*)+*t*<sub>*i*, *j*</sub>
+
 Explaination for the additional table columns:
 
 -   ***ModLog2FC\_control***: the modification log2 fold enrichment in the control condition.
 -   ***ModLog2FC\_treated***: the modification log2 fold enrichment in the treatment condition.
--   ***DiffModLog2FC***: the log2 Fold Change of differential modification.
--   ***pvalue***: the p value of the differential modification.
--   ***padj***: the adjusted p value using BH approach.
+-   ***DiffModLog2FC***: the log2 Fold Change estimates of differential modification (coefficient estimates of *β*<sub>*i*, 3</sub>).
+-   ***pvalue***: the Wald test p value on the differential modification coefficient.
+-   ***padj***: the adjusted Wald test p value using BH approach.
 
 Quantification and Statistical Analysis with Single Based Modification Annotation
 =================================================================================
 
 exomePeak2 supports the modification quantification and differential modification analysis on single based modification annotation. The modification sites with single based resolution can provide a more accurate mapping of modification locations compared with the peaks called directly from the MeRIP-seq datasets.
 
-Some of the datasets in epitranscriptomics have a single based resolution, e.x. Data generated by the m6A-CLIP-seq or m6A-miCLIP-seq techniques. exomePeak2 could provide a more accurate and consistent quantification and modification status inference for MeRIP-seq experiments using single based annotation.
+Some of the datasets in epitranscriptomics have a single based resolution, e.x. Data generated by the *m6A-CLIP-Seq* or *m6A-miCLIP-Seq* techniques. Reads count on the single based modification sites could provide a more accurate and consistent quantification on *MeRIP-Seq* experiments with single based annotation.
 
 exomePeak2 will automatically initiate the mode of single based modification quantification by providing a sigle based annotation file under the argument `mod_annot`.
 
@@ -154,7 +164,7 @@ exomePeak2(bam_ip = IP_BAM,
 ## dim: 171 7 
 ## metadata(0):
 ## assays(2): '' GCsizeFactors
-## rownames(171): mod_1 mod_2 ... control_83 control_84
+## rownames(171): peak_1 peak_2 ... control_83 control_84
 ## rowData names(2): GC_content feature_length
 ## colnames(7): IP1.bam IP2.bam ... Input2.bam Input3.bam
 ## colData names(3): design_IP design_Treatment sizeFactor
@@ -277,15 +287,15 @@ sessionInfo()
 ##  [1] BSgenome.Hsapiens.UCSC.hg19_1.4.0 BSgenome_1.50.0                  
 ##  [3] rtracklayer_1.42.2                Biostrings_2.50.2                
 ##  [5] XVector_0.22.0                    exomePeak2_0.9.9                 
-##  [7] knitr_1.23                        cqn_1.28.1                       
-##  [9] quantreg_5.51                     SparseM_1.77                     
-## [11] preprocessCore_1.44.0             nor1mix_1.3-0                    
-## [13] mclust_5.4.5                      SummarizedExperiment_1.12.0      
-## [15] DelayedArray_0.8.0                BiocParallel_1.16.6              
-## [17] matrixStats_0.54.0                Biobase_2.42.0                   
-## [19] GenomicRanges_1.34.0              GenomeInfoDb_1.18.2              
-## [21] IRanges_2.16.0                    S4Vectors_0.20.1                 
-## [23] BiocGenerics_0.28.0               BiocStyle_2.10.0                 
+##  [7] cqn_1.28.1                        quantreg_5.51                    
+##  [9] SparseM_1.77                      preprocessCore_1.44.0            
+## [11] nor1mix_1.3-0                     mclust_5.4.5                     
+## [13] SummarizedExperiment_1.12.0       DelayedArray_0.8.0               
+## [15] BiocParallel_1.16.6               matrixStats_0.54.0               
+## [17] Biobase_2.42.0                    GenomicRanges_1.34.0             
+## [19] GenomeInfoDb_1.18.2               IRanges_2.16.0                   
+## [21] S4Vectors_0.20.1                  BiocGenerics_0.28.0              
+## [23] BiocStyle_2.10.0                 
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
@@ -320,17 +330,18 @@ sessionInfo()
 ## [59] lattice_0.20-38          GenomicFeatures_1.34.8  
 ## [61] annotate_1.60.1          hms_0.5.0               
 ## [63] locfit_1.5-9.1           zeallot_0.1.0           
-## [65] pillar_1.4.2             reshape2_1.4.3          
-## [67] biomaRt_2.38.0           geneplotter_1.60.0      
-## [69] XML_3.98-1.20            glue_1.3.1              
-## [71] evaluate_0.14            latticeExtra_0.6-28     
-## [73] data.table_1.12.2        BiocManager_1.30.4      
-## [75] vctrs_0.2.0              MatrixModels_0.4-1      
-## [77] gtable_0.3.0             purrr_0.3.2             
-## [79] assertthat_0.2.1         emdbook_1.3.11          
-## [81] ggplot2_3.2.1            xfun_0.8                
-## [83] xtable_1.8-4             coda_0.19-3             
-## [85] survival_2.44-1.1        tibble_2.1.3            
-## [87] memoise_1.1.0            GenomicAlignments_1.18.1
-## [89] AnnotationDbi_1.44.0     cluster_2.1.0
+## [65] knitr_1.23               pillar_1.4.2            
+## [67] reshape2_1.4.3           biomaRt_2.38.0          
+## [69] geneplotter_1.60.0       XML_3.98-1.20           
+## [71] glue_1.3.1               evaluate_0.14           
+## [73] latticeExtra_0.6-28      data.table_1.12.2       
+## [75] BiocManager_1.30.4       vctrs_0.2.0             
+## [77] MatrixModels_0.4-1       gtable_0.3.0            
+## [79] purrr_0.3.2              assertthat_0.2.1        
+## [81] emdbook_1.3.11           ggplot2_3.2.1           
+## [83] xfun_0.8                 xtable_1.8-4            
+## [85] coda_0.19-3              survival_2.44-1.1       
+## [87] tibble_2.1.3             memoise_1.1.0           
+## [89] GenomicAlignments_1.18.1 AnnotationDbi_1.44.0    
+## [91] cluster_2.1.0
 ```

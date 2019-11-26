@@ -27,9 +27,9 @@ set.seed(1)
 
 # Peak Calling
 
-Users need to specify the bam file directories of IP and input samples separately using the arguments of `bam_ip` and `bam_input`; the biological replicates are represented by a character vector of the **BAM** file directories.
+For peak calling of *MeRIP-Seq* experiment, exomePeak2 demands the reads alignment results in **BAM** files. Users can specify the biological replicates of the IP and input samples by a character vector of the corresponding **BAM** directories at the arguments `bam_ip` and `bam_input` separately. 
 
-Transcript annotation is provided using GFF files in this example.  The transcript annotation can also come from the `TxDb` object. exomePeak2 will automatically download the TxDb if you fill the `genome` argument with the UCSC genome name.
+In the following example, the transcript annotation is provided using GFF files.  Transcript annotation can also be provided by the `TxDb` object. exomePeak2 will automatically download the TxDb if the `genome` argument is filled with the corresponding UCSC genome name.
 
 The genome sequence is required to conduct GC content bias correction. If the `genome` argument is missing ( `= NULL` ), exomPeak2 will perform peak calling without correcting the GC content bias.
 
@@ -58,26 +58,32 @@ exomePeak2(bam_ip = IP_BAM,
 
 exomePeak2 will export the modification peaks in formats of **BED** file and **CSV** table, the data will be saved automatically under a folder named by `exomePeak2_output`.
 
+Under the default settings, the peak statistics are derived from the ${\beta}_{i,1}$ terms in the following regression design under the **GLM (Generalized Linear Model)** developed by **DESeq2**:
+
+$$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}I(\rho(j)=IP) + t_{i,j}$$
+
+Where $Q_{i,j}$ is the expected value of reads abundence of modification $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient, ${\beta}_{i,1}$ is the coefficient for IP/input log2 fold change, $I(\rho(j)=IP)$ is the regression covariate that is the indicator variable for the sample $j$ being IP sample. $t_{i,j}$ is the regression offset that account for the sequencing depth variation and the GC content biases.
+
 Explaination over the columns of the exported table:
 
-- ***chr*** : the chromosomal name of the peak.
-- ***chromStart*** : the start of the peak on the chromosome.
-- ***chromEnd*** : the end of the peak on the chromosome.
-- ***name*** : the unique ID of the modification peak.
-- ***score*** : the -log2 p value of the peak.
-- ***strand*** : the strand of the peak on genome.
-- ***thickStart*** : the start position of the peak.
-- ***thickEnd*** : the end position of the peak.
-- ***itemRgb*** : the column for the RGB encoded color in BED file visualization.
-- ***blockCount*** : the block (exon) number within the peak.
-- ***blockSizes*** : the widths of blocks.
-- ***blockStarts*** : the start positions of blocks.
-- ***geneID*** : the gene ID of the peak.
-- ***ReadsCount.input*** : the reads count of the input sample.
-- ***ReadsCount.IP*** : the reads count of the IP sample.
-- ***log2FoldChange*** : the log2 IP over input fold enrichment.
-- ***pvalue*** : the p value of the enrichment.
-- ***padj*** : the adjusted p value using BH approach.
+- ***chr***: the chromosomal name of the peak.
+- ***chromStart***: the start of the peak on the chromosome.
+- ***chromEnd***: the end of the peak on the chromosome.
+- ***name***: the unique ID of the modification peak.
+- ***score***: the -log2 p value of the peak.
+- ***strand***: the strand of the peak on genome.
+- ***thickStart***: the start position of the peak.
+- ***thickEnd***: the end position of the peak.
+- ***itemRgb***: the column for the RGB encoded color in BED file visualization.
+- ***blockCount***: the block (exon) number within the peak.
+- ***blockSizes***: the widths of blocks.
+- ***blockStarts***: the start positions of blocks.
+- ***geneID***: the gene ID of the peak.
+- ***ReadsCount.input***: the reads count of the input sample.
+- ***ReadsCount.IP***: the reads count of the IP sample.
+- ***log2FoldChange***: the estimates of IP over input log2 fold enrichment (coefficient estimates of ${\beta}_{i,1}$).
+- ***pvalue***: the Wald test p value on the modification coefficient.
+- ***padj***: the adjusted Wald test p value using BH approach.
 
 
 # Differential Modification Analysis 
@@ -103,19 +109,23 @@ exomePeak2(bam_ip = IP_BAM,
 
 In differential modification mode, exomePeak2 will export the differential modification peaks in formats of **BED** file and **CSV** table, the data will also be saved automatically under a folder named by `exomePeak2_output`.
 
+The peak statistics in differential modification setting are derived from the interactive coefficient ${\beta}_{i,3}$ in the following regression design of the **DESeq2 GLM**:
+
+$$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}I(\rho(j)=IP) + {\beta}_{i,2}I(\rho(j)=Treatment) + {\beta}_{i,3}I(\rho(j)=IP\&Treatment) + t_{i,j}$$
+
 Explaination for the additional table columns:
 
-- ***ModLog2FC_control*** : the modification log2 fold enrichment in the control condition.
-- ***ModLog2FC_treated*** : the modification log2 fold enrichment in the treatment condition.
-- ***DiffModLog2FC*** : the log2 Fold Change of differential modification.
-- ***pvalue*** : the p value of the differential modification.
-- ***padj*** : the adjusted p value using BH approach.
+- ***ModLog2FC_control***: the modification log2 fold enrichment in the control condition.
+- ***ModLog2FC_treated***: the modification log2 fold enrichment in the treatment condition.
+- ***DiffModLog2FC***: the log2 Fold Change estimates of differential modification (coefficient estimates of ${\beta}_{i,3}$).
+- ***pvalue***: the Wald test p value on the differential modification coefficient.
+- ***padj***: the adjusted Wald test p value using BH approach.
 
 # Quantification and Statistical Analysis with Single Based Modification Annotation
 
 exomePeak2 supports the modification quantification and differential modification analysis on single based modification annotation. The modification sites with single based resolution can provide a more accurate mapping of modification locations compared with the peaks called directly from the MeRIP-seq datasets. 
 
-Some of the datasets in epitranscriptomics have a single based resolution, e.x. Data generated by the m6A-CLIP-seq or m6A-miCLIP-seq techniques. exomePeak2 could provide a more accurate and consistent quantification and modification status inference for MeRIP-seq experiments using single based annotation.
+Some of the datasets in epitranscriptomics have a single based resolution, e.x. Data generated by the *m6A-CLIP-Seq* or *m6A-miCLIP-Seq* techniques. Reads count on the single based modification sites could provide a more accurate and consistent quantification on *MeRIP-Seq* experiments with single based annotation.
 
 exomePeak2 will automatically initiate the mode of single based modification quantification by providing a sigle based annotation file under the argument `mod_annot`.
 
