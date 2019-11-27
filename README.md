@@ -66,7 +66,7 @@ exomePeak2(bam_ip = IP_BAM,
 
 exomePeak2 will export the modification peaks in formats of **BED** file and **CSV** table, the data will be saved automatically under a folder named by `exomePeak2_output`.
 
-Under the default settings, the peak statistics are derived from the β<sub>i, 1</sub> terms in the following regression design under the **GLM (Generalized Linear Model)** developed by **DESeq2**:
+Under the default settings, the peak statistics are derived from the β<sub>i, 1</sub> terms in the following regression design using the **GLM (Generalized Linear Model)** developed by **DESeq2**:
 
 log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>\*I(ρ(j)=IP)+t<sub>i, j</sub>
 

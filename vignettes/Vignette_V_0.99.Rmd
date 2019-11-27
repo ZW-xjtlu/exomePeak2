@@ -58,7 +58,7 @@ exomePeak2(bam_ip = IP_BAM,
 
 exomePeak2 will export the modification peaks in formats of **BED** file and **CSV** table, the data will be saved automatically under a folder named by `exomePeak2_output`.
 
-Under the default settings, the peak statistics are derived from the ${\beta}_{i,1}$ terms in the following regression design under the **GLM (Generalized Linear Model)** developed by **DESeq2**:
+Under the default settings, the peak statistics are derived from the ${\beta}_{i,1}$ terms in the following regression design using the **GLM (Generalized Linear Model)** developed by **DESeq2**:
 
 $$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}I(\rho(j)=IP) + t_{i,j}$$
 
@@ -84,7 +84,6 @@ Explaination over the columns of the exported table:
 - ***log2FoldChange***: the estimates of IP over input log2 fold enrichment (coefficient estimates of ${\beta}_{i,1}$).
 - ***pvalue***: the Wald test p value on the modification coefficient.
 - ***padj***: the adjusted Wald test p value using BH approach.
-
 
 # Differential Modification Analysis 
 
