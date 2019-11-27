@@ -1,7 +1,7 @@
 Package: exomePeak2
 Type: Package
 Title: Peak calling and quantification for MeRIP-seq data sets.
-Version: 0.9.9
+Version: 0.99.1
 Author: Zhen Wei
 Maintainer: Zhen Wei <zhen.wei10@icloud.com>
 Description: This package is developed to conduct peak calling and quantification for MeRIP-seq data sets while modeling the biological variabilities and the GC-content biases. 
