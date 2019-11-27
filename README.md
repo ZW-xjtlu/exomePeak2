@@ -68,7 +68,7 @@ exomePeak2 will export the modification peaks in formats of **BED** file and **C
 
 Under the default settings, the peak statistics are derived from the β<sub>i, 1</sub> terms in the following regression design under the **GLM (Generalized Linear Model)** developed by **DESeq2**:
 
-log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j)=IP)+t<sub>i, j</sub>
+log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>\*I(ρ(j)=IP)+t<sub>i, j</sub>
 
 Where Q<sub>i, j</sub> is the expected value of reads abundence of the modification peak i under sample j. β<sub>i, 0</sub> is the intercept coefficient, β<sub>i, 1</sub> is the coefficient for IP/input log2 fold change, I(ρ(j)=IP) is the regression covariate that is the indicator variable for the sample j being IP sample. t<sub>i, j</sub> is the regression offset that account for the sequencing depth variation and the GC content biases.
 
@@ -89,7 +89,7 @@ Explaination over the columns of the exported table:
 -   ***geneID***: the gene ID of the peak.
 -   ***ReadsCount.input***: the reads count of the input sample.
 -   ***ReadsCount.IP***: the reads count of the IP sample.
--   ***log2FoldChange***: the estimates of IP over input log2 fold enrichment (coefficient estimates of *β*<sub>*i*, 1</sub>).
+-   ***log2FoldChange***: the estimates of IP over input log2 fold enrichment (coefficient estimates of β<sub>i, 1</sub>).
 -   ***pvalue***: the Wald test p value on the modification coefficient.
 -   ***padj***: the adjusted Wald test p value using BH approach.
 
@@ -128,7 +128,7 @@ In differential modification mode, exomePeak2 will export the differential modif
 
 The peak statistics in differential modification setting are derived from the interactive coefficient β<sub>i, 3</sub> in the following regression design of the **DESeq2 GLM**:
 
-log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j)=IP)+β<sub>i, 2</sub>I(ρ(j)=Treatment)+β<sub>i, 3</sub>I(ρ(j)=IP&Treatment)+t<sub>i, j</sub>
+log2(Q<sub>i, j</sub>)=β<sub>i, 0</sub> + β<sub>i, 1</sub>\*I(ρ(j)=IP)+β<sub>i, 2</sub>\*I(ρ(j)=Treatment)+β<sub>i, 3</sub>\*I(ρ(j)=IP&Treatment)+t<sub>i, j</sub>
 
 Explaination for the additional table columns:
 

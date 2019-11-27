@@ -7,7 +7,7 @@ author: |
   | Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
 date: "`r Sys.Date()`"
 output:
-  BiocStyle::pdf_document:
+  BiocStyle::html_document:
     toc: true
 graphics: yes
 vignette: >
