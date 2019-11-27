@@ -62,7 +62,7 @@ Under the default settings, the peak statistics are derived from the ${\beta}_{i
 
 $$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}I(\rho(j)=IP) + t_{i,j}$$
 
-Where $Q_{i,j}$ is the expected value of reads abundence of modification $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient, ${\beta}_{i,1}$ is the coefficient for IP/input log2 fold change, $I(\rho(j)=IP)$ is the regression covariate that is the indicator variable for the sample $j$ being IP sample. $t_{i,j}$ is the regression offset that account for the sequencing depth variation and the GC content biases.
+Where $Q_{i,j}$ is the expected value of reads abundence of the modification peak $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient, ${\beta}_{i,1}$ is the coefficient for IP/input log2 fold change, $I(\rho(j)=IP)$ is the regression covariate that is the indicator variable for the sample $j$ being IP sample. $t_{i,j}$ is the regression offset that account for the sequencing depth variation and the GC content biases.
 
 Explaination over the columns of the exported table:
 
