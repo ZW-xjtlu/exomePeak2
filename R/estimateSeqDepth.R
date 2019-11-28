@@ -1,8 +1,8 @@
 #' @title Estimate the Sequencing Depth Size Factors for Peak Statistics Quantification.
 #'
-#' @description \code{estimateSeqDepth} estimate sequencing depth size factors for each MeRIP-seq samples.
+#' @description \code{estimateSeqDepth} estimate sequencing depth size factors for each MeRIP-seq samples used in peak statistics quantification.
 #' Under default setting, the sequencing depth are estimated by the robust estimator defined in package \code{DESeq}.
-#' i.e. the median of the ratios to the row geometric means.
+#' i.e. the median of the ratios to the geometric means of peak counts.
 #'
 #' @details The function takes the input of a \code{\link{SummarizedExomePeak}} object,
 #' and it estimates the sequencing depth size factors by the columns of its \link{assay}.
@@ -24,7 +24,7 @@
 #'  }
 #' }
 #'
-#' Under default setting, the sequencing depth factors are estimated from the background Background regions.
+#' Under the default settings, the sequencing depth size factors are estimated from the background control regions.
 #'
 #' @param ... inherited from \code{\link{estimateSizeFactorsForMatrix}}.
 #'
