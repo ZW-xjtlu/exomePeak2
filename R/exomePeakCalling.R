@@ -87,7 +87,7 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "Gaussian_mixture"}.
+#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 #'
 #' In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 #'
@@ -196,7 +196,9 @@ setMethod("exomePeakCalling",
                    bsgenome = NULL,
                    genome = NA,
                    mod_annot = NULL,
-                   glm_type = c("DESeq2", "NB", "Poisson"),
+                   glm_type = c("DESeq2",
+                                "NB",
+                                "Poisson"),
                    background = c("all",
                                   "Gaussian_mixture",
                                   "m6Aseq_prior",
