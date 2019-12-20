@@ -131,13 +131,13 @@ setMethod("GCsizeFactors<-",
               return(x2)
           })
 
-#' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
+#' @title Accessor to the slot \code{exomePeak2Results} in class \code{SummarizedExomePeak}.
 #'
 #' @param x1 A \code{data.frame} object.
 #'
-#' @aliases DESeq2Results
+#' @aliases exomePeak2Results
 #'
-#' @rdname DESeq2Results-methods
+#' @rdname exomePeak2Results-methods
 #'
 #'
 #' @examples
@@ -146,33 +146,33 @@ setMethod("GCsizeFactors<-",
 #'
 #' sep <- readRDS(f1)
 #'
-#' head(DESeq2Results(sep))
+#' head(exomePeak2Results(sep))
 #'
 #' @export
 #'
-setMethod("DESeq2Results",
+setMethod("exomePeak2Results",
           "SummarizedExomePeak",
           function(x1) {
-              return(x1@DESeq2Results)
+              return(x1@exomePeak2Results)
           })
 
-#' @title Accessor to the slot \code{DESeq2Results} in class \code{SummarizedExomePeak}.
+#' @title Accessor to the slot \code{exomePeak2Results} in class \code{SummarizedExomePeak}.
 #'
 #' @param x2 A \code{SummarizedExomePeak} object.
 #' @param value a \code{data.frame} object for the DESeq2 Results.
 #'
 #' @return A \code{data.frame} object for the DESeq2 Results.
 #'
-#' @aliases DESeq2Results<-
+#' @aliases exomePeak2Results<-
 #'
-#' @rdname DESeq2Results-methods
+#' @rdname exomePeak2Results-methods
 #'
 #' @export
 #'
-setMethod("DESeq2Results<-",
+setMethod("exomePeak2Results<-",
           "SummarizedExomePeak",
           function(x2,value) {
-              x2@DESeq2Results <- value
+              x2@exomePeak2Results <- value
               return(x2)
           })
 

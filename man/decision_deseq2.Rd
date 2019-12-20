@@ -9,7 +9,7 @@ decision_deseq2(Inf_RES, log2FC_cut = 0, P_cut = 0.05,
   "both"))
 }
 \arguments{
-\item{Inf_RES}{A \code{DESeq2Results} or similar object that contains the result statistics for either methylation or differential methylation.}
+\item{Inf_RES}{A \code{exomePeak2Results} or similar object that contains the result statistics for either methylation or differential methylation.}
 
 \item{log2FC_cut}{The log2 fold change cutoff of the inference result, default setting is 0.}
 

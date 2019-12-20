@@ -13,7 +13,7 @@ Results(sep, cut_off_pvalue = NULL, cut_off_padj = 0.05,
   inhibit_filter = FALSE, table_style = c("bed", "granges"))
 
 \S4method{Results}{SummarizedExomePeak}(sep, cut_off_pvalue = NULL,
-  cut_off_padj = 0.05, cut_off_log2FC = 0, min_num_of_positive = 30,
+  cut_off_padj = 0.1, cut_off_log2FC = 0, min_num_of_positive = 100,
   expected_direction = c("both", "hyper", "hypo"),
   inhibit_filter = FALSE, table_style = c("bed", "granges"))
 }

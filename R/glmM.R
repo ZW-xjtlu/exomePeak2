@@ -94,7 +94,7 @@ setMethod("glmM",
   }
 
   if(glm_type == "DESeq2") {
-    message("Calculate peaks/sites statistics with DESeq2 ... ", appendLF = FALSE)
+    message("Calculate peaks/sites statistics with regularized NB GLM ... ", appendLF = FALSE)
   }
 
 
@@ -249,7 +249,7 @@ setMethod("glmM",
 
   rownames(DS_final_rst) = rownames(SE_M)[indx_mod]
 
-  DESeq2Results( sep ) = as.data.frame( DS_final_rst )
+  exomePeak2Results( sep ) = as.data.frame( DS_final_rst )
 
   return(sep)
 

@@ -71,17 +71,17 @@ setGeneric("GCsizeFactors", function(x1) {standardGeneric("GCsizeFactors")})
 #' @exportMethod GCsizeFactors<-
 setGeneric("GCsizeFactors<-", function(x2,value) {standardGeneric("GCsizeFactors<-")})
 
-#' Method DESeq2Results
-#' @name DESeq2Results-methods
-#' @rdname DESeq2Results-methods
-#' @exportMethod DESeq2Results
-setGeneric("DESeq2Results", function(x1) {standardGeneric("DESeq2Results")})
+#' Method exomePeak2Results
+#' @name exomePeak2Results-methods
+#' @rdname exomePeak2Results-methods
+#' @exportMethod exomePeak2Results
+setGeneric("exomePeak2Results", function(x1) {standardGeneric("exomePeak2Results")})
 
-#' Method DESeq2Results<-
-#' @name DESeq2Results-methods
-#' @rdname DESeq2Results-methods
-#' @exportMethod DESeq2Results<-
-setGeneric("DESeq2Results<-", function(x2,value) {standardGeneric("DESeq2Results<-")})
+#' Method exomePeak2Results<-
+#' @name exomePeak2Results-methods
+#' @rdname exomePeak2Results-methods
+#' @exportMethod exomePeak2Results<-
+setGeneric("exomePeak2Results<-", function(x2,value) {standardGeneric("exomePeak2Results<-")})
 
 #' Method normalizeGC
 #' @name normalizeGC-methods

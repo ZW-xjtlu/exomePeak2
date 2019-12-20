@@ -445,7 +445,7 @@ if( export_results ) {
 
   exportResults(sep,
                 format = export_format,
-                inhibit_filter = (!is.null( mod_annot ))|(any(grepl("Diff",colnames(DESeq2Results( sep ))))),
+                inhibit_filter = (!is.null( mod_annot ))|(any(grepl("Diff",colnames(exomePeak2Results( sep ))))),
                 table_style = table_style,
                 save_dir = save_dir)
 

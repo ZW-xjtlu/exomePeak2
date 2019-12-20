@@ -33,10 +33,10 @@ This function plot the distribution of the exon length for peaks containing exon
 }
 \details{
 If the SummarizedExomePeaks object contains LFC statistics, the significantly modified peaks
-with IP to input log2FC > 0 and DESeq2 Wald test padj < .05 will be plotted .
+with IP to input log2FC > 0 and GLM Wald test padj < .05 will be plotted .
 
 If the SummarizedExomePeaks object contains interactive LFC statistics, both the hyper modification
-and hypo modification peaks with DESeq2 Wald test p values < .05 will be plotted.
+and hypo modification peaks with GLM Wald test p values < .05 will be plotted.
 }
 \examples{
 

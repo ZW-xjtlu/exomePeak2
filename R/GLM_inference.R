@@ -160,7 +160,7 @@ GLM_inference <- function(SE_bins,
   }
 
   if (glm_type == "DESeq2") {
-    message("Peak Calling with DESeq2 ... ", appendLF = FALSE)
+    message("Peak Calling with regularized NB GLM ... ", appendLF = FALSE)
   }
 
 

@@ -705,7 +705,7 @@ setMethod("exomePeakCalling",
                 NAMES = SummarizedExomePeaks@NAMES,
                 elementMetadata = SummarizedExomePeaks@elementMetadata,
                 metadata = SummarizedExomePeaks@metadata,
-                DESeq2Results = data.frame()
+                exomePeak2Results = data.frame()
               )
             )
         }

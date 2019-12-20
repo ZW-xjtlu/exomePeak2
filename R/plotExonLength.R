@@ -3,10 +3,10 @@
 #' @description This function plot the distribution of the exon length for peaks containing exons.
 #' @details
 #' If the SummarizedExomePeaks object contains LFC statistics, the significantly modified peaks
-#' with IP to input log2FC > 0 and DESeq2 Wald test padj < .05 will be plotted .
+#' with IP to input log2FC > 0 and GLM Wald test padj < .05 will be plotted .
 #'
 #' If the SummarizedExomePeaks object contains interactive LFC statistics, both the hyper modification
-#' and hypo modification peaks with DESeq2 Wald test p values < .05 will be plotted.
+#' and hypo modification peaks with GLM Wald test p values < .05 will be plotted.
 #'
 #' @param sep a \code{\link{SummarizedExomePeak}} object.
 #' @param txdb a \code{\link{TxDb}} object containing the transcript annotation.
@@ -58,7 +58,7 @@ if( sum(grepl("peak", rownames(sep))) < 10 ) {
 
   #if so, we need only plot the modification peaks and control peaks.
 
-  if(is.null(DESeq2Results(sep))){
+  if(is.null(exomePeak2Results(sep))){
 
     row_grl <- rowRanges( sep )
 
@@ -88,13 +88,13 @@ if( sum(grepl("peak", rownames(sep))) < 10 ) {
 
       row_grl <- rowRanges( sep )
 
-      indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+      indx_sig <- which( exomePeak2Results(sep)$padj < .05 & exomePeak2Results(sep)$log2FoldChange > 0 )
 
       gr_lab = "peak padj < .05"
 
       if( length(indx_sig) < floor( sum(grepl("peak_", rownames(sep))) * 0.01 ) ){
 
-      indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+      indx_sig <- which( exomePeak2Results(sep)$pvalue < .05 & exomePeak2Results(sep)$log2FoldChange > 0 )
 
       gr_lab = "peak p < .05"
 
@@ -128,11 +128,11 @@ if( sum(grepl("peak", rownames(sep))) < 10 ) {
 
       row_grl <- rowRanges( sep )
 
-      indx_hyper <- which( DESeq2Results(sep)$padj < .05 &
-                             DESeq2Results(sep)$log2FoldChange > 0)
+      indx_hyper <- which( exomePeak2Results(sep)$padj < .05 &
+                             exomePeak2Results(sep)$log2FoldChange > 0)
 
-      indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
-                            DESeq2Results(sep)$log2FoldChange < 0)
+      indx_hypo <- which( exomePeak2Results(sep)$padj < .05 &
+                            exomePeak2Results(sep)$log2FoldChange < 0)
 
       list_names <- c("hyper padj < 0.05", "hypo padj < 0.05")
 
@@ -140,11 +140,11 @@ if( sum(grepl("peak", rownames(sep))) < 10 ) {
 
       if(length(indx_hyper) + length(indx_hypo) < min_positive){
 
-      indx_hyper <- which( DESeq2Results(sep)$padj < .05 &
-                           DESeq2Results(sep)$log2FoldChange > 0)
+      indx_hyper <- which( exomePeak2Results(sep)$padj < .05 &
+                           exomePeak2Results(sep)$log2FoldChange > 0)
 
-      indx_hypo <- which( DESeq2Results(sep)$padj < .05 &
-                          DESeq2Results(sep)$log2FoldChange < 0)
+      indx_hypo <- which( exomePeak2Results(sep)$padj < .05 &
+                          exomePeak2Results(sep)$log2FoldChange < 0)
 
       list_names <- c("hyper p < 0.05", "hypo p < 0.05")
 

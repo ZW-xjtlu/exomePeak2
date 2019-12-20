@@ -185,7 +185,7 @@ The function integrates the following steps of a standard MeRIP-seq data analysi
 \item Check and index the BAM files with \code{\link{scanMeripBAM}}.
 \item Call modification peaks on exons with \code{\link{exomePeakCalling}}.
 \item Calculate offset factors of GC content biases with \code{\link{normalizeGC}}.
-\item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} or \code{\link{glmDM}}
+\item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} or \code{\link{glmDM}}.
 \item Export the peaks/sites statistics with user defined format by \code{\link{exportResults}}.
 }
 

@@ -2,7 +2,7 @@
 #'
 #' @description \code{Decision_dsresult} is an internal function used to summary the cut-off and the number of positive results used for DESeq2 result..
 #'
-#' @param Inf_RES A \code{DESeq2Results} or similar object that contains the result statistics for either methylation or differential methylation.
+#' @param Inf_RES A \code{exomePeak2Results} or similar object that contains the result statistics for either methylation or differential methylation.
 #' @param log2FC_cut The log2 fold change cutoff of the inference result, default setting is 0.
 #' @param P_cut A numeric value between 0 to 1, indicating the p value cut off of the Wald test defined by DESeq2 (or defined by QNB), it will be neglected if \code{Padj_cut} is not NULL.
 #' @param Padj_cut A numeric value between 0 to 1, indicating the fdr cut off of the Wald test defined by DESeq2 (or defined by QNB).

@@ -119,14 +119,14 @@ setMethod("exportResults",
             }
 
             #Decide the file names
-            if (!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
+            if (!any(grepl("Diff",colnames(exomePeak2Results( sep ))))) {
               file_name <- "Mod"
             } else{
               file_name <- "DiffMod"
             }
 
             #Check if the users have calculated the log2FCs and their associated p-values
-            if (nrow(DESeq2Results(sep)) == 0) {
+            if (nrow(exomePeak2Results(sep)) == 0) {
               if (any(sep$design_Treatment)) {
                 sep <- glmDM(sep)
               } else{
@@ -142,22 +142,22 @@ setMethod("exportResults",
 
             } else {
 
-            if (!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
+            if (!any(grepl("Diff",colnames(exomePeak2Results( sep ))))) {
 
               #Decide the filter on modification
               decision_mod <- decision_deseq2(
-                Inf_RES = DESeq2Results(sep),
+                Inf_RES = exomePeak2Results(sep),
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
                 Padj_cut = cut_off_padj,
-                Min_mod = min(min_num_of_positive, nrow(DESeq2Results(sep)))
+                Min_mod = min(min_num_of_positive, nrow(exomePeak2Results(sep)))
               )
 
               #P.S. If no sites are reported, export all the p values that are not NA
               index_keep <-
                 which(
-                  (DESeq2Results(sep)[[decision_mod$Cut_By_expected]] <= decision_mod$Cut_Val_expected) &
-                    (DESeq2Results(sep)$log2FoldChange > cut_off_log2FC)
+                  (exomePeak2Results(sep)[[decision_mod$Cut_By_expected]] <= decision_mod$Cut_Val_expected) &
+                    (exomePeak2Results(sep)$log2FoldChange > cut_off_log2FC)
                 )
 
             } else {
@@ -165,7 +165,7 @@ setMethod("exportResults",
               #Decide the filter on differential modification
 
               decision_dm <- decision_deseq2(
-                Inf_RES = DESeq2Results(sep),
+                Inf_RES = exomePeak2Results(sep),
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
                 Padj_cut = cut_off_padj,
@@ -175,17 +175,17 @@ setMethod("exportResults",
 
               if (expected_direction == "both") {
                 indx_es <-
-                  (abs(DESeq2Results(sep)$log2FoldChange) > cut_off_log2FC)
+                  (abs(exomePeak2Results(sep)$log2FoldChange) > cut_off_log2FC)
               } else {
                 if (expected_direction == "hyper") {
-                  indx_es <- (DESeq2Results(sep)$log2FoldChange > cut_off_log2FC)
+                  indx_es <- (exomePeak2Results(sep)$log2FoldChange > cut_off_log2FC)
                 } else {
-                  indx_es <- (DESeq2Results(sep)$log2FoldChange < -1 * cut_off_log2FC)
+                  indx_es <- (exomePeak2Results(sep)$log2FoldChange < -1 * cut_off_log2FC)
                 }
               }
 
               index_keep <-
-                which(DESeq2Results(sep)[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected & indx_es)
+                which(exomePeak2Results(sep)[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected & indx_es)
 
 
               if (length(index_keep) == min_num_of_positive) {
@@ -197,7 +197,7 @@ setMethod("exportResults",
             #Subset the SummarizedExomePeak object according to user defined filters
             sep <- sep[grepl("peak_", rownames(sep)),][index_keep,]
 
-            DESeq2Results(sep) <- DESeq2Results(sep)[grepl("peak_", rownames(sep)),][index_keep,]
+            exomePeak2Results(sep) <- exomePeak2Results(sep)[grepl("peak_", rownames(sep)),][index_keep,]
 
             id_num <- as.numeric(gsub("^.*_", "", rownames(sep)))
 
@@ -205,7 +205,7 @@ setMethod("exportResults",
 
             sep <- sep[id_index,]
 
-            DESeq2Results(sep) <- DESeq2Results(sep)[id_index,]
+            exomePeak2Results(sep) <- exomePeak2Results(sep)[id_index,]
 
             rownames(sep) <- paste0("peak_", rep(seq_along(id_num), table(id_num[id_index])))
 
@@ -215,7 +215,7 @@ setMethod("exportResults",
 
             result_grl <- rowRanges(sep)
 
-            result_stat <- DESeq2Results(sep)
+            result_stat <- exomePeak2Results(sep)
 
             #Correct the names in the resulting files
             result_gr <- unlist(result_grl)
@@ -227,6 +227,8 @@ setMethod("exportResults",
             names(result_gr) <- NULL
             result_gr$gene_id[is.na(result_gr$gene_id)] <- " "
             result_grl <- split(result_gr, indx_split)
+            #reorder the list
+            result_grl <- result_grl[order(as.numeric(gsub("^.*_", "", names(result_grl))))]
             mcols(result_grl) <- result_stat
             rm(result_gr,result_stat,indx_split)
 
@@ -312,7 +314,7 @@ setMethod("exportResults",
               file = file.path(save_dir, "ADDInfo", "ADDInfo_RPKM.csv")
             )
 
-            if (!any(grepl("Diff", colnames(DESeq2Results(sep))))){
+            if (!any(grepl("Diff", colnames(exomePeak2Results(sep))))){
 
               result_df <- result_df[,indx_range_info|indx_reads_count|indx_major_stat]
 

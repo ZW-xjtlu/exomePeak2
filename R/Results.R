@@ -70,9 +70,9 @@ setMethod("Results",
           "SummarizedExomePeak",
           function(sep,
                    cut_off_pvalue = NULL,
-                   cut_off_padj = 0.05,
+                   cut_off_padj = 0.1,
                    cut_off_log2FC = 0,
-                   min_num_of_positive = 30,
+                   min_num_of_positive = 100,
                    expected_direction = c("both", "hyper", "hypo"),
                    inhibit_filter = FALSE,
                    table_style = c("bed", "granges")
@@ -91,7 +91,7 @@ setMethod("Results",
 
             #Check if users have not run inference on the summarizedExomePeak.
 
-            if (is.null(DESeq2Results(sep))) {
+            if (is.null(exomePeak2Results(sep))) {
               if (any(sep$design_Treatment)) {
                 sep <- glmDM(sep)
               } else{
@@ -113,7 +113,7 @@ setMethod("Results",
 
             if (!any(sep$design_Treatment)) {
               decision_mod <- decision_deseq2(
-                Inf_RES = DESeq2Results(sep),
+                Inf_RES = exomePeak2Results(sep),
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
                 Padj_cut = cut_off_padj,
@@ -124,33 +124,33 @@ setMethod("Results",
 
               index_keep <-
                 which(
-                  (DESeq2Results(sep)[[decision_mod$Cut_By_expected]] < decision_mod$Cut_Val_expected) &
-                    (DESeq2Results(sep)$log2FoldChange > cut_off_log2FC)
+                  (exomePeak2Results(sep)[[decision_mod$Cut_By_expected]] < decision_mod$Cut_Val_expected) &
+                    (exomePeak2Results(sep)$log2FoldChange > cut_off_log2FC)
                 )
 
             } else {
               decision_dm <- decision_deseq2(
-                Inf_RES = DESeq2Results(sep),
+                Inf_RES = exomePeak2Results(sep),
                 log2FC_cut = cut_off_log2FC,
                 P_cut = cut_off_pvalue,
                 Padj_cut = cut_off_padj,
-                Min_mod = min(min_num_of_positive,nrow(DESeq2Results(sep))),
+                Min_mod = min(min_num_of_positive,nrow(exomePeak2Results(sep))),
                 Exp_dir = expected_direction
               )
 
               if (expected_direction == "both") {
                 indx_es <-
-                  (abs(DESeq2Results(sep)$log2FoldChange) > cut_off_log2FC)
+                  (abs(exomePeak2Results(sep)$log2FoldChange) > cut_off_log2FC)
               } else {
                 if (expected_direction == "hyper") {
-                  indx_es <- (DESeq2Results(sep)$log2FoldChange > cut_off_log2FC)
+                  indx_es <- (exomePeak2Results(sep)$log2FoldChange > cut_off_log2FC)
                 } else {
-                  indx_es <- (DESeq2Results(sep)$log2FoldChange < -1 * cut_off_log2FC)
+                  indx_es <- (exomePeak2Results(sep)$log2FoldChange < -1 * cut_off_log2FC)
                 }
               }
 
               index_keep <-
-                which(DESeq2Results(sep)[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected &
+                which(exomePeak2Results(sep)[[decision_dm$Cut_By_expected]] < decision_dm$Cut_Val_expected &
                         indx_es)
 
               if (length(index_keep) == 0) {
@@ -164,7 +164,7 @@ setMethod("Results",
             #Create the final result summary that contain GRangesList with metadata collumns.
             result_grl <-
               rowRanges(sep)[grepl("peak_", rownames(sep))][index_keep]
-            result_stat <- DESeq2Results(sep)[index_keep, ]
+            result_stat <- exomePeak2Results(sep)[index_keep, ]
 
 
             result_gr <- unlist(result_grl)

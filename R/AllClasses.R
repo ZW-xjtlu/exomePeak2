@@ -42,7 +42,7 @@ setClass(
 #'
 #'\enumerate{
 #'  \item \link{GCsizeFactors}
-#'  \item \link{DESeq2Results}
+#'  \item \link{exomePeak2Results}
 #'}
 #'
 #' @examples
@@ -85,7 +85,7 @@ setClass(
 #' GCsizeFactors(sep)
 #'
 #' ## Access to the statistics on (differential) modification LFC
-#' DESeq2Results(sep)
+#' exomePeak2Results(sep)
 #'
 #' @import SummarizedExperiment
 #' @name SummarizedExomePeak-class
@@ -98,7 +98,7 @@ setClass(
 
 setClass(
   Class = "SummarizedExomePeak",
-  slots = list(DESeq2Results = "data.frame"),
+  slots = list(exomePeak2Results = "data.frame"),
   contains = "RangedSummarizedExperiment"
 )
 

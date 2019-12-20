@@ -91,7 +91,7 @@ setMethod("glmDM",
   }
 
   if(glm_type == "DESeq2") {
-    message("Differential modification analysis with DESeq2 ... ", appendLF = FALSE)
+    message("Differential modification analysis with regularized NB GLM ... ", appendLF = FALSE)
   }
 
   if(is.null(colData( sep )$sizeFactor)) {
@@ -293,7 +293,7 @@ setMethod("glmDM",
 
   rownames(  DS_final_rst ) = rownames( SE_M )[indx_mod]
 
-  DESeq2Results( sep ) = as.data.frame(  DS_final_rst )
+  exomePeak2Results( sep ) = as.data.frame(  DS_final_rst )
 
   return( sep )
 

@@ -56,7 +56,7 @@ if(is.null(colData( sep )$sizeFactor)){
     sep <- estimateSeqDepth(sep)
 }
 
-if(nrow(DESeq2Results(sep)) == 0) {
+if(nrow(exomePeak2Results(sep)) == 0) {
   if(any(sep$design_Treatment)) {
     sep <- glmDM(sep)
    } else {
@@ -83,15 +83,15 @@ elementMetadata( sep ) <- GC_content_over_grl(
 )
 }
 
-Decision <- rep("Insignificant",nrow(DESeq2Results(sep)))
+Decision <- rep("Insignificant",nrow(exomePeak2Results(sep)))
 
-if(!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
+if(!any(grepl("Diff",colnames(exomePeak2Results( sep ))))) {
 
-indx_sig <- which( DESeq2Results(sep)$padj < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+indx_sig <- which( exomePeak2Results(sep)$padj < .05 & exomePeak2Results(sep)$log2FoldChange > 0 )
 
 if( length(indx_sig) < floor( sum(grepl("peak_", rownames(sep))) * 0.01 ) ){
 
-indx_sig <- which( DESeq2Results(sep)$pvalue < .05 & DESeq2Results(sep)$log2FoldChange > 0 )
+indx_sig <- which( exomePeak2Results(sep)$pvalue < .05 & exomePeak2Results(sep)$log2FoldChange > 0 )
 
 Decision[indx_sig] <- "p value < 0.05"
 
@@ -103,12 +103,12 @@ Decision[indx_sig] <- "padj < 0.05"
 
 } else {
 
-  if(length(which(DESeq2Results(sep)$padj < .05)) <
+  if(length(which(exomePeak2Results(sep)$padj < .05)) <
      floor(sum(grepl("peak_", rownames(sep))) * 0.1)) {
-    Decision[DESeq2Results(sep)$pvalue < .05] <- "p value < 0.05"
+    Decision[exomePeak2Results(sep)$pvalue < .05] <- "p value < 0.05"
 
   } else {
-    Decision[DESeq2Results(sep)$padj < .05] <- "p adj < 0.05"
+    Decision[exomePeak2Results(sep)$padj < .05] <- "p adj < 0.05"
 
   }
 
@@ -116,15 +116,15 @@ Decision[indx_sig] <- "padj < 0.05"
 
 GC_content_mod <- elementMetadata(sep)$GC_content[grepl("peak_",rownames(sep))]
 
-na_idx <- is.na( DESeq2Results(sep)$log2FoldChange ) | is.na(GC_content_mod)
+na_idx <- is.na( exomePeak2Results(sep)$log2FoldChange ) | is.na(GC_content_mod)
 
 plot_df = data.frame(
-  Log2FC = DESeq2Results(sep)$log2FoldChange[!na_idx],
+  Log2FC = exomePeak2Results(sep)$log2FoldChange[!na_idx],
   GC_idx = GC_content_mod[!na_idx],
   Label = Decision[!na_idx]
 )
 
-if(!any(grepl("Diff",colnames(DESeq2Results( sep ))))) {
+if(!any(grepl("Diff",colnames(exomePeak2Results( sep ))))) {
   ylabel <- "IP/input log2 Fold Change"
   mtitle <- "GC Content Against log2 Fold Change Estimates"
 } else {

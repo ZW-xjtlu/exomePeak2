@@ -39,7 +39,7 @@ It has 2 additional accessors:
 
 \enumerate{
  \item \link{GCsizeFactors}
- \item \link{DESeq2Results}
+ \item \link{exomePeak2Results}
 }
 }
 \examples{
@@ -82,6 +82,6 @@ rowRanges(sep)
 GCsizeFactors(sep)
 
 ## Access to the statistics on (differential) modification LFC
-DESeq2Results(sep)
+exomePeak2Results(sep)
 
 }

@@ -31,7 +31,7 @@ estimateSeqDepth(sep, from = c("Background", "Modification", "All"), ...)
  }
 }
 
-Under default setting, the sequencing depth factors are estimated from the background Background regions.}
+Under the default settings, the sequencing depth size factors are estimated from the background control regions.}
 
 \item{...}{inherited from \code{\link{estimateSizeFactorsForMatrix}}.}
 }
@@ -39,9 +39,9 @@ Under default setting, the sequencing depth factors are estimated from the backg
 This function will return a \code{\link{SummarizedExomePeak}} object containing newly estimated sequencing depth size factors.
 }
 \description{
-\code{estimateSeqDepth} estimate sequencing depth size factors for each MeRIP-seq samples.
+\code{estimateSeqDepth} estimate sequencing depth size factors for each MeRIP-seq samples used in peak statistics quantification.
 Under default setting, the sequencing depth are estimated by the robust estimator defined in package \code{DESeq}.
-i.e. the median of the ratios to the row geometric means.
+i.e. the median of the ratios to the geometric means of peak counts.
 }
 \details{
 The function takes the input of a \code{\link{SummarizedExomePeak}} object,
