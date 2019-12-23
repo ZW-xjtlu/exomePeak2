@@ -697,14 +697,13 @@ setMethod("exomePeakCalling",
             }
 
             return(
-              new(
-                "SummarizedExomePeak",
-                rowRanges = SummarizedExomePeaks@rowRanges,
-                colData = SummarizedExomePeaks@colData,
-                assays = SummarizedExomePeaks@assays,
-                NAMES = SummarizedExomePeaks@NAMES,
-                elementMetadata = SummarizedExomePeaks@elementMetadata,
-                metadata = SummarizedExomePeaks@metadata,
+              SummarizedExomePeak(
+                rowRanges = rowRanges(SummarizedExomePeaks),
+                colData = colData(SummarizedExomePeaks),
+                assays = Assays(assays(SummarizedExomePeaks)),
+                NAMES = NULL,
+                elementMetadata = DataFrame(matrix(vector(), nrow(SummarizedExomePeaks), 0)),
+                metadata = metadata(SummarizedExomePeaks),
                 exomePeak2Results = data.frame()
               )
             )

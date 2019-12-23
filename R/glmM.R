@@ -181,7 +181,7 @@ setMethod("glmM",
       rm(Expr_design_MLE)
 
       #Calculate absolute methylation level related estimates
-      AbsMod_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(0,1)) ) ))
+      AbsMod_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,1)) ) ))
       DS_result$log2AbsMod.MLE <- AbsMod_design_MLE[,"log2FoldChange"]
       DS_result$log2AbsMod.MLE.SE <- AbsMod_design_MLE[,"lfcSE"]
       rm(AbsMod_design_MLE)
