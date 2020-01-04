@@ -298,10 +298,10 @@ setMethod("exportResults",
             indx_reads_count <- grepl("ReadsCount",colnames(result_df))
             indx_major_stat <- colnames(result_df) %in% c("log2FoldChange","pvalue","padj")
 
-            #Export the estimates and statistics of all DESeq2 design
+            #Export the estimates and statistics of all GLM design
             write.csv(
               result_df[,!(indx_reads_count|indx_major_stat|indx_range_info)],
-              file = file.path(save_dir, "ADDInfo", "ADDInfo_DESeq2_allDesigns.csv")
+              file = file.path(save_dir, "ADDInfo", "ADDInfo_GLM_allDesigns.csv")
             )
 
             #Report a matrix of RPKM
