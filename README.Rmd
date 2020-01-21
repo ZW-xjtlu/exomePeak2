@@ -20,7 +20,7 @@ set.seed(1)
 
 # Package Installation
 
-To install exomePeak2 from Github, use the following codes.
+To install exomePeak2 from Github, use the following code:
 
 ```{r, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
