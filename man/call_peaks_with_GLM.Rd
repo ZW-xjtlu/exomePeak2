@@ -4,11 +4,22 @@
 \alias{call_peaks_with_GLM}
 \title{Statistical Inference with DESeq package based on the provided reads count for exomic bins.}
 \usage{
-call_peaks_with_GLM(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
-  correct_GC_bg = TRUE, qtnorm = TRUE, txdb, count_cutoff = 5,
-  p_cutoff = NULL, p_adj_cutoff = 0.05, log2FC_cutoff = 0,
-  consistent_peak = TRUE, consistent_log2FC_cutoff = 0,
-  consistent_fdr_cutoff = 0.05, alpha = 0.05, p0 = 0.8)
+call_peaks_with_GLM(
+  SE_bins,
+  glm_type = c("Poisson", "NB", "DESeq2"),
+  correct_GC_bg = TRUE,
+  qtnorm = TRUE,
+  txdb,
+  count_cutoff = 5,
+  p_cutoff = NULL,
+  p_adj_cutoff = 0.05,
+  log2FC_cutoff = 0,
+  consistent_peak = TRUE,
+  consistent_log2FC_cutoff = 0,
+  consistent_fdr_cutoff = 0.05,
+  alpha = 0.05,
+  p0 = 0.8
+)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} object. The meta-data collumn should contain the design information of IP/input + treated/control.}

@@ -4,12 +4,22 @@
 \alias{GLM_inference}
 \title{Statistical Inference with DESeq2 on IP over input fold change.}
 \usage{
-GLM_inference(SE_bins, glm_type = c("Poisson", "NB", "DESeq2"),
-  p_cutoff = 1e-04, p_adj_cutoff = NULL, count_cutoff = 5,
-  log2FC_mod = 1, min_mod_number = NA, correct_GC_bg = FALSE,
-  qtnorm = TRUE, consistent_peak = FALSE,
-  consistent_log2FC_cutoff = 1, consistent_fdr_cutoff = 0.05,
-  alpha = 0.05, p0 = 0.8)
+GLM_inference(
+  SE_bins,
+  glm_type = c("Poisson", "NB", "DESeq2"),
+  p_cutoff = 1e-04,
+  p_adj_cutoff = NULL,
+  count_cutoff = 5,
+  log2FC_mod = 1,
+  min_mod_number = NA,
+  correct_GC_bg = FALSE,
+  qtnorm = TRUE,
+  consistent_peak = FALSE,
+  consistent_log2FC_cutoff = 1,
+  consistent_fdr_cutoff = 0.05,
+  alpha = 0.05,
+  p0 = 0.8
+)
 }
 \arguments{
 \item{SE_bins}{a \code{SummarizedExperiment} of read count. It should contains a colData with column named design_IP,

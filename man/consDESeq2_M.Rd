@@ -4,8 +4,13 @@
 \alias{consDESeq2_M}
 \title{Calculate the index for across sample modification consistency in a DESeqDataSet object}
 \usage{
-consDESeq2_M(dds, consistent_log2FC_cutoff = 1,
-  consistent_fdr_cutoff = 0.05, p0 = 0.8, alpha = 0.05)
+consDESeq2_M(
+  dds,
+  consistent_log2FC_cutoff = 1,
+  consistent_fdr_cutoff = 0.05,
+  p0 = 0.8,
+  alpha = 0.05
+)
 }
 \arguments{
 \item{dds}{a DESeqDataSet object.}

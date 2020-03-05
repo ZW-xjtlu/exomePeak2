@@ -4,8 +4,14 @@
 \alias{ctest}
 \title{Exact poisson test on the ratio between IP and input counts.}
 \usage{
-ctest(IP_count, input_count, IP_sizeFactor, input_sizeFactor, fold = 1,
-  alpha = 0.05)
+ctest(
+  IP_count,
+  input_count,
+  IP_sizeFactor,
+  input_sizeFactor,
+  fold = 1,
+  alpha = 0.05
+)
 }
 \arguments{
 \item{IP_count}{a numeric vector for the counts of IP sample.}

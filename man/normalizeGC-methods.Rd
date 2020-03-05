@@ -7,14 +7,29 @@
 \alias{normalizeGC}
 \title{Method normalizeGC}
 \usage{
-normalizeGC(sep, bsgenome = "hg19", txdb = "hg19", gff_dir = NULL,
-  fragment_length = 100, binding_length = 25, feature = c("All",
-  "Modification", "Background"), qtnorm = FALSE, effective_GC = FALSE)
+normalizeGC(
+  sep,
+  bsgenome = "hg19",
+  txdb = "hg19",
+  gff_dir = NULL,
+  fragment_length = 100,
+  binding_length = 25,
+  feature = c("All", "Modification", "Background"),
+  qtnorm = FALSE,
+  effective_GC = FALSE
+)
 
-\S4method{normalizeGC}{SummarizedExomePeak}(sep, bsgenome = NULL,
-  txdb = NULL, gff_dir = NULL, fragment_length = 100,
-  binding_length = 25, feature = c("All", "Modification",
-  "Background"), qtnorm = FALSE, effective_GC = FALSE)
+\S4method{normalizeGC}{SummarizedExomePeak}(
+  sep,
+  bsgenome = NULL,
+  txdb = NULL,
+  gff_dir = NULL,
+  fragment_length = 100,
+  binding_length = 25,
+  feature = c("All", "Modification", "Background"),
+  qtnorm = FALSE,
+  effective_GC = FALSE
+)
 }
 \arguments{
 \item{sep}{a \code{\link{SummarizedExomePeak}} object returned by \code{\link{exomePeak2}} or \code{\link{exomePeakCalling}}.}

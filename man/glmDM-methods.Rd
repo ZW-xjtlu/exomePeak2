@@ -7,12 +7,19 @@
 \alias{glmDM}
 \title{Method glmDM}
 \usage{
-glmDM(sep, glm_type = c("auto", "Poisson", "NB", "DESeq2"),
-  LFC_shrinkage = c("apeglm", "ashr"), ...)
+glmDM(
+  sep,
+  glm_type = c("auto", "Poisson", "NB", "DESeq2"),
+  LFC_shrinkage = c("apeglm", "ashr"),
+  ...
+)
 
-\S4method{glmDM}{SummarizedExomePeak}(sep, glm_type = c("auto",
-  "Poisson", "NB", "DESeq2"), LFC_shrinkage = c("apeglm", "ashr",
-  "none"), ...)
+\S4method{glmDM}{SummarizedExomePeak}(
+  sep,
+  glm_type = c("auto", "Poisson", "NB", "DESeq2"),
+  LFC_shrinkage = c("apeglm", "ashr", "none"),
+  ...
+)
 }
 \arguments{
 \item{sep}{a \code{\link{SummarizedExomePeak}} object.}

@@ -4,8 +4,14 @@
 \alias{GC_content_over_grl}
 \title{Retrieve GC content level from genome over regions defined by a GRanges or GRangesList object.}
 \usage{
-GC_content_over_grl(bsgenome, txdb, grl, fragment_length = 100,
-  binding_length = 25, effective_GC = FALSE)
+GC_content_over_grl(
+  bsgenome,
+  txdb,
+  grl,
+  fragment_length = 100,
+  binding_length = 25,
+  effective_GC = FALSE
+)
 }
 \arguments{
 \item{bsgenome}{A BSgenome object.}

@@ -4,9 +4,14 @@
 \alias{disj_background}
 \title{Find the background of the user provided mod_gration.}
 \usage{
-disj_background(mod_gr, txdb, background_bins = NULL,
-  background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual",
-  "all"), control_width = 50, rename_mod = FALSE)
+disj_background(
+  mod_gr,
+  txdb,
+  background_bins = NULL,
+  background_types = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  control_width = 50,
+  rename_mod = FALSE
+)
 }
 \arguments{
 \item{mod_gr}{A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).}

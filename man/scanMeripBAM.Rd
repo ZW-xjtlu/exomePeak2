@@ -4,13 +4,26 @@
 \alias{scanMeripBAM}
 \title{Organize the BAM Files Information of a MeRIP-seq Data Set.}
 \usage{
-scanMeripBAM(bam_ip = NULL, bam_input = NULL, bam_treated_ip = NULL,
-  bam_treated_input = NULL, paired_end = FALSE,
+scanMeripBAM(
+  bam_ip = NULL,
+  bam_input = NULL,
+  bam_treated_ip = NULL,
+  bam_treated_input = NULL,
+  paired_end = FALSE,
   library_type = c("unstranded", "1st_strand", "2nd_strand"),
-  index_bam = TRUE, bam_files = NULL, design_ip = NULL,
-  design_treatment = NULL, mapq = 30L, isSecondaryAlignment = FALSE,
-  isNotPassingQualityControls = FALSE, isDuplicate = FALSE,
-  isPaired = NA, isProperPair = NA, hasUnmappedMate = NA, ...)
+  index_bam = TRUE,
+  bam_files = NULL,
+  design_ip = NULL,
+  design_treatment = NULL,
+  mapq = 30L,
+  isSecondaryAlignment = FALSE,
+  isNotPassingQualityControls = FALSE,
+  isDuplicate = FALSE,
+  isPaired = NA,
+  isProperPair = NA,
+  hasUnmappedMate = NA,
+  ...
+)
 }
 \arguments{
 \item{bam_ip}{a \code{character} vector for the BAM file directories of the (control) IP samples.}

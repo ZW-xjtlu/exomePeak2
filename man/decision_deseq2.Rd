@@ -4,9 +4,14 @@
 \alias{decision_deseq2}
 \title{Calculate the decision table for a DESeq2 result.}
 \usage{
-decision_deseq2(Inf_RES, log2FC_cut = 0, P_cut = 0.05,
-  Padj_cut = NULL, Min_mod = 1000, Exp_dir = c("hyper", "hypo",
-  "both"))
+decision_deseq2(
+  Inf_RES,
+  log2FC_cut = 0,
+  P_cut = 0.05,
+  Padj_cut = NULL,
+  Min_mod = 1000,
+  Exp_dir = c("hyper", "hypo", "both")
+)
 }
 \arguments{
 \item{Inf_RES}{A \code{exomePeak2Results} or similar object that contains the result statistics for either methylation or differential methylation.}
