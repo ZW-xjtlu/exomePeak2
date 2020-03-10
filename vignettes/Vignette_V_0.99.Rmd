@@ -1,10 +1,16 @@
 ---
 title: "The *exomePeak2* user's guide"
-author: |
-  | Zhen Wei <ZhenWei@xjtlu.edu.cn>
-  | Jia Meng <JiaMeng@xjtlu.edu.cn>
-  | Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
-  | Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
+author: 
+- name: Zhen Wei
+  affiliation:
+  - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
+  - Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
+  email: ZhenWei01@xjtlu.edu.cn
+- name: Jia Meng
+  affiliation:
+  - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
+  - Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
+  email: JiaMeng@xjtlu.edu.cn
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
@@ -18,12 +24,26 @@ vignette: >
 ---
 
 ```{r para, echo = FALSE, results='hide'}
-BiocStyle::markdown()
 knitr::opts_chunk$set(dev="png",fig.show="hold",
                fig.width=8,fig.height=4.5,fig.align="center",
                message=FALSE,collapse=TRUE)
-set.seed(1)
 ```
+
+# Introduction
+
+The package **exomePeak2** provides technically independent quantification and peak detection on Methylated RNA immunoprecipitation sequencing data (**MeRIP-Seq**). *MeRIP-Seq* is a commonly applied sequencing technology to measure the location and abundance of RNA modification sites in transcriptome under a given cellular condition. However, the quantification and peak calling in *MeRIP-Seq* are sensitive to PCR amplification bias that is prevalent in second-generation sequencing. Furthermore, the quantification using **RNA-Seq** based count data faces challenges of biological variation and small reads count. *exomePeak2* collectively address these issues by introducing a robust processing pipeline on MeRIP-Seq data. With *exomePeak2*, users can perform peak calling and(or) differential analysis with a straightforward one-step function. Alternatively, users could refine the parameters of their analysis through multi-step functions and visualization tools.
+
+# Installation
+
+To install exomePeak2 from bioconductor, sart R (version >"3.6") and enter:
+
+```{r, eval=FALSE}
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("exomePeak2")
+```
+
+For order versions of R, please refer to the appropriate [Bioconductor release](https://www.bioconductor.org/about/release-announcements/}.
 
 # Peak Calling
 
@@ -35,6 +55,8 @@ The genome sequence is required to conduct GC content bias correction. If the `g
 
 ```{r, eval = TRUE}
 library(exomePeak2)
+
+set.seed(1)
 
 GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
 
@@ -233,7 +255,7 @@ exportResults(SummarizedExomePeaks, format = "BED")
 
 Please contact the maintainer of exomePeak2 if you have encountered any problems:
 
-**ZhenWei** :  <zhen.wei@xjtlu.edu.cn>
+**ZhenWei** :  <zhen.wei01@xjtlu.edu.cn>
 
 Please visit the github page of exomePeak2:
 

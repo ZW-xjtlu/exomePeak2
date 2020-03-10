@@ -15,9 +15,8 @@
 #'
 #'4. Return the index for the bins that are classified into background.
 #'
-#'@import BSgenome
 #'@import SummarizedExperiment
-#'@import mclust
+#'@importFrom mclust densityMclust
 #'
 #'
 mclust_bg <- function(se_peak_counts,

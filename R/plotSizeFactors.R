@@ -15,7 +15,6 @@
 #' @return A ggplot.
 #'
 #'@import ggplot2
-#'@import reshape2
 #'
 #'@importFrom reshape2 melt
 #'

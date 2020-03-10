@@ -1,16 +1,17 @@
 Package: exomePeak2
 Type: Package
-Title: Peak calling and quantification for MeRIP-seq data sets.
-Version: 0.99.4
+Title: Peak calling and quantification for MeRIP-seq data sets
+Version: 0.99.5
 Author: Zhen Wei
 Maintainer: Zhen Wei <zhen.wei10@icloud.com>
-Description: This package is developed to conduct peak calling and quantification for MeRIP-seq data sets while modeling the biological variabilities and the GC-content biases. 
+Description: This package is developed to conduct peak calling and quantification for MeRIP-Seq data sets while modeling the biological variabilities and the GC-content biases. 
 License: GPL (>= 2)
-Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,mclust,genefilter,BSgenome,BiocParallel,IRanges,S4Vectors,quantreg,reshape2,rtracklayer,apeglm,RMariaDB
+BugReports: https://github.com/ZW-xjtlu/exomePeak2/issues
+Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,mclust,genefilter,BSgenome,BiocParallel,IRanges,S4Vectors,quantreg,reshape2,rtracklayer,apeglm,RMariaDB,methods
 Depends: SummarizedExperiment,cqn
-biocViews: Sequencing, MethylSeq, RNASeq
+biocViews: Sequencing, MethylSeq, RNASeq, ExomeSeq, Coverage, Normalization, Preprocessing, ImmunoOncology, DifferentialExpression
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,

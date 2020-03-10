@@ -26,7 +26,7 @@
 #' the filter statistics used is the normalized read abundence.
 #'
 #'@import SummarizedExperiment
-#'@import genefilter
+#'@importFrom genefilter filtered_R filtered_p
 #'
 #'@return A list include adjusted p values (with method fdr) and the corresponding log2 fold changes.
 

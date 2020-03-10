@@ -246,7 +246,6 @@
 #' @importFrom GenomicAlignments summarizeOverlaps
 #' @importFrom Rsamtools asMates
 #' @import GenomicRanges
-#' @import BiocParallel
 #' @import SummarizedExperiment
 #' @import RMariaDB
 #'

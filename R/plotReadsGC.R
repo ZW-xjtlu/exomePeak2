@@ -43,7 +43,6 @@
 #'@import ggplot2
 #'@import BSgenome
 #'@import SummarizedExperiment
-#'@import quantreg
 #'@importFrom reshape2 melt
 #'
 #'@aliases plotReadsGC

@@ -127,7 +127,7 @@ setMethod("GCsizeFactors",
 setMethod("GCsizeFactors<-",
           "SummarizedExomePeak",
           function(x2,value) {
-              assays(x2)$GCsizeFactors <- value
+              assays(x2,withDimnames=FALSE)$GCsizeFactors <- value
               return(x2)
           })
 

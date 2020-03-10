@@ -2,6 +2,11 @@ The *exomePeak2* user's guide
 ================
 2019-12-20
 
+Introduction
+============
+
+The package **exomePeak2** provides technically independent quantification and peak detection on Methylated RNA immunoprecipitation sequencing data (**MeRIP-Seq**). *MeRIP-Seq* is a commonly applied sequencing technology to measure the location and abundance of RNA modification sites in transcriptome under a given cellular condition. However, the quantification and peak calling in *MeRIP-Seq* are sensitive to PCR amplification bias that is prevalent in second-generation sequencing. Furthermore, the quantification using **RNA-Seq** based count data faces challenges of biological variation and small reads count. *exomePeak2* collectively address these issues by introducing a robust processing pipeline on MeRIP-Seq data. With *exomePeak2*, users can perform peak calling and(or) differential analysis with a straightforward one-step function. Alternatively, users could refine the parameters of their analysis through multi-step functions and visualization tools.
+
 Package Installation
 ====================
 
@@ -242,7 +247,7 @@ SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 plotLfcGC(SummarizedExomePeaks) 
 ```
 
-<img src="README_files/figure-markdown_github/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
+<img src="inst/figures/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
 
 **6. Generate the bar plot for the sequencing depth size factors.**
 
@@ -250,7 +255,7 @@ plotLfcGC(SummarizedExomePeaks)
 plotSizeFactors(SummarizedExomePeaks)
 ```
 
-<img src="README_files/figure-markdown_github/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
+<img src="inst/figures/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
 
 **7. Export the modification peaks and the peak statistics with user decided format.**
 

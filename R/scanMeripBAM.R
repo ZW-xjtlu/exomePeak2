@@ -77,7 +77,7 @@
 #' )
 #'
 #' @seealso \code{\link{exomePeakCalling}}
-#' @import Rsamtools
+#' @importFrom Rsamtools BamFileList sortBam indexBam scanBamFlag ScanBamParam index<-
 #' @export
 
 scanMeripBAM <- function(bam_ip = NULL,

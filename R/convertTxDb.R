@@ -12,7 +12,7 @@
 #'
 #' @importFrom IRanges IRanges
 #'
-#' @import rtracklayer
+#' @importFrom rtracklayer asGFF
 #'
 #' @name convertTxDb
 #'

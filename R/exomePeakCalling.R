@@ -178,9 +178,9 @@
 #'
 #' @seealso \code{\link{exomePeak2}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}
 #' @import GenomicAlignments
-#' @importFrom Rsamtools asMates
+#' @importFrom Rsamtools asMates yieldSize<-
 #' @import GenomicRanges
-#' @import BiocParallel
+#' @importFrom BiocParallel register SerialParam MulticoreParam SnowParam
 #' @import SummarizedExperiment
 #'
 #' @aliases exomePeakCalling
@@ -671,11 +671,11 @@ setMethod("exomePeakCalling",
 
               indx_ctl <- grepl("control",rownames(SummarizedExomePeaks))
 
-              assay(SummarizedExomePeaks)[indx_ctl,] <- assay(SE_Peak_counts_bg)
+              assay(SummarizedExomePeaks,withDimnames=FALSE)[indx_ctl,] <- assay(SE_Peak_counts_bg)
 
               rm(SE_Peak_counts_bg, indx_ctl)
 
-              assay(SummarizedExomePeaks)[indx_modc,] <- assay(SE_temp)
+              assay(SummarizedExomePeaks,withDimnames=FALSE)[indx_modc,] <- assay(SE_temp)
 
               rm(SE_temp, indx_modc)
 
