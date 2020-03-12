@@ -23,7 +23,7 @@ This class contains \link{SummarizedExperiment}.
 \details{
 \strong{Constructors:}
 
-The \code{SummarizedExomePeak} object can be contructed by 3 functions.
+The \code{SummarizedExomePeak} object can be constructed by 3 functions.
 
 \enumerate{
  \item \link{SummarizedExomePeak}

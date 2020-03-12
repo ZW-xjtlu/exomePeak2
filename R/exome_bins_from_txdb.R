@@ -13,7 +13,8 @@
 #'
 #' @importFrom IRanges IRanges
 #' @importFrom S4Vectors queryHits subjectHits
-#'
+#' @importFrom GenomeInfoDb seqlengths seqlengths<-
+#' @keywords internal
 exome_bins_from_txdb <- function(txdb,
                                  window_size = 25,
                                  step_size = 25) {

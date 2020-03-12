@@ -21,3 +21,4 @@ the resized reads GRanges for 5' POS positions.
 \description{
 extract reads five prime POS.
 }
+\keyword{internal}

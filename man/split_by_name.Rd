@@ -15,3 +15,4 @@ the list split by its names.
 \description{
 a function to split a GRanges into GRangesList by its names.
 }
+\keyword{internal}

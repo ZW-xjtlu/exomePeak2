@@ -37,3 +37,4 @@ a DataFrame contains 2 columns:
 The GC content is calculated only on exon sequences, for regions that failed to mapped to exons in txdb, the function would return NA instead.
 The ranges in grl will be flanked by the size fragment_length - binding_length before GC content calculation.
 }
+\keyword{internal}

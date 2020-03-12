@@ -17,7 +17,7 @@
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @importFrom S4Vectors queryHits subjectHits
-#'
+#' @keywords internal
 
 disj_background <- function(mod_gr,
                             txdb,

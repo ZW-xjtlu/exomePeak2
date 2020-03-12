@@ -6,6 +6,7 @@
 #' @import GenomicRanges
 #'
 #' @importFrom S4Vectors queryHits subjectHits
+#' @keywords internal
 #'
 
 remove_introns <- function(gr_bins, grl_exbg){

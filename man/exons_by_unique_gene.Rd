@@ -16,3 +16,4 @@ the name corresponds to the original gene with .integer indexed if they have exo
 \description{
 Extracting exons by the corresponding genes that are on the same chromosomes and strand.
 }
+\keyword{internal}

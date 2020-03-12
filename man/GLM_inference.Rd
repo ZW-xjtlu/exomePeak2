@@ -68,3 +68,4 @@ a list of the index for the significant modified peaks (IP > input) and control 
 \description{
 \code{GLM_inference} conduct inference on log2 fold changes of IP over input using the GLM defined in DESeq2.
 }
+\keyword{internal}

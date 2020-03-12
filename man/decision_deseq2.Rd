@@ -32,3 +32,4 @@ A \code{data.frame} object indicating the column and cut-off value used for desi
 \description{
 \code{Decision_dsresult} is an internal function used to summary the cut-off and the number of positive results used for DESeq2 result..
 }
+\keyword{internal}

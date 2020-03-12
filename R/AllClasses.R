@@ -1,6 +1,79 @@
-#' @title MeripBamFileList
+#' @title Maintain and use BAM files in MeRIP-Seq experiment
 #'
-#' @description An object that summarizes the BAM files used in a MeRIP-Seq experiment.
+#' @description An S4 object defined in exomePeak2 that summarizes the BAM files used in a MeRIP-Seq experiment.
+#'
+#' \code{MeripBamFileList()} provide a convenient format to store and manage
+#' the BAM file directories for MeRIP-Seq data set.
+#'
+#' This class contains \link{BamFileList} from the packge \code{Rsamtools}.
+#'
+#' @details
+#'
+#' \strong{Constructors:}
+#'
+#' \code{MeripBamFileList} can be constructed by \code{scanMeripBAM()}
+#'
+#' \strong{Accessors:}
+#'
+#' \code{MeripBamFileList} object share all the accessors with the \link{BamFileList} class,
+#' please check it for more information.
+#'
+#' The frequently used accessors include:
+#' \code{metadata()}
+#' \code{Parameter()}
+#' \code{asMate()}
+#'
+#' It has one additional accessor: \code{LibraryType()}
+#' This accessor retrieves the strand specificity information of the RNA-Seq library.
+#'
+#' @examples
+#'
+#' ### Define BAM File Directories
+#'
+#' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "IP2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "IP3.bam", package="exomePeak2")
+#' f4 = system.file("extdata", "IP4.bam", package="exomePeak2")
+#' IP_BAM = c(f1,f2,f3,f4)
+#' f1 = system.file("extdata", "Input1.bam", package="exomePeak2")
+#' f2 = system.file("extdata", "Input2.bam", package="exomePeak2")
+#' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
+#' INPUT_BAM = c(f1,f2,f3)
+#'
+#' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
+#' TREATED_IP_BAM = c(f1)
+#' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
+#' TREATED_INPUT_BAM = c(f1)
+#'
+#' ### For MeRIP-Seq Experiment Without the Treatment Group
+#'
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
+#'  bam_ip = IP_BAM,
+#'  bam_input = INPUT_BAM,
+#'  paired_end = FALSE
+#' )
+#'
+#' ### For MeRIP-Seq Experiment With the Treatment Group
+#'
+#' MeRIP_Seq_Alignment <- scanMeripBAM(
+#'  bam_ip = IP_BAM,
+#'  bam_input = INPUT_BAM,
+#'  bam_treated_ip = TREATED_IP_BAM,
+#'  bam_treated_input = TREATED_INPUT_BAM,
+#'  paired_end = FALSE
+#' )
+#'
+#' # Access to the library type, could be one in "unstranded","1st_strand", and "2nd_strand"
+#' LibraryType(MeRIP_Seq_Alignment)
+#'
+#' # Access to the BAM FLAG parameters used for BAM file filtering
+#' Parameter(MeRIP_Seq_Alignment)
+#'
+#' # Return a logical value, TRUE if the BAM file is paired end
+#' asMates(MeRIP_Seq_Alignment)
+#'
+#' # Return a list storing the design of MeRIP-Seq experiment
+#' metadata(MeRIP_Seq_Alignment)
 #'
 #' @exportClass MeripBamFileList
 #'
@@ -26,7 +99,7 @@ setClass(
 #'
 #' \strong{Constructors:}
 #'
-#'The \code{SummarizedExomePeak} object can be contructed by 3 functions.
+#'The \code{SummarizedExomePeak} object can be constructed by 3 functions.
 #'
 #'\enumerate{
 #'  \item \link{SummarizedExomePeak}
@@ -106,5 +179,9 @@ setClass(
 #' @param ... arguments passed to \code{new()}.
 #' @name SummarizedExomePeak
 #' @rdname SummarizedExomePeak-class
+#' @importFrom methods as is new
+#' @importFrom stats pbinom qbinom relevel
+#' @importFrom utils capture.output read.table write.csv
+#'
 #' @export
 SummarizedExomePeak <- function(...) new("SummarizedExomePeak", ...)

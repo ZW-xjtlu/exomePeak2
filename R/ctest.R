@@ -29,6 +29,8 @@
 #'@importFrom genefilter filtered_R filtered_p
 #'
 #'@return A list include adjusted p values (with method fdr) and the corresponding log2 fold changes.
+#'
+#'@keywords internal
 
 ctest <-  function(IP_count,
                    input_count,

@@ -9,6 +9,8 @@
 #'
 #'@return the resized reads GRanges for reversed 5' POS positions.
 #'
+#'@keywords internal
+#'
 reads_five_POS_rev <- function(reads,
                            width = 1,
                            fix = "start",

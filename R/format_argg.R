@@ -1,3 +1,5 @@
+#'@importFrom Biobase package.version
+#'
 format_argg <- function(x){
 txdb_info <- x$txdb
 txdb_info[1] <- ""

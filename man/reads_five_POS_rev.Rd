@@ -21,3 +21,4 @@ the resized reads GRanges for reversed 5' POS positions.
 \description{
 extract reads five prime POS and reverse its strand.
 }
+\keyword{internal}

@@ -14,7 +14,7 @@ normalizeGC(
   gff_dir = NULL,
   fragment_length = 100,
   binding_length = 25,
-  feature = c("All", "Modification", "Background"),
+  feature = c("Background", "Modification", "All"),
   qtnorm = FALSE,
   effective_GC = FALSE
 )
@@ -26,7 +26,7 @@ normalizeGC(
   gff_dir = NULL,
   fragment_length = 100,
   binding_length = 25,
-  feature = c("All", "Modification", "Background"),
+  feature = c("Background", "Modification", "All"),
   qtnorm = FALSE,
   effective_GC = FALSE
 )
@@ -46,21 +46,24 @@ If the \code{TxDb} object is not available, it could be a \code{character} strin
 
 \item{binding_length}{a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.}
 
-\item{feature}{a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("All","Modification","Background")}; default is \code{"All"}.
+\item{feature}{a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("Background","All","Modification")}; default is \code{"Background"}.
 
 \describe{
+
+ \item{\strong{\code{Background}}}{
+ The GC content linear effects will be estimated on the background regions.
+ By default, the background is defined as the exon regions not overlapping with peaks / modification sites flanked by the fragment length.
+ You could select alternative background finding methods with \code{background} at \code{\link{exomePeakCalling}}.
+ }
+
+ \item{\strong{\code{Modification}}}{
+ The GC content linear effects will be estimated on the regions of modification peaks/sites.
+ }
 
  \item{\strong{\code{All}}}{
  The GC content linear effects will be estimated on all regions, i.e. both the region of modification and the background control regions.
  }
 
- \item{\strong{\code{Modification}}}{
- The GC content linear effects will be estimated on the modification peaks/sites.
- }
-
- \item{\strong{\code{Background}}}{
- The GC content linear effects will be estimated on the background control regions.
- }
 
 }}
 

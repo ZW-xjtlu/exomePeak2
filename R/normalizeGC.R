@@ -14,21 +14,24 @@
 #'
 #'@param binding_length a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.
 #'
-#'@param feature a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("All","Modification","Background")}; default is \code{"All"}.
+#'@param feature a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("Background","All","Modification")}; default is \code{"Background"}.
 #'
 #'\describe{
+#'
+#'  \item{\strong{\code{Background}}}{
+#'  The GC content linear effects will be estimated on the background regions.
+#'  By default, the background is defined as the exon regions not overlapping with peaks / modification sites flanked by the fragment length.
+#'  You could select alternative background finding methods with \code{background} at \code{\link{exomePeakCalling}}.
+#'  }
+#'
+#'  \item{\strong{\code{Modification}}}{
+#'  The GC content linear effects will be estimated on the regions of modification peaks/sites.
+#'  }
 #'
 #'  \item{\strong{\code{All}}}{
 #'  The GC content linear effects will be estimated on all regions, i.e. both the region of modification and the background control regions.
 #'  }
 #'
-#'  \item{\strong{\code{Modification}}}{
-#'  The GC content linear effects will be estimated on the modification peaks/sites.
-#'  }
-#'
-#'  \item{\strong{\code{Background}}}{
-#'  The GC content linear effects will be estimated on the background control regions.
-#'  }
 #'
 #' }
 #'
@@ -63,6 +66,7 @@
 #'@import SummarizedExperiment
 #'@import cqn
 #'@importFrom BSgenome getBSgenome
+#'
 #'@docType methods
 #'@seealso \code{\link{estimateSeqDepth}}
 #'
@@ -80,7 +84,7 @@ setMethod("normalizeGC",
                                  gff_dir = NULL,
                                  fragment_length = 100,
                                  binding_length = 25,
-                                 feature = c("All","Modification","Background"),
+                                 feature = c("Background","Modification","All"),
                                  qtnorm = FALSE,
                                  effective_GC = FALSE
                                  ) {
@@ -143,6 +147,8 @@ if(feature == "All"){
   }
 }
 
+if(length(Subindex) < 10) Subindex = which( rowMeans(assay(sep)[!GC_na_index,]) > 50 )
+
 if(!qtnorm) {
 
 cqnObject <- quiet( suppressMessages(
@@ -160,7 +166,7 @@ cqnObject <- quiet( suppressMessages(
 
 GC_size_factors[!GC_na_index,] <- cqnObject$glm.offset
 
-assays(sep)$GCsizeFactors <- GC_size_factors
+assays(sep, withDimnames=FALSE)$GCsizeFactors <- GC_size_factors
 
 } else {
 
@@ -198,7 +204,7 @@ GC_size_factors[!GC_na_index,!sep$design_IP] <- cqnObject_input$glm.offset
 
 rm(cqnObject_IP, cqnObject_input)
 
-assays(sep)$GCsizeFactors <- GC_size_factors
+assays(sep, withDimnames=FALSE)$GCsizeFactors <- GC_size_factors
 
 }
 

@@ -19,6 +19,7 @@
 #' @import SummarizedExperiment
 #'
 #' @return a logical index for the consistently modified rows in the DESeqDataSet.
+#' @keywords internal
 #'
 consDESeq2_M <- function(dds,
                         consistent_log2FC_cutoff = 1,

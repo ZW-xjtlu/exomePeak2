@@ -17,3 +17,4 @@ A \code{GRangesList} object with the same length of \code{gr_bins}, each list el
 \description{
 Removing introns from a provided GRanges object.
 }
+\keyword{internal}

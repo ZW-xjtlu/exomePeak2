@@ -25,3 +25,4 @@ The second portion is the restructed user provided annotation with gene id annot
 \description{
 Replace the control regions with user provided background.
 }
+\keyword{internal}

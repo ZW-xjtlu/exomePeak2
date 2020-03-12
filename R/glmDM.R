@@ -58,6 +58,7 @@
 #' @seealso \code{\link{glmM}}
 #'
 #' @export
+#'
 
 setMethod("glmDM",
           "SummarizedExomePeak",

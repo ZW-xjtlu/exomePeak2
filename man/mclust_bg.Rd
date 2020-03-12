@@ -30,3 +30,4 @@ This function will do the following jobs:
 
 4. Return the index for the bins that are classified into background.
 }
+\keyword{internal}

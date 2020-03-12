@@ -13,9 +13,9 @@ exomePeakCalling(
   genome = NA,
   mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"),
-  background = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  background_method = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL,
-  correct_GC_bg = FALSE,
+  correct_GC_bg = TRUE,
   qtnorm = FALSE,
   gff_dir = NULL,
   fragment_length = 100,
@@ -43,9 +43,9 @@ exomePeakCalling(
   genome = NA,
   mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"),
-  background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
+  background_method = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL,
-  correct_GC_bg = FALSE,
+  correct_GC_bg = TRUE,
   qtnorm = FALSE,
   gff_dir = NULL,
   fragment_length = 100,
@@ -99,7 +99,7 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 
 By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.}
 
-\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+\item{background_method}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 
 In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 
@@ -123,7 +123,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 \item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
 
-\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
 
 If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 

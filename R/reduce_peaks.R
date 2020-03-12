@@ -9,7 +9,7 @@
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures
-#'
+#' @keywords internal
 #'
 
 

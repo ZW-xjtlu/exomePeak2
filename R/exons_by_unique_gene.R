@@ -5,7 +5,7 @@
 #'
 #' @importFrom GenomicFeatures exonsBy
 #' @import GenomicRanges
-#'
+#' @keywords internal
 exons_by_unique_gene <- function(txdb) {
 
 exbg <- exonsBy(txdb, by = "gene")

@@ -15,6 +15,7 @@
 #' @importFrom rtracklayer asGFF
 #'
 #' @name convertTxDb
+#' @keywords internal
 #'
 
 convertTxDb <- function(txdb,type = c("full_tx", "whole_genome")){

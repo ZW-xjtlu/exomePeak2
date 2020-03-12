@@ -109,7 +109,7 @@
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions during modification level quantification; default \code{= TRUE}.
 #'
 #' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
@@ -117,7 +117,7 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+#' @param background_method a \code{character} specifies the method of finding background regions for peak detection, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 #'
 #' In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 #'
@@ -245,6 +245,7 @@
 #' @seealso \code{\link{exomePeakCalling}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}, \code{\link{plotLfcGC}}
 #' @importFrom GenomicAlignments summarizeOverlaps
 #' @importFrom Rsamtools asMates
+#' @importFrom utils capture.output
 #' @import GenomicRanges
 #' @import SummarizedExperiment
 #' @import RMariaDB
@@ -285,12 +286,12 @@ exomePeak2 <- function(bam_ip = NULL,
                        alpha = 0.05,
                        p0 = 0.8,
                        parallel = FALSE,
-                       background = c("all",
-                                      "Gaussian_mixture",
-                                      "m6Aseq_prior",
-                                      "manual"),
+                       background_method = c("all",
+                                             "Gaussian_mixture",
+                                             "m6Aseq_prior",
+                                             "manual"),
                        manual_background = NULL,
-                       correct_GC_bg = FALSE,
+                       correct_GC_bg = TRUE,
                        qtnorm = FALSE,
                        glm_type = c("DESeq2",
                                     "Poisson",
@@ -320,7 +321,7 @@ stopifnot(all(export_format %in% c("CSV", "BED", "RDS")))
 
 table_style <- match.arg(table_style)
 
-background <- match.arg(background)
+background_method <- match.arg(background_method)
 
 glm_type <- match.arg(glm_type)
 
@@ -412,7 +413,7 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         p0 = p0,
                         parallel = parallel,
                         mod_annot = mod_annot,
-                        background = background,
+                        background_method = background_method,
                         manual_background = manual_background,
                         correct_GC_bg = correct_GC_bg,
                         qtnorm = qtnorm

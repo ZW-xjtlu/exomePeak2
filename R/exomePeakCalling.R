@@ -79,7 +79,7 @@
 #'
 #' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
 #'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
 #'
 #' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
 #'
@@ -87,7 +87,7 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+#' @param background_method a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 #'
 #' In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 #'
@@ -199,12 +199,12 @@ setMethod("exomePeakCalling",
                    glm_type = c("DESeq2",
                                 "NB",
                                 "Poisson"),
-                   background = c("all",
-                                  "Gaussian_mixture",
-                                  "m6Aseq_prior",
-                                  "manual"),
+                   background_method = c("all",
+                                         "Gaussian_mixture",
+                                         "m6Aseq_prior",
+                                         "manual"),
                    manual_background = NULL,
-                   correct_GC_bg = FALSE,
+                   correct_GC_bg = TRUE,
                    qtnorm = FALSE,
                    gff_dir = NULL,
                    fragment_length = 100,
@@ -232,7 +232,7 @@ setMethod("exomePeakCalling",
 
             glm_type <- match.arg(glm_type)
 
-            background <- match.arg(background)
+            background_method <- match.arg(background_method)
 
             stopifnot(fragment_length > 0)
 
@@ -380,7 +380,7 @@ setMethod("exomePeakCalling",
               #Model based clustering
               m6A_prior = F
 
-              if (background == "Gaussian_mixture") {
+              if (background_method == "Gaussian_mixture") {
                 message("Identify background with Gaussian Mixture Model ... ", appendLF = F)
 
                 rowData(SE_Peak_counts)$indx_bg <- quiet( mclust_bg(se_peak_counts = SE_Peak_counts) )
@@ -403,7 +403,7 @@ setMethod("exomePeakCalling",
 
               #Define background using prior knowledge of m6A topology
 
-              if (background == "m6Aseq_prior" | m6A_prior) {
+              if (background_method == "m6Aseq_prior" | m6A_prior) {
                 indx_UTR5 <-
                   rowRanges(SE_Peak_counts) %over% fiveUTRsByTranscript(txdb)
 
@@ -417,13 +417,13 @@ setMethod("exomePeakCalling",
 
               #Define background using user provided GRanges
 
-              if (background == "manual") {
+              if (background_method == "manual") {
 
                 rowData(SE_Peak_counts)$indx_bg = rowRanges(SE_Peak_counts) %over% manual_background
 
               }
 
-              if (background == "all") {
+              if (background_method == "all") {
 
                 rowData(SE_Peak_counts)$indx_bg = rowMeans(assay(SE_Peak_counts)) >= bg_count_cutoff
 
@@ -508,7 +508,7 @@ setMethod("exomePeakCalling",
                 mod_gr = gr_mod_flanked,
                 txdb = txdb,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
-                background_types = background,
+                background_types = background_method,
                 control_width = peak_width
               )
 

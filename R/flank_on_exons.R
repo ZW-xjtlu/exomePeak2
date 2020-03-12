@@ -13,7 +13,8 @@
 #'
 #'@import GenomicRanges
 #'@import GenomicFeatures
-#'
+#'@importFrom GenomeInfoDb seqlengths seqlengths<-
+#'@keywords internal
 #'
 flank_on_exons <- function(grl,
                            flank_length,

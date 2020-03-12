@@ -23,3 +23,4 @@ The original input GRangesList will be dropped if it is not mapped to the exonic
 \description{
 This function provides extention of the ends of the GRangesList on transcript coordinate or exons.
 }
+\keyword{internal}

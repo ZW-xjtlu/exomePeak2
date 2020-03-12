@@ -18,7 +18,8 @@
 #' @import BSgenome
 #' @import GenomicRanges
 #' @importFrom S4Vectors DataFrame
-#'
+#' @importFrom Biostrings DNAStringSet startIndex
+#' @keywords internal
 #'
 GC_content_over_grl <- function(bsgenome,
                                 txdb,
@@ -106,7 +107,7 @@ names(GC_mod) <- names(grl_mod)
 
 #Calculate the background GC content using ordinary method without flanking.
 
-GC_control <- as.vector( letterFrequency( Views(Hsapiens,unlist(grl[grepl("control_",names(grl))])) , letters = "GC", as.prob = TRUE) )
+GC_control <- as.vector( letterFrequency( Views(bsgenome,unlist(grl[grepl("control_",names(grl))])) , letters = "GC", as.prob = TRUE) )
 names(GC_control) <- grep("control_",names(grl),value = TRUE)
 
 GC_return <- rep(NA,length(grl))

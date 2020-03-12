@@ -53,3 +53,4 @@ The p-values are adjusted with "BH" method with an independent filtering slected
 
 the filter statistics used is the normalized read abundence.
 }
+\keyword{internal}

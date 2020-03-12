@@ -18,3 +18,4 @@ The metadata collumn is preserved, however the names is not tracked anymore.
 \description{
 \code{reduce_inter_grl} redivide and reduce the overlapping GRangesList element.
 }
+\keyword{internal}

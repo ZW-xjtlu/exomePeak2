@@ -17,3 +17,4 @@ a TxDb object that will change the exon region into the full transcript and the 
 \description{
 This function can convert the txdb object into full transcript and whole genome types.
 }
+\keyword{internal}

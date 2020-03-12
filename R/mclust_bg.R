@@ -18,6 +18,7 @@
 #'@import SummarizedExperiment
 #'@importFrom mclust densityMclust
 #'
+#'@keywords internal
 #'
 mclust_bg <- function(se_peak_counts,
                       alpha = 1){

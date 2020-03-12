@@ -44,6 +44,7 @@
 #'
 #' @import cqn
 #'
+#' @keywords internal
 #'
 GLM_inference <- function(SE_bins,
                           glm_type = c("Poisson", "NB", "DESeq2"),

@@ -25,3 +25,4 @@ Calculate the index for across sample differential modification consistency in a
 The minimum consistent number cutcoff is defined by 1-alpha quantile of a binomial distribution with probability of success = p, and number of trials = number of possible pairs between replicates.
 This is equivalent to the rejection of an exact binomial test with null hypothesis of p < 0.8 and N = number of possible pairs.
 }
+\keyword{internal}

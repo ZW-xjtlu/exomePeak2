@@ -21,3 +21,4 @@ The gene IDs are divided into multiple ones if the gene contains exons that belo
 \description{
 extract exome bins for peak calling given a txdb object
 }
+\keyword{internal}

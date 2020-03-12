@@ -32,9 +32,9 @@ exomePeak2(
   alpha = 0.05,
   p0 = 0.8,
   parallel = FALSE,
-  background = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
+  background_method = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL,
-  correct_GC_bg = FALSE,
+  correct_GC_bg = TRUE,
   qtnorm = FALSE,
   glm_type = c("DESeq2", "Poisson", "NB"),
   LFC_shrinkage = c("apeglm", "ashr", "Gaussian", "none"),
@@ -123,7 +123,7 @@ The consistency defined in this way is equivalent to the rejection of an exact b
 
 \item{parallel}{a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.}
 
-\item{background}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+\item{background_method}{a \code{character} specifies the method of finding background regions for peak detection, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 
 In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 
@@ -148,7 +148,7 @@ The following methods are supported in \code{ExomePeak2} to differentiate the no
 
 \item{manual_background}{a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.}
 
-\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+\item{correct_GC_bg}{a \code{logical} value of whether to estimate the GC content linear effect on background regions during modification level quantification; default \code{= TRUE}.
 
 If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.}
 
