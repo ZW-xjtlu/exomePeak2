@@ -78,6 +78,7 @@
 #'
 #' @seealso \code{\link{exomePeakCalling}}
 #' @importFrom Rsamtools BamFileList sortBam indexBam scanBamFlag ScanBamParam index<-
+#' @importFrom rtracklayer path
 #' @export
 
 scanMeripBAM <- function(bam_ip = NULL,
