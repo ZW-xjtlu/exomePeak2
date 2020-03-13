@@ -24,12 +24,16 @@ This class contains \link{BamFileList} from the packge \code{Rsamtools}.
 please check it for more information.
 
 The frequently used accessors include:
-\code{metadata()}
-\code{Parameter()}
-\code{asMate()}
 
-It has one additional accessor: \code{LibraryType()}
-This accessor retrieves the strand specificity information of the RNA-Seq library.
+\code{metadata()}: Return a list storing the design of MeRIP-Seq experiment.
+
+\code{Parameter()}: Access to the BAM FLAG parameters used for BAM file filtering.
+
+\code{asMate()}: Return a logical value, TRUE if the BAM file is paired end.
+
+It has one additional accessor \code{LibraryType()}
+
+\code{LibraryType()} retrieves the strand specificity information of the RNA-Seq library.
 }
 \examples{
 
@@ -68,16 +72,8 @@ MeRIP_Seq_Alignment <- scanMeripBAM(
  paired_end = FALSE
 )
 
-# Access to the library type, could be one in "unstranded","1st_strand", and "2nd_strand"
 LibraryType(MeRIP_Seq_Alignment)
 
-# Access to the BAM FLAG parameters used for BAM file filtering
 Parameter(MeRIP_Seq_Alignment)
-
-# Return a logical value, TRUE if the BAM file is paired end
-asMates(MeRIP_Seq_Alignment)
-
-# Return a list storing the design of MeRIP-Seq experiment
-metadata(MeRIP_Seq_Alignment)
 
 }
