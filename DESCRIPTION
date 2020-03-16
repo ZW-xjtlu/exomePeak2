@@ -1,10 +1,10 @@
 Package: exomePeak2
 Type: Package
-Title: Technically Independent Peak Calling and Quantification for MeRIP-Seq
+Title: Bias Awared Peak Calling and Quantification for MeRIP-Seq
 Version: 0.99.91
 Author: Zhen Wei
 Maintainer: Zhen Wei <zhen.wei10@icloud.com>
-Description: exomePeak2 provides technically independent quantification and peak detection on Methylated RNA immunoprecipitation sequencing data (MeRIP-Seq). MeRIP-Seq is a commonly applied sequencing technology to measure the transcriptome-wide location and abundance of RNA modification sites under a given cellular condition. However, the quantification and peak calling in MeRIP-Seq are sensitive to PCR amplification bias which is prevalent in next generation sequencing (NGS) techniques. In addition, the RNA-Seq based count data exhibits biological variation in small reads count. exomePeak2 collectively address these challanges by introducing a rich set of robust data science models tailored for MeRIP-Seq. With exomePeak2, users can perform peak calling, modification site quantification, and differential analysis with a straightforward one-step function. Alternatively, users could define personalized methods for their own analysis through multi-step functions and diagnostic plots.
+Description: exomePeak2 provides bias awared quantification and peak detection on Methylated RNA immunoprecipitation sequencing data (MeRIP-Seq). MeRIP-Seq is a commonly applied sequencing technology to measure the transcriptome-wide location and abundance of RNA modification sites under a given cellular condition. However, the quantification and peak calling in MeRIP-Seq are sensitive to PCR amplification bias which is prevalent in next generation sequencing (NGS) techniques. In addition, the RNA-Seq based count data exhibits biological variation in small reads count. exomePeak2 collectively address these challanges by introducing a rich set of robust data science models tailored for MeRIP-Seq. With exomePeak2, users can perform peak calling, modification site quantification, and differential analysis with a straightforward one-step function. Alternatively, users could define personalized methods for their own analysis through multi-step functions and diagnostic plots.
 License: GPL (>= 2)
 BugReports: https://github.com/ZW-xjtlu/exomePeak2/issues
 Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,mclust,genefilter,Biostrings,BSgenome,BiocParallel,IRanges,S4Vectors,reshape2,rtracklayer,apeglm,RMariaDB,methods,stats,utils,Biobase,GenomeInfoDb
