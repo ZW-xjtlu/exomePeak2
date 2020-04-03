@@ -23,7 +23,7 @@ exomePeak2(
   peak_width = fragment_length/2,
   pc_count_cutoff = 5,
   bg_count_cutoff = 50,
-  p_cutoff = 1e-05,
+  p_cutoff = 0.01,
   p_adj_cutoff = NULL,
   log2FC_cutoff = 1,
   consistent_peak = FALSE,
@@ -101,7 +101,7 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 
 \item{bg_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.}
 
-\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 1e-05}.}
+\item{p_cutoff}{a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 0.01}.}
 
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
