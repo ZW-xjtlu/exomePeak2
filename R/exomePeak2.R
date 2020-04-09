@@ -416,6 +416,7 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         background_method = background_method,
                         manual_background = manual_background,
                         correct_GC_bg = correct_GC_bg,
+                        glm_type = glm_type,
                         qtnorm = qtnorm
 )
 
@@ -435,10 +436,10 @@ if(!is.null(bsgenome)) {
 
 if(any(sep$design_Treatment)){
   message("Differential modification analysis with interactive GLM ... ", appendLF = FALSE)
-  sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage) )
+  sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage, glm_type = glm_type) )
   message("OK")
 } else {
-  sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage)
+  sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage, glm_type = glm_type)
 }
 
 if( export_results ) {
