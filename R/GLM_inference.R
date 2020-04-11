@@ -152,6 +152,8 @@ GLM_inference <- function(SE_bins,
   #             Generalized Linear Model               #
   ######################################################
 
+  if (!consistent_peak) {
+
   if (glm_type == "Poisson") {
     message("Peak Calling with Poisson GLM ... ",appendLF = FALSE)
   }
@@ -211,7 +213,7 @@ GLM_inference <- function(SE_bins,
 
   message("OK")
 
-  if (consistent_peak) {
+  }else{
 
     message("Evaluating peak consistency with C-tests ... ", appendLF = FALSE)
 
@@ -221,7 +223,7 @@ GLM_inference <- function(SE_bins,
                               alpha = alpha,
                               p0 = p0)
 
-    sig_peak_mod <- sig_peak_mod[ sig_peak_mod%in%rownames(dds)[cons_indx] ]
+    sig_peak_mod <- rownames(dds)[cons_indx]
 
     rm(cons_indx)
 
