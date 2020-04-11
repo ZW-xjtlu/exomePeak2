@@ -48,7 +48,7 @@
 #'
 GLM_inference <- function(SE_bins,
                           glm_type = c("Poisson", "NB", "DESeq2"),
-                          p_cutoff = 0.0001,
+                          p_cutoff = 1e-5,
                           p_adj_cutoff = NULL,
                           count_cutoff = 5,
                           log2FC_mod = 1,
