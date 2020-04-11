@@ -103,7 +103,7 @@ setGeneric("normalizeGC", function(sep,
 #' @rdname glmM-methods
 #' @exportMethod glmM
 setGeneric("glmM", function(sep,
-                               glm_type = c("auto","Poisson", "NB", "DESeq2"),
+                               glm_type = c("DESeq2","NB","Poisson"),
                                LFC_shrinkage = c("apeglm","Gaussian","ashr"),
                                ...) {standardGeneric("glmM")})
 
@@ -112,7 +112,7 @@ setGeneric("glmM", function(sep,
 #' @rdname glmDM-methods
 #' @exportMethod glmDM
 setGeneric("glmDM", function(sep,
-                             glm_type = c("auto","Poisson", "NB", "DESeq2"),
+                             glm_type = c("DESeq2","NB","Poisson"),
                              LFC_shrinkage = c("apeglm","ashr"),
                              ...) {standardGeneric("glmDM")})
 

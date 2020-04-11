@@ -63,7 +63,7 @@
 setMethod("glmM",
           "SummarizedExomePeak",
            function(sep,
-                    glm_type = c("auto","Poisson", "NB", "DESeq2"),
+                    glm_type = c("DESeq2","NB","Poisson"),
                     LFC_shrinkage = c("apeglm", "Gaussian", "ashr"),
                     ...) {
   if( (any(sep$design_Treatment) & any(!sep$design_Treatment)) ) {
@@ -77,13 +77,14 @@ setMethod("glmM",
 
   glm_type = match.arg(glm_type)
 
-  if(glm_type == "auto") {
-    if( all( table(colData(sep)$design_IP) > 1  ) ) {
-      glm_type <- "DESeq2"
-    } else {
+    if( any( table(colData(sep)$design_IP) == 1  ) ) {
+      warning(
+        "At least one of the IP or input group has no replicates. Quantification method changed to Poisson GLM.\n",
+        call. = TRUE,
+        immediate. = FALSE
+      )
       glm_type <- "Poisson"
     }
-  }
 
   if(glm_type == "Poisson") {
     message("Calculate peaks/sites statistics with Poisson GLM ... ", appendLF = FALSE)

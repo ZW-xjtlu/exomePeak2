@@ -8,14 +8,14 @@
 \usage{
 glmM(
   sep,
-  glm_type = c("auto", "Poisson", "NB", "DESeq2"),
+  glm_type = c("DESeq2", "NB", "Poisson"),
   LFC_shrinkage = c("apeglm", "Gaussian", "ashr"),
   ...
 )
 
 \S4method{glmM}{SummarizedExomePeak}(
   sep,
-  glm_type = c("auto", "Poisson", "NB", "DESeq2"),
+  glm_type = c("DESeq2", "NB", "Poisson"),
   LFC_shrinkage = c("apeglm", "Gaussian", "ashr"),
   ...
 )

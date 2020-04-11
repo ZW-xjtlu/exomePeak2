@@ -63,7 +63,7 @@
 setMethod("glmDM",
           "SummarizedExomePeak",
            function(sep,
-                    glm_type = c("auto","Poisson", "NB", "DESeq2"),
+                    glm_type = c("DESeq2","NB","Poisson"),
                     LFC_shrinkage = c("apeglm","ashr","none"),
                     ...) {
 
@@ -75,13 +75,14 @@ setMethod("glmDM",
      stop("Your data has no interactive design / treatment groups, please use glm_M().\n")
    }
 
-  if(glm_type == "auto") {
-    if( all( table(colData(sep)$design_IP,colData(sep)$design_Treatment) > 1 ) ) {
-      glm_type <- "DESeq2"
-    } else {
+    if( any( table(colData(sep)$design_IP,colData(sep)$design_Treatment) == 1 ) ) {
+        warning(
+          "At least one of the IP or input group has no replicates. Quantification method changed to Poisson GLM.\n",
+          call. = TRUE,
+          immediate. = FALSE
+        )
       glm_type <- "Poisson"
     }
-  }
 
   if(glm_type == "Poisson") {
     message("Differential modification analysis with Poisson GLM ... ", appendLF = FALSE)
