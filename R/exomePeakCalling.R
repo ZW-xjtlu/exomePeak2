@@ -486,6 +486,8 @@ setMethod("exomePeakCalling",
                 p0 = p0
               )
 
+              if(length(grl_mod) == 0) stop("No modification peaks are detected, please try smaller p_cutoff.")
+
               #Filter peak by width
               grl_mod <- grl_mod[sum(width(grl_mod)) >= peak_width]
 

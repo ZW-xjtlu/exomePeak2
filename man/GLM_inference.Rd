@@ -7,7 +7,7 @@
 GLM_inference(
   SE_bins,
   glm_type = c("Poisson", "NB", "DESeq2"),
-  p_cutoff = 1e-04,
+  p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
   count_cutoff = 5,
   log2FC_mod = 1,

@@ -38,11 +38,15 @@ exome_bins_from_txdb <- function(txdb,
 
   indx_minus <- strands_tx == "-"
 
+  indx_unknown <- strands_tx == "*"
+
   strands_bins <- rep(strands_tx, bin_nums_on_tx)
 
   indx_bin_plus <- strands_bins == "+"
 
   indx_bin_minus <- strands_bins == "-"
+
+  indx_bin_unknown <- strands_bins == "*"
 
   seqnames_bins <- rep(names(tx_widths), bin_nums_on_tx)
 
@@ -61,12 +65,18 @@ exome_bins_from_txdb <- function(txdb,
     ),
     use.names = FALSE) - window_size + 1
 
+  bin_starts_on_tx[indx_bin_unknown] <-
+    unlist(lapply(bin_nums_on_tx[indx_unknown], function(x)
+      seq(1, step_size * x, by = step_size)), use.names = FALSE)
+
   rm(bin_nums_on_tx,
      strands_tx,
      indx_plus,
      indx_minus,
+     indx_unknown,
      indx_bin_plus,
-     indx_bin_minus)
+     indx_bin_minus,
+     indx_bin_unknown)
 
   bins_on_tx <- GRanges(
     seqnames = seqnames_bins,
