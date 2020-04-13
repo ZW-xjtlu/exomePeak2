@@ -173,11 +173,17 @@ setMethod("glmDM",
   colnames(DS_result) <- c("log2fcDiffMod.MLE","log2fcDiffMod.MLE.SE","log2fcDiffMod.pvalue","log2fcDiffMod.padj")
 
   #Include reads count
+  if(nrow(assay(dds)) != 1){
   DS_result$ReadsCount.IP.Treated <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP & colData(dds)$design_Treatment]) )
   DS_result$ReadsCount.input.Treated <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP & colData(dds)$design_Treatment] ))
   DS_result$ReadsCount.IP.Control <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP & !colData(dds)$design_Treatment] ))
   DS_result$ReadsCount.input.Control <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP & !colData(dds)$design_Treatment] ))
-
+  }else{
+  DS_result$ReadsCount.IP.Treated <- rowSums( rbind(assay(dds)[,colData(dds)$design_IP & colData(dds)$design_Treatment]) )
+  DS_result$ReadsCount.input.Treated <- rowSums( rbind(assay(dds)[,!colData(dds)$design_IP & colData(dds)$design_Treatment] ))
+  DS_result$ReadsCount.IP.Control <- rowSums( rbind(assay(dds)[,colData(dds)$design_IP & !colData(dds)$design_Treatment] ))
+  DS_result$ReadsCount.input.Control <- rowSums( rbind(assay(dds)[,!colData(dds)$design_IP & !colData(dds)$design_Treatment] ))
+  }
   #Calculate estimates of other contrasts
   Expr_Control_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,0,0,0)) ) ))
   DS_result$log2Expr.Control.MLE <- Expr_Control_design_MLE[,"log2FoldChange"]
@@ -295,7 +301,7 @@ setMethod("glmDM",
 
   rownames(  DS_final_rst ) = rownames( SE_M )[indx_mod]
 
-  exomePeak2Results( sep ) = as.data.frame(  DS_final_rst )
+  exomePeak2Results( sep ) = DS_final_rst
 
   return( sep )
 

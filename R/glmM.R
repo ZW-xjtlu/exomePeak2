@@ -172,8 +172,13 @@ setMethod("glmM",
       colnames(DS_result) <- c("log2fcMod.MLE","log2fcMod.MLE.SE","log2fcMod.pvalue","log2fcMod.padj")
 
       #Include reads count
+      if(nrow(assay(dds)) != 1){
       DS_result$ReadsCount.IP <- rowSums( cbind(assay(dds)[,colData(dds)$design_IP]) )
       DS_result$ReadsCount.input <- rowSums( cbind(assay(dds)[,!colData(dds)$design_IP]) )
+      }else{
+      DS_result$ReadsCount.IP <- rowSums( rbind(assay(dds)[,colData(dds)$design_IP]) )
+      DS_result$ReadsCount.input <- rowSums( rbind(assay(dds)[,!colData(dds)$design_IP]) )
+      }
 
       #Calculate expression level related estimates
       Expr_design_MLE <- as.data.frame( suppressWarnings( suppressMessages( results( dds, contrast = c(1,0)) ) ))
@@ -250,7 +255,7 @@ setMethod("glmM",
 
   rownames(DS_final_rst) = rownames(SE_M)[indx_mod]
 
-  exomePeak2Results( sep ) = as.data.frame( DS_final_rst )
+  exomePeak2Results( sep ) = DS_final_rst
 
   return(sep)
 
