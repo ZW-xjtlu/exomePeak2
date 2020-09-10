@@ -35,7 +35,7 @@ knitr::opts_chunk$set(dev="png",fig.show="hold",
 
 # Installation
 
-To install exomePeak2 from bioconductor, sart R (version >"3.6") and enter:
+To install exomePeak2 from bioconductor, start R (version >"3.6") and enter:
 
 ```{r, eval=FALSE}
 if(!requireNamespace("BiocManager", quietly = TRUE))
