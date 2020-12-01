@@ -20,17 +20,23 @@
 #'
 #' Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among replicates; default \code{= TRUE}.
+#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among replicates,
+#' the peak consistency is defined using the c-test method implemented in the package ExomePeak,
+#' in which the exact Poisson tests are conducted between all possible combinations among biological replicates of IP and input samples,
+#' and only bins that are consistently positively called out of a significant proportion of the combinations are kept; default \code{= TRUE}.
+#'
+#' The c-tests conducted will also be corrected with GC content or quantile normalization offsets if the corresponding parameters are provided.
 #'
 #' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
 #'
-#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.
+#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default\code{ = 0.05}. Check \code{\link{ctest}}.
 #'
-#' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
+#' @param alpha a \code{numeric} for the binomial quantile used in defining the proportion parameter of the consistency filter; default\code{ = 0.05}.
 #'
 #' @param p0 a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
 #'
-#' For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
+#' For a bin to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates;
+#' i.e. qbinom(0.95, N, 0.8).
 #'
 #' The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.
 #'

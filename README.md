@@ -79,7 +79,7 @@ The modification peak statistics are derived from the *β*<sub>*i*, 1</sub> te
 
 Under the default settings, the linear models fitted are the regularized **GLM (Generalized Linear Model)** of NB developed by **DESeq2**. If one of the IP and input group has no biological replicates, Poisson GLMs will be fitted to the modification peaks.
 
-Explaination over the columns of the exported table:
+Explanation over the columns of the exported table:
 
 -   ***chr***: the chromosomal name of the peak.
 -   ***chromStart***: the start of the peak on the chromosome.
@@ -137,7 +137,7 @@ The peak statistics in differential modification setting are derived from the in
 
 **log2(Q<sub>i, j</sub>) = β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j)=IP)+β<sub>i, 2</sub>I(ρ(j) = Treatment)+β<sub>i, 3</sub>I(ρ(j) = IP&Treatment)+t<sub>i, j</sub>**
 
-Explaination for the additional table columns:
+Explanation for the additional table columns:
 
 -   ***ModLog2FC\_control***: the modification log2 fold enrichment in the control condition.
 -   ***ModLog2FC\_treated***: the modification log2 fold enrichment in the treatment condition.

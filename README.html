@@ -429,7 +429,7 @@ exomePeak2(bam_ip = IP_BAM,
 <p><strong>log2(Q<sub>i, j</sub>) = β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j) = IP)+t<sub>i, j</sub></strong></p>
 <p><em>Q</em><sub><em>i</em>, <em>j</em></sub> is the expected value of reads abundence of modification <em>i</em> under sample <em>j</em>. <em>β</em><sub><em>i</em>, 0</sub> is the intercept coefficient, <em>β</em><sub><em>i</em>, 1</sub> is the coefficient for IP/input log2 fold change, <em>I</em>(<em>ρ</em>(<em>j</em>)=<em>IP</em>) is the regression covariate that is the indicator variable for the sample <em>j</em> being IP sample. <em>t</em><sub><em>i</em>, <em>j</em></sub> is the regression offset that account for the sequencing depth variation and the GC content biases.</p>
 <p>Under the default settings, the linear models fitted are the regularized <strong>GLM (Generalized Linear Model)</strong> of NB developed by <strong>DESeq2</strong>. If one of the IP and input group has no biological replicates, Poisson GLMs will be fitted to the modification peaks.</p>
-<p>Explaination over the columns of the exported table:</p>
+<p>Explanation over the columns of the exported table:</p>
 <ul>
 <li><strong><em>chr</em></strong>: the chromosomal name of the peak.</li>
 <li><strong><em>chromStart</em></strong>: the start of the peak on the chromosome.</li>
@@ -479,7 +479,7 @@ exomePeak2(bam_ip = IP_BAM,
 <p>In differential modification mode, exomePeak2 will export the differential modification peaks in formats of <strong>BED</strong> file and <strong>CSV</strong> table, the data will also be saved automatically under a folder named by <code>exomePeak2_output</code>.</p>
 <p>The peak statistics in differential modification setting are derived from the interactive coefficient <em>β</em><sub><em>i</em>, 3</sub> in the following regression design of the <strong>NB GLM</strong>:</p>
 <p><strong>log2(Q<sub>i, j</sub>) = β<sub>i, 0</sub> + β<sub>i, 1</sub>I(ρ(j)=IP)+β<sub>i, 2</sub>I(ρ(j) = Treatment)+β<sub>i, 3</sub>I(ρ(j) = IP&amp;Treatment)+t<sub>i, j</sub></strong></p>
-<p>Explaination for the additional table columns:</p>
+<p>Explanation for the additional table columns:</p>
 <ul>
 <li><strong><em>ModLog2FC_control</em></strong>: the modification log2 fold enrichment in the control condition.</li>
 <li><strong><em>ModLog2FC_treated</em></strong>: the modification log2 fold enrichment in the treatment condition.</li>
