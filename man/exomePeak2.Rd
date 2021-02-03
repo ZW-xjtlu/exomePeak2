@@ -225,8 +225,8 @@ If the \code{bsgenome} and the \code{genome} arguments are not provided (\code{=
 
 If the \strong{BAM} files in treated samples are provided at the arguments \code{bam_treated_ip} and \code{bam_treated_input}, the statistics of differential modification analysis on peaks/sites will be reported.
 
-Under default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named by \code{'exomePeak2_output'}.
-The results generated include a \strong{BED} file and a \strong{CSV} table that store the locations and statistics of the (differential) modified peaks/sites.
+Under the default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named \code{'exomePeak2_output'}.
+The results generated include a \strong{BED} file and a \strong{CSV} table that stores the locations and statistics of the (differential) modified peaks/sites.
 }
 \examples{
 

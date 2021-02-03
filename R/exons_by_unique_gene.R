@@ -1,20 +1,30 @@
 #' @title Extracting exons by the corresponding genes that are on the same chromosomes and strand.
 #' @param txdb A TXDB object.
-#' @return A \code{GRangesList} object, each element in it corresponds to GRanges of the reduced exons of an unique gene,
+#' @return A \code{GRangesList} object, each element in it corresponds to GRanges of the merged exons of an unique gene,
 #' the name corresponds to the original gene with .integer indexed if they have exons on different strands and chromosomes.
-#'
+#' 
+#' The genes that are overlap between each other are merged into one genes, and the exons are also merged into one if they can overlap with each other.
+#' If a gene can belong to 2 stands, the gene will be divided into "2 genes" with their IDs labeled by "_plusStrand" and "_minusStrand" at their ends.
+#' 
 #' @importFrom GenomicFeatures exonsBy
 #' @import GenomicRanges
 #' @keywords internal
 exons_by_unique_gene <- function(txdb) {
-
 exbg <- exonsBy(txdb, by = "gene")
 
-#remove the genes that are not belong to the same strands
-exbg <- exbg[elementNROWS( range(exbg) ) == 1]
+#add genes that are not belong to the same strands
+indx_both_strands <- elementNROWS( range(exbg) ) != 1
+
+if(any(indx_both_strands)){
+exbg_both_gr <- unlist(exbg[indx_double])
+strands <- as.character(strand(exbg_both_gr))
+strands[strands=="+"] <- "_plusStrand"
+strands[strands=="-"] <- "_minusStrand"
+exbg <- c(exbg[-1*indx_both_strands], split(exbg_both_gr, paste0(names(exbg_both_gr), strands)))
+rm(strands,exbg_both_gr)
+}
 
 #Creating gene names for duplicated genes
-
 fol <- findOverlaps(exbg)
 
 fol <- fol[ queryHits(fol) != subjectHits(fol) ]
@@ -49,7 +59,7 @@ if(nrow(ol_indx_M) == 0){
 
   rm(new_gene_names,new_gene_names_list)
 
-  #Group reduced exons into relavent genes
+  #Group reduced exons into relevant genes
 
   rd_exons <- reduce( unlist(exbg), min.gapwidth=0L )
 
@@ -59,7 +69,7 @@ if(nrow(ol_indx_M) == 0){
 
   split_indx[queryHits(fol)] <- names(exbg)[subjectHits(fol)]
 
-  unique_exons_gene <- split( rd_exons, split_indx )
+  unique_exons_gene <- reduce( split( rd_exons, split_indx ) )
 
   return(unique_exons_gene)
 }

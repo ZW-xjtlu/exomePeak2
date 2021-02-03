@@ -1,2 +1,7 @@
-Changes in version 0.99.92 (2020-03-10)
-+ Fix several issues commented by the bioconductor reviewer
+Changes in version 0.99.9 (2020-03-10)
++ Fix comments proposed in the bioconductor submission issue on Github
+
+Changes in version 1.4.0 (2021-02-03)
++ When extract bins on transcripts, the transcripts overlapped between each other are merged into one gene unit, and all of the overlapping exons on the gene unit will be merged. Before 1.4.0 the overlapping exons on the same transcript are not merged. 
+
++ Bins are generated for the gene can have transcripts lie on different stands, and before 1.4.0 those multi-strand genes are filtered out from analysis; the transcripts on different strands will be now divided into 2 gene units with their IDs labeled by "_plusStrand" and "_minusStrand" at their ends.

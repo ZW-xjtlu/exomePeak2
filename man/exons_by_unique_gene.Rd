@@ -10,8 +10,11 @@ exons_by_unique_gene(txdb)
 \item{txdb}{A TXDB object.}
 }
 \value{
-A \code{GRangesList} object, each element in it corresponds to GRanges of the reduced exons of an unique gene,
+A \code{GRangesList} object, each element in it corresponds to GRanges of the merged exons of an unique gene,
 the name corresponds to the original gene with .integer indexed if they have exons on different strands and chromosomes.
+
+The genes that are overlap between each other are merged into one genes, and the exons are also merged into one if they can overlap with each other.
+If a gene can belong to 2 stands, the gene will be divided into "2 genes" with their IDs labeled by "_plusStrand" and "_minusStrand" at their ends.
 }
 \description{
 Extracting exons by the corresponding genes that are on the same chromosomes and strand.
