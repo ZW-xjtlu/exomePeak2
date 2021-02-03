@@ -4,7 +4,7 @@
 \alias{exons_by_unique_gene}
 \title{Extracting exons by the corresponding genes that are on the same chromosomes and strand.}
 \usage{
-exons_by_unique_gene(txdb)
+exons_by_unique_gene(txdb, keep_standard_chromosomes = TRUE)
 }
 \arguments{
 \item{txdb}{A TXDB object.}
@@ -14,7 +14,7 @@ A \code{GRangesList} object, each element in it corresponds to GRanges of the me
 the name corresponds to the original gene with .integer indexed if they have exons on different strands and chromosomes.
 
 The genes that are overlap between each other are merged into one genes, and the exons are also merged into one if they can overlap with each other.
-If a gene can belong to 2 stands, the gene will be divided into "2 genes" with their IDs labeled by "_plusStrand" and "_minusStrand" at their ends.
+If a gene can belong to more than 2 strands or sequences (chromosomes), the gene will be divided into multiple genes with their IDs concatenated by "_'+ or -'_'seqnames'" at their ends.
 }
 \description{
 Extracting exons by the corresponding genes that are on the same chromosomes and strand.
