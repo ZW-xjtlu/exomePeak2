@@ -14,7 +14,7 @@ exons_by_unique_gene <- function(txdb) {
   fol <- fol[queryHits(fol) != subjectHits(fol)]
   ol_indx_M <- as.matrix(fol)
   if (nrow(ol_indx_M) == 0) {
-    return(exbg)
+    return(reduce(exbg))
   }
   else {
     rm(fol)
@@ -36,7 +36,6 @@ exons_by_unique_gene <- function(txdb) {
     split_indx <- rep(NA, length(rd_exons))
     split_indx[queryHits(fol)] <- names(exbg)[subjectHits(fol)]
     unique_exons_gene <- split(rd_exons, split_indx)
-    unique_exons_gene <- reduce(unique_exons_gene)
     return(unique_exons_gene)
   }
 }

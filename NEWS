@@ -2,4 +2,4 @@ Changes in version 0.99.9 (2020-03-10)
 + Fix comments proposed in the bioconductor submission issue on Github
 
 Changes in version 1.3.3 (2021-02-03)
-+ When extract bins on transcripts, the overlapping exons on the same transcript will be merged into one. 
++ Fix the bug of not merging the overlapping exons when the transcript annotation have no overlapping transcripts, this can happen when a very small annotation is provided.
