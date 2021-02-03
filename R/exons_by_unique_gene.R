@@ -8,17 +8,35 @@
 #' @import GenomicRanges
 #' @keywords internal
 exons_by_unique_gene <- function(txdb) {
-  #Remove the genes that are not belong to the same strands or chromosomes
-  exbg <- exbg[elementNROWS( range(exbg) ) == 1]
-  #Creating gene names for duplicated genes
+  exbg <- exonsBy(txdb, by = "gene")
+  exbg <- exbg[elementNROWS(range(exbg)) == 1]
   fol <- findOverlaps(exbg)
-  fol <- fol[ queryHits(fol) != subjectHits(fol) ]
-  if(nrow(ol_indx_M) == 0){
-  rd_exons <- reduce( unlist(exbg), min.gapwidth=0L )
-  split_indx[queryHits(fol)] <- names(exbg)[subjectHits(fol)]
-  unique_exons_gene <- reduce( split( rd_exons, split_indx ) )
-  return(unique_exons_gene)
-  #Group reduced exons into relevant genes
+  fol <- fol[queryHits(fol) != subjectHits(fol)]
+  ol_indx_M <- as.matrix(fol)
+  if (nrow(ol_indx_M) == 0) {
+    return(exbg)
   }
-  
+  else {
+    rm(fol)
+    new_gene_names_temp <- names(exbg)
+    new_gene_names_list <- split(new_gene_names_temp, seq_along(new_gene_names_temp))
+    for (i in seq_len(nrow(ol_indx_M))) {
+      temp_i <- ol_indx_M[i, 1]
+      new_gene_names_list[[temp_i]] <- c(new_gene_names_list[[temp_i]], 
+                                         new_gene_names_temp[ol_indx_M[i, 2]])
+    }
+    rm(ol_indx_M, temp_i, new_gene_names_temp)
+    new_gene_names_list <- lapply(new_gene_names_list, sort)
+    new_gene_names <- vapply(new_gene_names_list, function(x) paste(x, 
+                                                                    collapse = ","), character(1))
+    names(exbg) <- new_gene_names
+    rm(new_gene_names, new_gene_names_list)
+    rd_exons <- reduce(unlist(exbg), min.gapwidth = 0L)
+    fol <- findOverlaps(rd_exons, exbg)
+    split_indx <- rep(NA, length(rd_exons))
+    split_indx[queryHits(fol)] <- names(exbg)[subjectHits(fol)]
+    unique_exons_gene <- split(rd_exons, split_indx)
+    unique_exons_gene <- reduce(unique_exons_gene)
+    return(unique_exons_gene)
+  }
 }
