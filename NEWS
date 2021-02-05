@@ -5,5 +5,5 @@ Changes in version 1.3.3 (2021-02-03)
 + Fix the bug of not merging the overlapping exons when the transcript annotation have no overlapping transcripts, this can happen when a very small annotation is provided.
 
 Changes in version 1.3.4 (2021-02-05)
-+ The options `consistent_peak`, `consistent_log2FC_cutoff`, `consistent_fdr_cutoff`, `alpha`, and `p0` are deprecated from the functions exomePeak2() and exomePeakCalling(). The consistent_peak option was implemented to reproduce the consistent peak algorithm in the old package exomePeak, and its performance is significantly lower than the NB GLM derived methods according to our recent tests. Hence, the consistency related functionalities are removed in the later versions of exomePeak2; your pervious results using exomePeak2 will not be affected if you didn't set `consistent_peak=TRUE`.
++ The options `consistent_peak`, `consistent_log2FC_cutoff`, `consistent_fdr_cutoff`, `alpha`, and `p0` are deprecated from the functions exomePeak2() and exomePeakCalling(). The consistent_peak option was implemented to reproduce the consistent peak algorithm in the old package exomePeak, and its performance is significantly lower than the NB GLM derived methods according to our recent tests. Hence, the consistency related functionalities are removed in the later versions of exomePeak2.
 
