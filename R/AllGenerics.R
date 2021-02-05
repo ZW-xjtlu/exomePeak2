@@ -37,11 +37,6 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         p_cutoff = 1e-05,
                                         p_adj_cutoff = NULL,
                                         log2FC_cutoff = 0,
-                                        consistent_peak = FALSE,
-                                        consistent_log2FC_cutoff = 0,
-                                        consistent_fdr_cutoff = 0.05,
-                                        alpha = 0.05,
-                                        p0 = 0.8,
                                         parallel = FALSE,
                                         bp_param = NULL) {standardGeneric("exomePeakCalling")})
 

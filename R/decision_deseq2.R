@@ -43,11 +43,10 @@ decision_deseq2 <- function(Inf_RES,
   }
   }
 
-  #Define index of the expected direction.
+  #define index of the expected direction.
   EXP_idx =  eval(parse(text = paste0( "Inf_RES$log2FoldChange ",result_df$Expected_dir) ))
 
-  #First let's do regular cut-off
-
+  #the regular cut-off is preformed
   if( !is.null( Padj_cut ) ) {
     Inf_RES$padj[is.na(Inf_RES$padj)] = 1
     result_df$Cut_By_ctrl = "padj"
@@ -63,8 +62,7 @@ decision_deseq2 <- function(Inf_RES,
     result_df$Discoveries_expected = sum(EXP_idx & Inf_RES$pvalue < P_cut)
   }
 
-  #Second, we will consider the case while the minimum number is not met.
-
+  #dealt with the cases while the minimum number is not met
   if(Exp_dir == "both") {
 
     if(result_df$Discoveries_expected < Min_mod) {

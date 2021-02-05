@@ -13,12 +13,7 @@ GLM_inference(
   log2FC_mod = 1,
   min_mod_number = NA,
   correct_GC_bg = FALSE,
-  qtnorm = TRUE,
-  consistent_peak = FALSE,
-  consistent_log2FC_cutoff = 1,
-  consistent_fdr_cutoff = 0.05,
-  alpha = 0.05,
-  p0 = 0.8
+  qtnorm = TRUE
 )
 }
 \arguments{
@@ -47,26 +42,6 @@ If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of t
 \item{qtnorm}{a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= TRUE}.
 
 Subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.}
-
-\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among replicates,
-the peak consistency is defined using the c-test method implemented in the package ExomePeak,
-in which the exact Poisson tests are conducted between all possible combinations among biological replicates of IP and input samples,
-and only bins that are consistently positively called out of a significant proportion of the combinations are kept; default \code{= TRUE}.
-
-The c-tests conducted will also be corrected with GC content or quantile normalization offsets if the corresponding parameters are provided.}
-
-\item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
-
-\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default\code{ = 0.05}. Check \code{\link{ctest}}.}
-
-\item{alpha}{a \code{numeric} for the binomial quantile used in defining the proportion parameter of the consistency filter; default\code{ = 0.05}.}
-
-\item{p0}{a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
-
-For a bin to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates;
-i.e. qbinom(0.95, N, 0.8).
-
-The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.}
 }
 \value{
 a list of the index for the significant modified peaks (IP > input) and control peaks (peaks other than modification containing peaks).

@@ -31,7 +31,7 @@ knitr::opts_chunk$set(dev="png",fig.show="hold",
 
 # Introduction
 
-**exomePeak2** provides bias awared quantification and peak detection on Methylated RNA immunoprecipitation sequencing data (**MeRIP-Seq**). *MeRIP-Seq* is a commonly applied sequencing technology to measure the transcriptome-wide location and abundance of RNA modification sites under a given cellular condition. However, the quantification and peak calling in *MeRIP-Seq* are sensitive to PCR amplification bias which is prevalent in next generation sequencing (NGS) techniques. In addition, the **RNA-Seq** based count data exhibits biological variation in small reads count. *exomePeak2* collectively address these challanges by introducing a rich set of robust data science models tailored for MeRIP-Seq. With *exomePeak2*, users can perform peak calling, modification site quantification, and differential analysis with a straightforward one-step function. Alternatively, users could customize methods for their own analysis through multi-step functions and diagnostic plots.
+**exomePeak2** provides bias awared quantification and peak detection on Methylated RNA immunoprecipitation sequencing data (**MeRIP-Seq**). *MeRIP-Seq* is a commonly applied sequencing technology to measure the transcriptome-wide location and abundance of RNA modification sites under a given cellular condition. However, the quantification and peak calling in *MeRIP-Seq* are sensitive to PCR amplification bias which is prevalent in next generation sequencing (NGS) techniques. In addition, the **RNA-Seq** based count data exhibits biological variation in small reads count. *exomePeak2* collectively address these challenges by introducing a rich set of robust data science models tailored for MeRIP-Seq. With *exomePeak2*, users can perform peak calling, modification site quantification, and differential analysis with a straightforward one-step function. Finally, diagnostic plots and customized reports can be generated with the multi-step functions.
 
 # Installation
 
@@ -84,9 +84,9 @@ The modification peak statistics are derived from the ${\beta}_{i,1}$ terms in t
 
 $$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}I(\rho(j)=IP) + t_{i,j}$$
 
-$Q_{i,j}$ is the expected value of reads abundence of modification $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient, ${\beta}_{i,1}$ is the coefficient for IP/input log2 fold change, $I(\rho(j)=IP)$ is the regression covariate that is the indicator variable for the sample $j$ being IP sample. $t_{i,j}$ is the regression offset that account for the sequencing depth variation and the GC content biases.
+$Q_{i,j}$ is the expected value of reads abundance of modification $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient, ${\beta}_{i,1}$ is the coefficient for IP/input log2 fold change, $I(\rho(j)=IP)$ is the regression covariate that is the indicator variable for the sample $j$ being IP sample. $t_{i,j}$ is the regression offset that account for the sequencing depth variation and the GC content biases. $t{i,j}$ is estimated with the median regression on the logarithm of reads count implemented in the package **cqn**[1]; the median regression is smoothed using the natural cubic splines with the knots defined in function `cqn::cqn()`. By default, the quantile normalization functionality in **cqn** is turned off so that only the GC bias offsets are estimated from the read counts.
 
-Under the default settings, the linear models fitted are the regularized **GLM (Generalized Linear Model)** of NB developed by **DESeq2**. If one of the IP and input group has no biological replicates, Poisson GLMs will be fitted to the modification peaks.
+Under the default settings, the linear models fitted are the regularized **GLM (Generalized Linear Model)** of NB developed by **DESeq2**[2]. If one of the IP and input group has no biological replicates, Poisson GLMs will be fitted to the modification peaks. Both the size factors used in **cqn** and **DESeq2** are estimated by the robust size factor estimators defined in the function `DESeq2::estimateSizeFactors()` with type = "ratio".
 
 Explanation over the columns of the exported table:
 
@@ -169,7 +169,6 @@ exomePeak2(bam_ip = IP_BAM,
 
 In this mode, exomePeak2 will export the analysis result also in formats of **BED** file and **CSV** table, while each row of the table corresponds to the sites of the annotation `GRanges`.
 
-
 # Peak Calling and Visualization in Multiple Steps
 
 The exomePeak2 package can achieve peak calling and peak statistics calulation with multiple functions.
@@ -250,6 +249,11 @@ plotSizeFactors(SummarizedExomePeaks)
 ```{r, eval = TRUE}  
 exportResults(SummarizedExomePeaks, format = "BED") 
 ```
+
+# References
+1. KD Hansen, RA Irizarry, and Z Wu, Removing technical variability in RNA-seq data using conditional quantile normalization. Biostatistics 2012 vol. 13(2) pp. 204-216.
+
+2. Love, M.I., Huber, W., Anders, S. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology, 15:550. https://doi.org/10.1186/s13059-014-0550-8
 
 # Contact
 

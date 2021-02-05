@@ -26,11 +26,6 @@ exomePeak2(
   p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
   log2FC_cutoff = 1,
-  consistent_peak = FALSE,
-  consistent_log2FC_cutoff = 1,
-  consistent_fdr_cutoff = 0.05,
-  alpha = 0.05,
-  p0 = 0.8,
   parallel = FALSE,
   background_method = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL,
@@ -106,20 +101,6 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
 \item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
-
-\item{consistent_peak}{a \code{logical} of whether the positive peaks returned should be consistent among all the replicates; default \code{= FALSE}.}
-
-\item{consistent_log2FC_cutoff}{a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.}
-
-\item{consistent_fdr_cutoff}{a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.}
-
-\item{alpha}{a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.}
-
-\item{p0}{a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
-
-For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
-
-The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.}
 
 \item{parallel}{a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.}
 

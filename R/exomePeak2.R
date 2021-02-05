@@ -84,21 +84,7 @@
 #' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
 #'
 #' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
-#'
-#' @param consistent_peak a \code{logical} of whether the positive peaks returned should be consistent among all the replicates; default \code{= FALSE}.
-#'
-#' @param consistent_log2FC_cutoff a \code{numeric} for the modification log2 fold changes cutoff in the peak consisency calculation; default = 1.
-#'
-#' @param consistent_fdr_cutoff a \code{numeric} for the BH adjusted C-test p values cutoff in the peak consistency calculation; default { = 0.05}. Check \code{\link{ctest}}.
-#'
-#' @param alpha a \code{numeric} for the binomial quantile used in the consitent peak filter; default\code{ = 0.05}.
-#'
-#' @param p0 a \code{numeric} for the binomial proportion parameter used in the consistent peak filter; default \code{= 0.8}.
-#'
-#' For a peak to be consistently methylated, the minimum number of significant enriched replicate pairs is defined as the 1 - alpha quantile of a binomial distribution with p = p0 and N = number of possible pairs between replicates.
-#'
-#' The consistency defined in this way is equivalent to the rejection of an exact binomial test with null hypothesis of p < p0 and N = replicates number of IP * replicates number of input.
-#'
+#' 
 #' @param parallel a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.
 #'
 #' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
@@ -279,11 +265,6 @@ exomePeak2 <- function(bam_ip = NULL,
                        p_cutoff = 1e-05,
                        p_adj_cutoff = NULL,
                        log2FC_cutoff = 1,
-                       consistent_peak = FALSE,
-                       consistent_log2FC_cutoff = 1,
-                       consistent_fdr_cutoff = 0.05,
-                       alpha = 0.05,
-                       p0 = 0.8,
                        parallel = FALSE,
                        background_method = c("all",
                                              "Gaussian_mixture",
@@ -405,11 +386,6 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         p_cutoff = p_cutoff,
                         p_adj_cutoff = p_adj_cutoff,
                         log2FC_cutoff = log2FC_cutoff,
-                        consistent_peak = consistent_peak,
-                        consistent_log2FC_cutoff = consistent_log2FC_cutoff,
-                        consistent_fdr_cutoff = consistent_fdr_cutoff,
-                        alpha = alpha,
-                        p0 = p0,
                         parallel = parallel,
                         mod_annot = mod_annot,
                         background_method = background_method,
