@@ -154,7 +154,7 @@ exomePeak2 supports modification quantification and differential modification an
 
 By eliminating of the technical variation introduced by the peak lengths, the read counting at the single-base modification sites can provide more accurate and reliable quantification for the *MeRIP-Seq* experiments. exomePeak2 will automatically initiate the mode of single-base modification quantification/differential analysis when user provide a reference object in the argument `mod_annot`. 
 
-The GLM designs used in the reference based mode are identical with the quantification and differential analysis under the peak calling mode. The difference is that only one round of GLM fitting is performed in the reference mode by treating the the single-base modification sites as the detected peaks.
+The GLM designs used in the reference based mode are identical with the quantification and differential analysis under the peak calling mode. The difference is that only one round of GLM fitting is performed in the reference mode by treating the the single-base modification site as the detected peaks.
 
 The single-base annotation information should be provided to the exomePeak2 function in *GRanges* object, the GRanges object can be imported directly from the **BED** files of single-base annotation files using `dplyr::import()`.
 
@@ -263,7 +263,7 @@ plotSizeFactors(SummarizedExomePeaks)
 
 **7. Export the modification peaks and their statistics**
 
-The analysis results can be saved on the system in formats of *CSV*, *BED*, or *RDS*.
+The analysis results can be saved on the system in formats of **CSV**, **BED**, or **RDS**.
 ```{r, eval = TRUE, fig.width=10, fig.height=7}  
 exportResults(SummarizedExomePeaks, format = "BED") 
 ```
