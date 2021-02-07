@@ -20,6 +20,6 @@ BiocManager::install(c("SummarizedExperiment","cqn","Rsamtools",
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 
-devtools::install_github("ZW-xjtlu/exomePeak2")
+devtools::install_github("ZW-xjtlu/exomePeak2", build_vignettes = TRUE)
 ```
 To view the documentation of exomePeak2, type `browseVignettes("exomePeak2")` after installation.
