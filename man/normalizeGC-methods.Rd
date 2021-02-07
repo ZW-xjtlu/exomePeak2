@@ -14,7 +14,7 @@ normalizeGC(
   gff_dir = NULL,
   fragment_length = 100,
   binding_length = 25,
-  feature = c("Background", "Modification", "All"),
+  feature = c("All", "Background", "Modification"),
   qtnorm = FALSE,
   effective_GC = FALSE
 )
@@ -26,7 +26,7 @@ normalizeGC(
   gff_dir = NULL,
   fragment_length = 100,
   binding_length = 25,
-  feature = c("Background", "Modification", "All"),
+  feature = c("All", "Background", "Modification"),
   qtnorm = FALSE,
   effective_GC = FALSE
 )
@@ -46,7 +46,7 @@ If the \code{TxDb} object is not available, it could be a \code{character} strin
 
 \item{binding_length}{a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.}
 
-\item{feature}{a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("Background","All","Modification")}; default is \code{"Background"}.
+\item{feature}{a \code{character} specifies the region used in the GC content linear effect estimation, can be one in \code{c("Background","All","Modification")}; default is \code{"All"}.
 
 \describe{
 

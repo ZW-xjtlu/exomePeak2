@@ -47,6 +47,7 @@ setMethod("plotLfcGC",
                          bsgenome = NULL,
                          txdb = NULL,
                          save_pdf_prefix = NULL,
+                         point_size = 0.05,
                          fragment_length = 100,
                          binding_length = 25,
                          effective_GC = FALSE,
@@ -139,7 +140,7 @@ plot_df <- plot_df[plot_df$GC_idx < 0.88 & plot_df$GC_idx > 0.2,]
 p1 <- ggplot(plot_df, aes(x = GC_idx , y = Log2FC )) +
                  geom_point(aes(group = Label,
                                 colour = Label),
-                            size = .05,
+                            size = point_size,
                             alpha = .5) +
             theme_classic() +
             scale_colour_manual(values = c("blue", "red")) +

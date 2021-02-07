@@ -24,7 +24,10 @@
 #'
 #' Under the default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named \code{'exomePeak2_output'}.
 #' The results generated include a \strong{BED} file and a \strong{CSV} table that stores the locations and statistics of the (differential) modified peaks/sites.
-#'
+#' 
+#' When performing differential analysis using function exomePeak2(), the sequencing depth for the interactive GLM will be estimated from the background features,
+#' which by default are the disjoint regions of the detected peaks on exons.
+#' 
 #' @param bam_ip a \code{character} vector for the BAM file directories of the (control) IP samples.
 #' @param bam_input a \code{character} vector for the BAM file directories of the (control) input samples.
 #' @param bam_treated_ip a \code{character} vector for the BAM file directories of the treated IP samples.
@@ -107,7 +110,7 @@
 #'
 #' In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 #'
-#' The following methods are supported in \code{ExomePeak2} to differentiate the no modification background windows from the modification containig windows.
+#' The following methods are supported in \code{exomePeak2} to differentiate the no modification background windows from the modification containig windows.
 #'
 #' \describe{
 #'
@@ -395,7 +398,11 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         qtnorm = qtnorm
 )
 
-sep <- estimateSeqDepth(sep)
+if(any(sep$design_Treatment)){
+sep <- estimateSeqDepth(sep, from='Background')
+}else{
+sep <- estimateSeqDepth(sep)  
+}
 
 if(!is.null(bsgenome)) {
 
