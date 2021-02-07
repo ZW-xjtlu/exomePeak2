@@ -173,7 +173,7 @@ exomePeak2(bam_ip = IP_BAM,
 
 Under the reference based mode, exomePeak2 will export the analysis results in the format of **BED** and **CSV** files, while the order of the rows in the files will match the corresponding ranges of the single-base `GRanges`.
 
-# Peak Calling and Visualization in Multiple Steps
+# Multi-step Functions
 
 The exomePeak2 package can achieve peak calling and peak statistics calculation with multiple functions.
 
