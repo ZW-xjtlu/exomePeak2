@@ -250,7 +250,7 @@ All of the GLM statistics and normalization factors calculated will be contained
 A scatter plot can be produced with *plotLfcGC()* to visualize the trend of LFCs with GC. It is recommended to plot it twice before and after conducting the GC content normalization using *normalizeGC()*.
 
 ```{r, eval = TRUE, fig.align='center', fig.height = 2.8, fig.width = 5}
-plotLfcGC(SummarizedExomePeaks, point_size = 1) 
+plotLfcGC(SummarizedExomePeaks, point_size = 1, xlim = c(0.4, 0.85)) 
 ```
 
 **6. Bar plot of sequencing depth estimates**

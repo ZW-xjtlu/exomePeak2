@@ -12,6 +12,7 @@ plotLfcGC(
   txdb = NULL,
   save_pdf_prefix = NULL,
   point_size = 0.05,
+  xlim = c(0.2, 0.9),
   fragment_length = 100,
   binding_length = 25,
   effective_GC = FALSE,
@@ -24,6 +25,7 @@ plotLfcGC(
   txdb = NULL,
   save_pdf_prefix = NULL,
   point_size = 0.05,
+  xlim = c(0.2, 0.9),
   fragment_length = 100,
   binding_length = 25,
   effective_GC = FALSE,
@@ -38,6 +40,10 @@ plotLfcGC(
 \item{txdb}{a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.}
 
 \item{save_pdf_prefix}{a \code{character}, if provided, a pdf file with the given name will be saved under the current directory; Default \code{= NULL}.}
+
+\item{point_size}{a \code{numeric} value for the point size of the scatter plot; Default \code{= 0.05}.}
+
+\item{xlim}{a \code{numeric} vector for the range of x-axis of the plot; Default \code{= c(0.2,0.9)}.}
 
 \item{fragment_length}{a \code{numeric} value for the expected fragment length in the RNA-seq library; Default \code{= 100}.}
 

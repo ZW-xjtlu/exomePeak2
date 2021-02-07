@@ -10,6 +10,10 @@
 #'
 #'@param txdb a \code{\link{TxDb}} object for the transcript annotation, it could be the name of the reference genome recognized by \code{\link{makeTxDbFromUCSC}}.
 #'
+#'@param point_size a \code{numeric} value for the point size of the scatter plot; Default \code{= 0.05}.
+#'
+#'@param xlim a \code{numeric} vector for the range of x-axis of the plot; Default \code{= c(0.2,0.9)}.
+#'
 #'@param save_pdf_prefix a \code{character}, if provided, a pdf file with the given name will be saved under the current directory; Default \code{= NULL}.
 #'
 #'@param fragment_length a \code{numeric} value for the expected fragment length in the RNA-seq library; Default \code{= 100}.
@@ -48,6 +52,7 @@ setMethod("plotLfcGC",
                          txdb = NULL,
                          save_pdf_prefix = NULL,
                          point_size = 0.05,
+                         xlim = c(0.2,0.9),
                          fragment_length = 100,
                          binding_length = 25,
                          effective_GC = FALSE,
@@ -126,11 +131,11 @@ plot_df = data.frame(
 )
 
 if(!any(grepl("Diff",colnames(exomePeak2Results( sep ))))) {
-  ylabel <- "IP/input log2 Fold Change"
-  mtitle <- "GC Content Against log2 Fold Change Estimates"
+  ylabel <- "IP/input log2FC"
+  mtitle <- "GC Content Against log2 Fold Change"
 } else {
-  ylabel <- "Differential log2 Fold Cange"
-  mtitle <- "GC Content Against log2 Fold Change Estimates"
+  ylabel <- "Differential log2FC"
+  mtitle <- "GC Content Against log2 Fold Change"
 }
 
 plot_df$GC_idx <- as.numeric(plot_df$GC_idx)
@@ -148,7 +153,7 @@ p1 <- ggplot(plot_df, aes(x = GC_idx , y = Log2FC )) +
                  y = ylabel,
                  title = mtitle,
                  subtitle = save_pdf_prefix) +
-            xlim(c(0.2,0.9))
+            xlim(xlim)
 
 if(!is.null( save_pdf_prefix )) {
 
