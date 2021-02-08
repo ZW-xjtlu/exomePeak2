@@ -5,12 +5,12 @@ author:
   affiliation:
   - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
   - Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
-  email: ZhenWei01@xjtlu.edu.cn
+  email: Zhen.Wei01@xjtlu.edu.cn
 - name: Jia Meng
   affiliation:
   - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
   - Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
-  email: JiaMeng@xjtlu.edu.cn
+  email: Jia.Meng@xjtlu.edu.cn
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
