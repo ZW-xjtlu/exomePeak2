@@ -48,18 +48,20 @@ GLM_inference <- function(SE_bins,
 
   indx_count <- which(rowMeans(assay(SE_bins)) > count_cutoff)
 
-  if(is.na(min_mod_number)) min_mod_number = floor( sum(rowSums( assay(SE_bins) , na.rm = TRUE) > 0, na.rm = TRUE)*0.001 )
+  if(is.na(min_mod_number)) min_mod_number = floor(sum(rowSums( assay(SE_bins) , na.rm = TRUE) > 0, na.rm = TRUE)*0.001)
 
-  dds = DESeqDataSet(se = SE_bins[indx_count, ],
+  dds = DESeqDataSet(se = SE_bins[indx_count,],
                      design = ~ design_IP)
 
   ######################################################
   #               Size factor estimation               #
   ######################################################
-
-  dds$sizeFactor = estimateSizeFactorsForMatrix(assay(dds))
-
-  if (!is.null(rowData(SE_bins)$gc_contents)) {
+  #The IP and input size factors are estimated separately
+  #It will use the median of ratio of geometric mean method implemented in DESeq2 
+  
+  dds$sizeFactor <- estimateSizeFactorsForMatrix(assay(dds))
+  
+  if (!is.null(rowData(SE_bins)$gc_contents)){
 
     message("Estimate offsets of GC content biases on bins ... ", appendLF = FALSE)
 
@@ -85,7 +87,7 @@ GLM_inference <- function(SE_bins,
         sqn = qtnorm
       )
     )
-      )
+    )
     )
 
     cqnObject_input <- quiet(

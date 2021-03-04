@@ -242,7 +242,7 @@ setMethod("exomePeakCalling",
               message("OK")
             } else {
               if (is.null(txdb)) {
-                stop("Missing transcript annotation, please provide the genome name or the transcript annotation package/files.")
+                stop("Missing transcript annotation, please provide the genome name or transcript annotation package/files.")
               }
 
               if (!is(txdb, "TxDb")) {
@@ -442,7 +442,7 @@ setMethod("exomePeakCalling",
               if (glm_type == "DESeq2") {
                 if (any(table(SE_Peak_counts$design_IP) == 1)) {
                   warning(
-                    "At least one of the IP or input group has no replicates. Peak calling method changed to Poisson GLM.\n",
+                    "At least one of the IP or input group has < 2 replicates. Peak calling method has been changed to Poisson GLM.\n",
                     call. = TRUE,
                     immediate. = FALSE
                   )
@@ -462,7 +462,7 @@ setMethod("exomePeakCalling",
                 txdb = txdb
               )
 
-              if(length(grl_mod) == 0) stop("No modification peaks are detected. Please try smaller values of `p_cutoff`, e.x. 0.01.")
+              if(length(grl_mod) == 0) stop("No modification peaks are detected. Please try using a smaller value of `p_cutoff`, e.x. 0.01.")
 
               #Filter peak by width
               grl_mod <- grl_mod[sum(width(grl_mod)) >= peak_width]
@@ -492,7 +492,7 @@ setMethod("exomePeakCalling",
 
               rm(SE_Peak_counts, gr_mod_flanked)
 
-              message("Count reads on the merged peaks and the control regions ... ", appendLF = F)
+              message("Count reads on merged peaks and control regions ... ", appendLF = F)
 
               if (!parallel) {
                 register(SerialParam(), default = FALSE)
