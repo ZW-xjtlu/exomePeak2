@@ -14,4 +14,5 @@ Changes in version 1.3.5 (2021-02-07)
 Changes in version 1.3.7 (2021-03-10)
 + Added parameter `bp_param` to the exomePeak2() function; the parameter enables user to configure specific settings of parallel computation using functions in BiocParallel. 
 
-+ Changed the default setting for parameter `log2FC_cutoff` in functions exomePeak2() and exomePeakCalling() from 1 to 0. The adjustment is to improve the power of the peak calling result. 
++ Changed the default setting for parameter `log2FC_cutoff` in functions exomePeak2() and exomePeakCalling() from 1 to 0. The adjustment should has very little effect on the peak calling result.
+
