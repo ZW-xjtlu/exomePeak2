@@ -86,10 +86,12 @@
 #'
 #' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
 #'
-#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
+#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
 #' 
 #' @param parallel a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.
 #'
+#' @param bp_param optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution; default \code{= NULL}.
+#' 
 #' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
 #'
 #' If user provides the single based RNA modification annotation, exomePeak2 will perform reads count and (differential) modification quantification on the provided annotation.
@@ -267,8 +269,9 @@ exomePeak2 <- function(bam_ip = NULL,
                        bg_count_cutoff = 50,
                        p_cutoff = 1e-05,
                        p_adj_cutoff = NULL,
-                       log2FC_cutoff = 1,
+                       log2FC_cutoff = 0,
                        parallel = FALSE,
+                       bp_param = NULL,
                        background_method = c("all",
                                              "Gaussian_mixture",
                                              "m6Aseq_prior",
@@ -390,6 +393,7 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         p_adj_cutoff = p_adj_cutoff,
                         log2FC_cutoff = log2FC_cutoff,
                         parallel = parallel,
+                        bp_param = bp_param,
                         mod_annot = mod_annot,
                         background_method = background_method,
                         manual_background = manual_background,

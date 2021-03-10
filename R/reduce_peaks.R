@@ -10,9 +10,7 @@
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @keywords internal
-#'
-
-
+#‘
 reduce_peaks <- function(peaks_grl,
                          txdb) {
   exBygene  <- exons_by_unique_gene(

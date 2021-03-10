@@ -25,8 +25,9 @@ exomePeak2(
   bg_count_cutoff = 50,
   p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
-  log2FC_cutoff = 1,
+  log2FC_cutoff = 0,
   parallel = FALSE,
+  bp_param = NULL,
   background_method = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL,
   correct_GC_bg = TRUE,
@@ -100,9 +101,11 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
-\item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
+\item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.}
 
 \item{parallel}{a \code{logical} value indicating whether to use parallel computation, it will require > 16GB memory if \code{parallel = TRUE}; default \code{= FALSE}.}
+
+\item{bp_param}{optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.}
 
 \item{background_method}{a \code{character} specifies the method of finding background regions for peak detection, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
 
