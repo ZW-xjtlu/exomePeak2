@@ -27,7 +27,7 @@ exomePeakCalling(
   p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
   log2FC_cutoff = 0,
-  parallel = FALSE,
+  parallel = 3,
   bp_param = NULL
 )
 
@@ -51,8 +51,8 @@ exomePeakCalling(
   bg_count_cutoff = 50,
   p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
-  log2FC_cutoff = 1,
-  parallel = FALSE,
+  log2FC_cutoff = 0,
+  parallel = 1,
   bp_param = NULL
 )
 }
@@ -139,9 +139,9 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{p_adj_cutoff}{a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.}
 
-\item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.}
+\item{log2FC_cutoff}{a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.}
 
-\item{parallel}{a \code{logical} value of whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.}
+\item{parallel}{a \code{numeric} value specifying the number of cores used for parallel computing; default \code{= 3}.}
 
 \item{bp_param}{optional, a \code{\link{BiocParallelParam}} object that stores the configuration parameters for the parallel execution.}
 }

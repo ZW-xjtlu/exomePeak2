@@ -37,7 +37,7 @@ setGeneric("exomePeakCalling", function(merip_bams = NULL,
                                         p_cutoff = 1e-05,
                                         p_adj_cutoff = NULL,
                                         log2FC_cutoff = 0,
-                                        parallel = FALSE,
+                                        parallel = 3,
                                         bp_param = NULL) {standardGeneric("exomePeakCalling")})
 
 #' Method estimateSeqDepth

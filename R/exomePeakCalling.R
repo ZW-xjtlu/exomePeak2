@@ -51,11 +51,11 @@
 #'
 #' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
 #'
-#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 1}.
+#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
 #'
 #' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
 #'
-#' @param parallel a \code{logical} value of whether to use parallel computation, typlically it requires more than 16GB of RAM if \code{parallel = TRUE}; default \code{= FALSE}.
+#' @param parallel a \code{numeric} value specifying the number of cores used for parallel computing; default \code{= 3}.
 #'
 #' @param mod_annot a \code{\link{GRanges}} or \code{\link{GRangesList}} object for user provided single based RNA modification annotation, the widths of the ranged object should be all equal to 1.
 #'
@@ -201,8 +201,8 @@ setMethod("exomePeakCalling",
                    bg_count_cutoff = 50,
                    p_cutoff = 1e-05,
                    p_adj_cutoff = NULL,
-                   log2FC_cutoff = 1,
-                   parallel = FALSE,
+                   log2FC_cutoff = 0,
+                   parallel = 1,
                    bp_param = NULL
           ) {
 
@@ -242,7 +242,7 @@ setMethod("exomePeakCalling",
               message("OK")
             } else {
               if (is.null(txdb)) {
-                stop("Missing transcript annotation, please provide the genome name or transcript annotation package/files.")
+                stop("Missing transcript annotation, please provide the genome name or the transcript annotation package/files.")
               }
 
               if (!is(txdb, "TxDb")) {
@@ -284,15 +284,14 @@ setMethod("exomePeakCalling",
               #                Initial reads count                 #
               ######################################################
 
-              if (!parallel) {
-                register(SerialParam())
-                suppressWarnings( register(MulticoreParam(workers = 1)) )
-                register(SnowParam(workers = 1))
+              if (!is.null(bp_param)) {
+                register(bp_param, default = TRUE)
               } else {
-                if (!is.null(bp_param)) {
-                  register(bp_param, default = TRUE)
-                }
+                register(SerialParam())
+                suppressWarnings( register(MulticoreParam(workers = parallel)) )
+                register(SnowParam(workers = parallel))
               }
+              
               yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SE_Peak_counts <- suppressWarnings( summarizeOverlaps(
@@ -442,7 +441,7 @@ setMethod("exomePeakCalling",
               if (glm_type == "DESeq2") {
                 if (any(table(SE_Peak_counts$design_IP) == 1)) {
                   warning(
-                    "At least one of the IP or input group has < 2 replicates. Peak calling method has been changed to Poisson GLM.\n",
+                    "At least one of the IP or input group has no replicates. Peak calling method changed to Poisson GLM.\n",
                     call. = TRUE,
                     immediate. = FALSE
                   )
@@ -462,7 +461,7 @@ setMethod("exomePeakCalling",
                 txdb = txdb
               )
 
-              if(length(grl_mod) == 0) stop("No modification peaks are detected. Please try using a smaller value of `p_cutoff`, e.x. 0.01.")
+              if(length(grl_mod) == 0) stop("No modification peaks are detected. Please try smaller values of `p_cutoff`, e.x. 0.01.")
 
               #Filter peak by width
               grl_mod <- grl_mod[sum(width(grl_mod)) >= peak_width]
@@ -492,22 +491,16 @@ setMethod("exomePeakCalling",
 
               rm(SE_Peak_counts, gr_mod_flanked)
 
-              message("Count reads on merged peaks and control regions ... ", appendLF = F)
+              message("Count reads on the merged peaks and the control regions ... ", appendLF = F)
 
-              if (!parallel) {
-                register(SerialParam(), default = FALSE)
-                suppressWarnings( register(MulticoreParam(workers = 1)) )
-                register(SnowParam(workers = 1))
+              if (!is.null(bp_param)) {
+                register(bp_param, default = TRUE)
               } else {
-                if (!is.null(bp_param)) {
-                  register(bp_param, default = TRUE)
-                } else {
-                  register(SerialParam(), default = FALSE)
-                 suppressWarnings( register(MulticoreParam(workers = 3)) )
-                  register(SnowParam(workers = 3))
-                }
+                register(SerialParam())
+                suppressWarnings( register(MulticoreParam(workers = parallel)) )
+                register(SnowParam(workers = parallel))
               }
-
+              
               yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
 
               SummarizedExomePeaks <- suppressWarnings( summarizeOverlaps(
@@ -588,18 +581,12 @@ setMethod("exomePeakCalling",
 
               message("Count reads on the single based annotation ... ", appendLF = F)
 
-              if (!parallel) {
-                register(SerialParam())
-                suppressWarnings( register(MulticoreParam(workers = 1)) )
-                register(SnowParam(workers = 1))
+              if (!is.null(bp_param)) {
+                register(bp_param, default = TRUE)
               } else {
-                if (!is.null(bp_param)) {
-                  register(bp_param, default = TRUE)
-                } else {
-                  register(SerialParam(), default = FALSE)
-                  suppressWarnings( register(MulticoreParam(workers = 3)) )
-                  register(SnowParam(workers = 3))
-                }
+                register(SerialParam())
+                suppressWarnings( register(MulticoreParam(workers = parallel)) )
+                register(SnowParam(workers = parallel))
               }
 
               yieldSize(merip_bams) = 5000000 #Control the yield size to inhibit memory overflow
