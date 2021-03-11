@@ -1,8 +1,8 @@
-#' @title Find the background of the user provided mod_gration.
+#' @title Find the background of the user provided modification.
 #'
-#' @param mod_gr A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).
-#' @param txdb A \code{TxDb} object that define the transcript mod_gration.
-#' @param background_bins A Granges object for background binds.
+#' @param mod_gr A \code{GRanges} object of user provided modification (names are neccessary for the index of the splitting).
+#' @param txdb A \code{TxDb} object that define the transcript modification.
+#' @param background_bins A Granges object for background bins.
 #' @param background_types A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.
 #' @param control_width A integer for the minimum width of the control region returned; default 50.
 #' @param rename_mod Whether to rename the returned modification sites, default = FALSE.
@@ -12,7 +12,7 @@
 #' If the resulting ranges have less number and width compared with what defined in \code{cut_off_num},
 #' the exon regions of txdb will be returned as the background.
 #'
-#' The second portion is the restructed user provided mod_gration with gene id mod_grated.
+#' The second portion is the reconstructed provided modification with gene id mod_grated.
 #'
 #' @import GenomicRanges
 #' @import GenomicFeatures

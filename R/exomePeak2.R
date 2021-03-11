@@ -64,7 +64,9 @@
 #'
 #' @param step_length a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.
 #'
-#' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
+#' @param min_peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2}.
+#' 
+#' @param max_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .
 #'
 #' @param glm_type a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 #'
@@ -262,7 +264,8 @@ exomePeak2 <- function(bam_ip = NULL,
                        fragment_length = 100,
                        binding_length = 25,
                        step_length = binding_length,
-                       peak_width = fragment_length/2,
+                       min_peak_width = fragment_length/2,
+                       max_peak_width = fragment_length*10,
                        pc_count_cutoff = 5,
                        bg_count_cutoff = 50,
                        p_cutoff = 1e-05,
@@ -318,7 +321,9 @@ stopifnot(fragment_length > 0)
 
 stopifnot(step_length > 0)
 
-stopifnot(peak_width > 0)
+stopifnot(min_peak_width > 0)
+
+stopifnot(max_peak_width > 0)
 
 stopifnot(log2FC_cutoff >= 0)
 
@@ -383,7 +388,8 @@ sep <- exomePeakCalling(merip_bams = merip_bam_lst,
                         fragment_length = fragment_length,
                         binding_length = binding_length,
                         step_length = binding_length,
-                        peak_width = fragment_length/2,
+                        min_peak_width = min_peak_width,
+                        max_peak_width = max_peak_width,
                         pc_count_cutoff = pc_count_cutoff,
                         bg_count_cutoff = bg_count_cutoff,
                         p_cutoff = p_cutoff,

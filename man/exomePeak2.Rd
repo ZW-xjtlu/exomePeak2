@@ -20,7 +20,8 @@ exomePeak2(
   fragment_length = 100,
   binding_length = 25,
   step_length = binding_length,
-  peak_width = fragment_length/2,
+  min_peak_width = fragment_length/2,
+  max_peak_width = fragment_length * 10,
   pc_count_cutoff = 5,
   bg_count_cutoff = 50,
   p_cutoff = 1e-05,
@@ -90,7 +91,9 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 
 \item{step_length}{a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.}
 
-\item{peak_width}{a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .}
+\item{min_peak_width}{a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2}.}
+
+\item{max_peak_width}{a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .}
 
 \item{pc_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 5}.}
 

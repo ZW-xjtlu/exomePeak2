@@ -53,8 +53,10 @@
 #'
 #' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
 #'
-#' @param peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length} .
+#' @param min_peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2} .
 #'
+#' @param min_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .
+#' 
 #' @param parallel a \code{numeric} value specifying the number of cores used for parallel computing; default \code{= 3}.
 #'
 #' @param mod_annot a \code{\link{GRanges}} or \code{\link{GRangesList}} object for user provided single based RNA modification annotation, the widths of the ranged object should be all equal to 1.
@@ -196,7 +198,8 @@ setMethod("exomePeakCalling",
                    fragment_length = 100,
                    binding_length = 25,
                    step_length = binding_length,
-                   peak_width = fragment_length / 2,
+                   min_peak_width = fragment_length/2,
+                   max_peak_width = fragment_length*10,
                    pc_count_cutoff = 5,
                    bg_count_cutoff = 50,
                    p_cutoff = 1e-05,
@@ -219,7 +222,9 @@ setMethod("exomePeakCalling",
 
             stopifnot(step_length > 0)
 
-            stopifnot(peak_width > 0)
+            stopifnot(min_peak_width > 0)
+            
+            stopifnot(max_peak_width > 0)
 
             stopifnot(log2FC_cutoff >= 0)
 
@@ -464,8 +469,9 @@ setMethod("exomePeakCalling",
               if(length(grl_mod) == 0) stop("No modification peaks are detected. Please try smaller values of `p_cutoff`, e.x. 0.01.")
 
               #Filter peak by width
-              grl_mod <- grl_mod[sum(width(grl_mod)) >= peak_width]
-
+              indx_keep <- (sum(width(grl_mod)) >= min_peak_width) & (sum(width(grl_mod)) <= max_peak_width)
+              grl_mod <- grl_mod[indx_keep]
+              rm(indx_keep)
               ######################################################
               #                 Round 2 reads count                #
               ######################################################
@@ -486,11 +492,10 @@ setMethod("exomePeakCalling",
                 txdb = txdb,
                 background_bins = rowRanges(SE_Peak_counts)[rowData(SE_Peak_counts)$indx_bg, ],
                 background_types = background_method,
-                control_width = peak_width
+                control_width = min_peak_width
               )
-
+              
               rm(SE_Peak_counts, gr_mod_flanked)
-
               message("Count reads on the merged peaks and the control regions ... ", appendLF = F)
 
               if (!is.null(bp_param)) {

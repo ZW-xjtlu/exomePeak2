@@ -198,7 +198,9 @@ setMethod("exportResults",
             sep <- sep[grepl("peak_", rownames(sep)),][index_keep,]
 
             exomePeak2Results(sep) <- exomePeak2Results(sep)[grepl("peak_", rownames(sep)),][index_keep,]
-
+            
+            sep <- sort_sep(sep)
+            
             id_num <- as.numeric(gsub("^.*_", "", rownames(sep)))
 
             id_index <- order(id_num)
@@ -206,6 +208,8 @@ setMethod("exportResults",
             sep <- sep[id_index,]
 
             exomePeak2Results(sep) <- exomePeak2Results(sep)[id_index,]
+            
+            sep <- sort_sep(sep)
 
             rownames(sep) <- paste0("peak_", rep(seq_along(id_num), table(id_num[id_index])))
 

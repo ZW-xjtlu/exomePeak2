@@ -2,7 +2,7 @@
 % Please edit documentation in R/disj_background.R
 \name{disj_background}
 \alias{disj_background}
-\title{Find the background of the user provided mod_gration.}
+\title{Find the background of the user provided modification.}
 \usage{
 disj_background(
   mod_gr,
@@ -14,11 +14,11 @@ disj_background(
 )
 }
 \arguments{
-\item{mod_gr}{A \code{GRanges} object of user provided mod_gration (names are neccessary for the index of the splitting).}
+\item{mod_gr}{A \code{GRanges} object of user provided modification (names are neccessary for the index of the splitting).}
 
-\item{txdb}{A \code{TxDb} object that define the transcript mod_gration.}
+\item{txdb}{A \code{TxDb} object that define the transcript modification.}
 
-\item{background_bins}{A Granges object for background binds.}
+\item{background_bins}{A Granges object for background bins.}
 
 \item{background_types}{A logical value, TRUE if the region of 5'UTR and long exons of the transcripts should be dropped in control region; Default TRUE.}
 
@@ -33,9 +33,9 @@ The first portion is the exons regions that is not overlapped with \code{annoati
 If the resulting ranges have less number and width compared with what defined in \code{cut_off_num},
 the exon regions of txdb will be returned as the background.
 
-The second portion is the restructed user provided mod_gration with gene id mod_grated.
+The second portion is the reconstructed provided modification with gene id mod_grated.
 }
 \description{
-Find the background of the user provided mod_gration.
+Find the background of the user provided modification.
 }
 \keyword{internal}
