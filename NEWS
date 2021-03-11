@@ -16,7 +16,7 @@ Changes in version 1.3.7 (2021-03-10)
 
 + To avoid the potential confusion for the downstream analysis, the default settings for the parameter `log2FC_cutoff` in functions exomePeak2() and exomePeakCalling() are changed from 1 to 0. The adjustment should have very little effect on the peak calling result.
 
-+ The naming of peaks in the output file is now sorted by the genomic orders.
++ The naming of peaks in the output file is now sorted by their genomic order.
 
 + A maximum for peak width is added now, which is by default 10*fragment_length. Such a higher bound can significantly improve the results of DRACH motif finding for m6A-Seq.
 
