@@ -12,11 +12,11 @@ Changes in version 1.3.5 (2021-02-07)
 + When performing the difference analysis using the function exomePeak2(), the sequencing depth of the interactive GLM will be estimated on the background features, which by default are the disjoint regions of the peaks detected on the exons. Tests on real data revealed that the background approach can make the differential methylation directions more in-line with the expectation of the perturbed protein regulator. Previously, the background sequencing depth estimation can only be realized in the multiple-step functions but not in exomePeak2().
 
 Changes in version 1.3.7 (2021-03-10)
-+ parameter `parallel` is changed in the exomePeak2() and exomePeakCalling() functions; the parameter now enables user to configure specific number of cores used in the parallel computation (default = 3). 
++ parameter `parallel` is changed in the exomePeak2() and exomePeakCalling() functions; the parameter now enables user to configure specific number of cores used in the parallel computation (default = 1). 
 
-+ To avoid the potential confusion for the downstream analysis, the default setting for parameter `log2FC_cutoff` in functions exomePeak2() and exomePeakCalling() is changed from 1 to 0. The adjustment should has very little effect on the peak calling result.
++ To avoid the potential confusion for the downstream analysis, the default settings for the parameter `log2FC_cutoff` in functions exomePeak2() and exomePeakCalling() are changed from 1 to 0. The adjustment should have very little effect on the peak calling result.
 
 + The naming of peaks in the output file is now sorted by the genomic orders.
 
-+ A maximum for peak width is added now, which is by default 10*fragment_length. Such higher bound can improve the results of DRACH motif finding for m6A-Seq.
++ A maximum for peak width is added now, which is by default 10*fragment_length. Such a higher bound can significantly improve the results of DRACH motif finding for m6A-Seq.
 
