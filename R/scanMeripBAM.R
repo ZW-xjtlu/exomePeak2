@@ -124,16 +124,18 @@ scanMeripBAM <- function(bam_ip = NULL,
                          asMates = paired_end)
 
   bai_temp = paste0(bam_files, ".bai")
-
-  sorted_bai_temp = gsub(".bam$", "_sorted.bam.bai", bam_files)
+  csi_temp = paste0(bam_files, ".csi")
+  sorted_bai_temp = gsub(".bam$", ".sorted.bam.bai", bam_files)
+  sorted_csi_temp = gsub(".bam$", ".sorted.bam.csi", bam_files)
+  sorted_bam_temp = gsub(".bam$", ".sorted.bam", bam_files)
 
   exist_indx <-
-    all(file.exists(bai_temp)) |
+    all(file.exists(bai_temp)) | all(file.exists(csi_temp)) |
     (all(file.exists(sorted_bai_temp)) &
-       all(file.exists(
-         gsub(".bam$", "_sorted.bam", bam_files)
-       )))
-
+       all(file.exists(sorted_bam_temp))) |
+    (all(file.exists(sorted_csi_temp)) &
+       all(file.exists(sorted_bam_temp)))
+  
   if (!exist_indx) {
     if (!index_bam) {
       warning(
@@ -146,7 +148,7 @@ scanMeripBAM <- function(bam_ip = NULL,
     } else {
       message("Sorting and indexing BAM files with Rsamtools...", appendLF = FALSE)
 
-      sorted_bam_names <- gsub(".bam$", "_sorted", bam_files)
+      sorted_bam_names <- gsub(".bam$", ".sorted", bam_files)
 
       for (i in seq_along(sorted_bam_names)) {
         suppressWarnings(sortBam(bam_files[i], destination = sorted_bam_names[i]))
@@ -163,19 +165,22 @@ scanMeripBAM <- function(bam_ip = NULL,
     }
 
   } else {
-    if (all(file.exists(sorted_bai_temp))) {
-      bam.list = BamFileList(file = gsub(".bam$", "_sorted.bam", bam_files),
+    if (all(file.exists(csi_temp))){
+      index(bam.list) = normalizePath(csi_temp)
+    } else if (all(file.exists(sorted_csi_temp))) {
+      bam.list = BamFileList(file = gsub(".bam$", ".sorted.bam", bam_files),
                              asMates = paired_end)
-
+      index(bam.list) = normalizePath(sorted_csi_temp)
+    } else if (all(file.exists(sorted_bai_temp))) {
+      bam.list = BamFileList(file = gsub(".bam$", ".sorted.bam", bam_files),
+                             asMates = paired_end)
       index(bam.list) = normalizePath(sorted_bai_temp)
-
     } else {
       index(bam.list) = normalizePath(bai_temp)
-
     }
   }
 
-  rm(bai_temp, sorted_bai_temp)
+  rm(bai_temp,csi_temp,sorted_bai_temp,sorted_csi_temp)
 
 
   #Check the existence of the bam files
