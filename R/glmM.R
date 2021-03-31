@@ -64,7 +64,7 @@ setMethod("glmM",
           "SummarizedExomePeak",
            function(sep,
                     glm_type = c("DESeq2","NB","Poisson"),
-                    LFC_shrinkage = c("apeglm", "Gaussian", "ashr"),
+                    LFC_shrinkage = c("apeglm", "Gaussian", "ashr", "none"),
                     ...) {
   if( (any(sep$design_Treatment) & any(!sep$design_Treatment)) ) {
 

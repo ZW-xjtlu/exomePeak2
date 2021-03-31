@@ -100,7 +100,7 @@ setGeneric("normalizeGC", function(sep,
 #' @exportMethod glmM
 setGeneric("glmM", function(sep,
                                glm_type = c("DESeq2","NB","Poisson"),
-                               LFC_shrinkage = c("apeglm","Gaussian","ashr"),
+                               LFC_shrinkage = c("apeglm","Gaussian","ashr","none"),
                                ...) {standardGeneric("glmM")})
 
 #' Method glmDM
