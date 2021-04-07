@@ -55,7 +55,7 @@
 #'
 #' @param min_peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2} .
 #'
-#' @param min_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .
+#' @param min_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*100} .
 #' 
 #' @param parallel a \code{numeric} value specifying the number of cores used for parallel computing; default \code{= 3}.
 #'
@@ -199,7 +199,7 @@ setMethod("exomePeakCalling",
                    binding_length = 25,
                    step_length = binding_length,
                    min_peak_width = fragment_length/2,
-                   max_peak_width = fragment_length*10,
+                   max_peak_width = fragment_length*100,
                    pc_count_cutoff = 5,
                    bg_count_cutoff = 50,
                    p_cutoff = 1e-05,
