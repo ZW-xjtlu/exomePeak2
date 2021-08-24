@@ -22,7 +22,7 @@ exomePeakCalling(
   binding_length = 25,
   step_length = binding_length,
   min_peak_width = fragment_length/2,
-  max_peak_width = fragment_length * 10,
+  max_peak_width = Inf,
   pc_count_cutoff = 5,
   bg_count_cutoff = 50,
   p_cutoff = 1e-05,
@@ -39,7 +39,7 @@ exomePeakCalling(
   genome = NA,
   mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"),
-  background_method = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
+  background_method = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
   manual_background = NULL,
   correct_GC_bg = TRUE,
   qtnorm = FALSE,
@@ -48,8 +48,8 @@ exomePeakCalling(
   binding_length = 25,
   step_length = binding_length,
   min_peak_width = fragment_length/2,
-  max_peak_width = fragment_length * 10,
-  pc_count_cutoff = 5,
+  max_peak_width = Inf,
+  pc_count_cutoff = 0,
   bg_count_cutoff = 50,
   p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
@@ -91,7 +91,7 @@ The single base annotation will be flanked by length = floor(fragment_length - b
 
 By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.}
 
-\item{background_method}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+\item{background_method}{a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "Gaussian_mixture"}.
 
 In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 
@@ -131,9 +131,11 @@ If \code{qtnorm = TRUE}, subset quantile normalization will be applied within th
 
 \item{step_length}{a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.}
 
-\item{min_peak_width}{a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .}
+\item{min_peak_width}{a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2} .}
 
-\item{pc_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 5}.}
+\item{max_peak_width}{a \code{numeric} value for the maximum width of the merged peaks; default \code{= Inf} .}
+
+\item{pc_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 0}.}
 
 \item{bg_count_cutoff}{a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.}
 

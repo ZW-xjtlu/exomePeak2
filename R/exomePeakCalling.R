@@ -43,7 +43,7 @@
 #'
 #' By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.
 #'
-#' @param pc_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 5}.
+#' @param pc_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 0}.
 #'
 #' @param bg_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.
 #'
@@ -55,7 +55,7 @@
 #'
 #' @param min_peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2} .
 #'
-#' @param min_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*100} .
+#' @param max_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= Inf} .
 #' 
 #' @param parallel a \code{numeric} value specifying the number of cores used for parallel computing; default \code{= 3}.
 #'
@@ -75,7 +75,7 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background_method a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+#' @param background_method a \code{character} specifies the method for the background finding, i.e. to identify the windows without modification signal. It could be one of the "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "Gaussian_mixture"}.
 #'
 #' In order to accurately account for the technical variations, it is often neccessary to estimate the GC content linear effects on windows without modification signals (background).
 #'
@@ -187,10 +187,10 @@ setMethod("exomePeakCalling",
                    glm_type = c("DESeq2",
                                 "NB",
                                 "Poisson"),
-                   background_method = c("all",
-                                         "Gaussian_mixture",
+                   background_method = c("Gaussian_mixture",
                                          "m6Aseq_prior",
-                                         "manual"),
+                                         "manual",
+                                         "all"),
                    manual_background = NULL,
                    correct_GC_bg = TRUE,
                    qtnorm = FALSE,
@@ -199,8 +199,8 @@ setMethod("exomePeakCalling",
                    binding_length = 25,
                    step_length = binding_length,
                    min_peak_width = fragment_length/2,
-                   max_peak_width = fragment_length*100,
-                   pc_count_cutoff = 5,
+                   max_peak_width = Inf,
+                   pc_count_cutoff = 0,
                    bg_count_cutoff = 50,
                    p_cutoff = 1e-05,
                    p_adj_cutoff = NULL,

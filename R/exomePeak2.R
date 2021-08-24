@@ -66,7 +66,7 @@
 #'
 #' @param min_peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2}.
 #' 
-#' @param max_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .
+#' @param max_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= Inf} .
 #'
 #' @param glm_type a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
 #'
@@ -108,26 +108,23 @@
 #'
 #' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
 #'
-#' @param background_method a \code{character} specifies the method of finding background regions for peak detection, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
+#' @param background_method a \code{character} specifies the method of finding background regions for peak detection, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "Gaussian_mixture"}.
 #'
 #' In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
 #'
 #' The following methods are supported in \code{exomePeak2} to differentiate the no modification background windows from the modification containig windows.
 #'
 #' \describe{
-#'
-#'  \item{\strong{\code{all}}}{Use all windows as the background.
-#'  This choise assumes no differences in the effects of technical features between the background and the modification regions.}
-#'
+#' 
 #'  \item{\strong{\code{Gaussian_mixture}}}{The background is identified by Multivariate Gaussian Mixture Model (MGMM) with 2 mixing components on the vectors containing methylation level estimates and GC content, the background regions are predicted by the Bayes Classifier on the learned GMM.}
 #'
-#'  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
-#'
-#'  This type of background should not be used if the MeRIP-seq data is not targetting on m6A methylation.
-#'
-#'  }
+#'  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.}
 #'
 #'  \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
+#'  
+#'  \item{\strong{\code{all}}}{Use all windows as the background. This choise assumes no differences in the effects of technical features between the background and the modification regions.
+#'
+#'  This type of background should not be used if the MeRIP-seq data is not targeting on m6A methylation.}
 #'
 #'  }
 #'
@@ -265,17 +262,17 @@ exomePeak2 <- function(bam_ip = NULL,
                        binding_length = 25,
                        step_length = binding_length,
                        min_peak_width = fragment_length/2,
-                       max_peak_width = fragment_length*100,
-                       pc_count_cutoff = 5,
+                       max_peak_width = Inf,
+                       pc_count_cutoff = 0,
                        bg_count_cutoff = 50,
                        p_cutoff = 1e-05,
                        p_adj_cutoff = NULL,
                        log2FC_cutoff = 0,
                        parallel = 1,
-                       background_method = c("all",
-                                             "Gaussian_mixture",
+                       background_method = c("Gaussian_mixture",
                                              "m6Aseq_prior",
-                                             "manual"),
+                                             "manual",
+                                             "all"),
                        manual_background = NULL,
                        correct_GC_bg = TRUE,
                        qtnorm = FALSE,

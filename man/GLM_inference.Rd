@@ -9,10 +9,10 @@ GLM_inference(
   glm_type = c("Poisson", "NB", "DESeq2"),
   p_cutoff = 1e-05,
   p_adj_cutoff = NULL,
-  count_cutoff = 5,
+  count_cutoff = 0,
   log2FC_mod = 1,
   min_mod_number = NA,
-  correct_GC_bg = FALSE,
+  correct_GC_bg = TRUE,
   qtnorm = TRUE
 )
 }
@@ -35,7 +35,7 @@ The DESeq2 method is only recommended for high power experiments with more than 
 If the bins are filtered less than this number by the p values or effect sizes,
 more sites will be reported by the order of the p value until it reaches this number; Default to be calculated by floor( sum(rowSums( assay(SE_bins) ) > 0)*0.001 ).}
 
-\item{correct_GC_bg}{a \code{logical} of whether to estimate the GC content linear effect on background regions; default \code{= FALSE}.
+\item{correct_GC_bg}{a \code{logical} of whether to estimate the GC content linear effect on background regions; default \code{= TRUE}.
 
 If \code{correct_GC_bg = TRUE}, it may result in a more accurate estimation of the technical effect of GC content for the RNA modifications that are highly biologically related to GC content.}
 
