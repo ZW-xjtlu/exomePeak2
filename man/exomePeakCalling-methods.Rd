@@ -13,7 +13,7 @@ exomePeakCalling(
   genome = NA,
   mod_annot = NULL,
   glm_type = c("DESeq2", "NB", "Poisson"),
-  background_method = c("Gaussian_mixture", "m6Aseq_prior", "manual", "all"),
+  background_method = c("all", "Gaussian_mixture", "m6Aseq_prior", "manual"),
   manual_background = NULL,
   correct_GC_bg = TRUE,
   qtnorm = FALSE,
