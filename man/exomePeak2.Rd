@@ -21,7 +21,7 @@ exomePeak2(
   binding_length = 25,
   step_length = binding_length,
   min_peak_width = fragment_length/2,
-  max_peak_width = fragment_length * 10,
+  max_peak_width = fragment_length * 100,
   pc_count_cutoff = 5,
   bg_count_cutoff = 50,
   p_cutoff = 1e-05,

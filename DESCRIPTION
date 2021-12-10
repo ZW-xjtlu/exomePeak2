@@ -12,7 +12,7 @@ Depends: SummarizedExperiment,cqn
 biocViews: Sequencing, MethylSeq, RNASeq, ExomeSeq, Coverage, Normalization, Preprocessing, DifferentialExpression
 Encoding: UTF-8
 LazyData: false
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 Suggests: 
     knitr,
     rmarkdown,
