@@ -98,8 +98,8 @@ Annotations on the columns of the output table:
 - ***blockSizes***: the widths of the blocks.
 - ***blockStarts***: the start positions of the blocks.
 - ***geneID***: the gene ID of the peak.
-- ***RPM.input***: the RPM (read per million) calculated from the pulled input samples.
-- ***RPM.IP***: the RPM calculated from the pulled IP samples.
+- ***RPM.input***: the RPM (Reads per million mapped reads) calculated from the pooled input samples.
+- ***RPM.IP***: the RPM calculated from the pooled IP samples.
 - ***log2FC***: the estimate of IP over input log2 fold change (coefficient estimates of ${\beta}_{i,1}$).
 - ***pvalue***: the p-value of the peak, which is calculated by the Wald test over the coefficient of ${\beta}_{i,1}$.
 - ***fdr***: the adjusted Wald test p-value using Benjamini Hochberg approach.
