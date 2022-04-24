@@ -1,7 +1,7 @@
 Package: exomePeak2
 Type: Package
 Title: Peak Calling and differential analysis for MeRIP-Seq
-Version: 2.0.1
+Version: 1.7.0
 Authors@R: person("Zhen", "Wei", email = "zhen.wei10@icloud.com",
                   role = c("aut", "cre"))
 Description: exomePeak2 provides peak detection and differential methylation for Methylated RNA Immunoprecipitation Sequencing (MeRIP-Seq) data. MeRIP-Seq is a commonly applied sequencing assay that measures the location and abundance of RNA modification sites under specific cell conditions. In practice, the technique is sensitive to PCR amplification biases commonly found in NGS data. Additionally, the efficiency of immunoprecipitation often varies by different IP samples. exomePeak2 can perform peak calling and differential analysis that are independent of GC content biases and IP efficiency changes. 

@@ -1,0 +1,26 @@
+Changes in version 0.99.9 (2020-03-10)
++ Fix comments proposed in the bioconductor submission issue on Github
+
+Changes in version 1.3.3 (2021-02-03)
++ Fix the bug of not merging the overlapping exons when the transcript annotation have no overlapping transcripts, this can happen when a very small annotation is provided.
+
+Changes in version 1.3.4 (2021-02-05)
++ The options `consistent_peak`, `consistent_log2FC_cutoff`, `consistent_fdr_cutoff`, `alpha`, and `p0` are deprecated from the functions exomePeak2() and exomePeakCalling(). The consistent_peak option was implemented to reproduce the consistent peak calling algorithm in the old package exomePeak, and its performance is significantly lower than the NB GLM derived methods according to our recent tests. Hence, the consistency related functionalities are removed in the later versions of exomePeak2.
+
+Changes in version 1.3.5 (2021-02-07)
++ Improved the grammar and details in the DESCRIPTION file and the vignettes.
++ When performing the difference analysis using the function exomePeak2(), the sequencing depth of the interactive GLM will be estimated on the background features, which by default are the disjoint regions of the peaks detected on the exons. Tests on real data revealed that the background approach can make the differential methylation directions more in-line with the expectation of the perturbed protein regulator. Previously, the background sequencing depth estimation can only be realized in the multiple-step functions but not in exomePeak2().
+
+Changes in version 1.3.7 (2021-03-10)
++ Parameter `parallel` is changed in the exomePeak2() and exomePeakCalling() functions; the parameter now enables user to configure specific number of cores used in the parallel computation (default = 1). 
++ To avoid the potential confusion for the downstream analysis, the default settings for the parameter `log2FC_cutoff` in functions exomePeak2() and exomePeakCalling() are changed from 1 to 0. The adjustment should have very little effect on the peak calling result.
++ The naming of peaks in the output file is now sorted by their genomic order.
++ A maximum for peak width is added now, which is by default 100*fragment_length. Such a higher bound can significantly improve the results of DRACH motif finding for m6A-Seq.
+
+
+Changes in version 1.7.0 (2022-04-20)
++ Improved accuracy by introducing new computational models of GC content bias correction and IP efficiency correction.
++ Improved peak calling stability by applying Poisson test under default setting.
++ Read count method is improved.
++ Multi-step functions and quantification mode are deprecated. 
++ Unnecessary function parameters are removed.
