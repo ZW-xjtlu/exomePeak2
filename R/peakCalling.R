@@ -1,0 +1,97 @@
+## Peak calling with MeRIP-Seq.
+##
+## return the peaks in GRangesList format.
+##
+peakCalling <- function(bam_IP,
+                        bam_input,
+                        txdb = NULL,
+                        genome = NULL,
+                        bin_size = 25,
+                        step_size = 25,
+                        fragment_length = 100,
+                        strandness = c("unstrand", "1st_strand", "2nd_strand"),
+                        gff = NULL,
+                        test_method = c("Poisson", "DESeq2"),
+                        p_cutoff = 1e-10,
+                        plot_gc = FALSE,
+                        parallel = 1,
+                        motif_based = FALSE,
+                        motif_sequence = "DRACH"){
+  #require(GenomicRanges)
+  #require(SummarizedExperiment)
+  #require(DESeq2)
+
+  #Check input validity
+  strandness <- match.arg(strandness)
+  test_method <- match.arg(test_method)
+  stopifnot(fragment_length > 0 & bin_size > 0 & step_size > 0)
+
+  if(is.null(gff) & is.null(txdb)){
+    stop("Please at least provide one among gff and TxDb for transcript annotation.")
+  }
+
+  if(is.null(txdb) & !is.null(gff)){
+    txdb <- makeTxDbFromGFF(gff)
+  }
+
+  if(!(all(file.exists(bam_IP)) & all(file.exists(bam_input)))){
+    stop("At least one bam file directories provided cannot be found, please check it.")
+  }
+
+  if(is.null(genome) & motif_based){
+    stop("Motif cannot be extracted without providing the 'genome' argument, please try to find the reference genome.")
+  }
+
+  if(is.null(genome)){
+    warning("Reference genome not provided, GC content bias is left uncorrected.")
+  }
+
+  #Extract bins for count
+  exByGene  <- exonsByiGenes(txdb) %>% quiet
+  if(!motif_based){
+    peakBins <- exonicBins(exByGene, bin_size, step_size) %>% quiet
+  }else{
+    peakBins <- sampleSequence(motif_sequence, exByGene, genome) %>% quiet
+    peakBins <-  resize(peakBins, 1, fix = "center") %>% quiet
+  }
+  mcols(peakBins) <- NULL
+  if(is(peakBins, "GRanges")) peakBins <- split(peakBins, seq_along(peakBins)) %>% quiet
+
+  #Count the bam files
+  bam_dirs <- c(bam_IP, bam_input)
+  se <- featuresCounts(peakBins, bam_dirs, strandness, parallel) %>% quiet
+  rm(bam_dirs)
+
+  #Annotate SummarizedExperiment
+  se$IP_input <- rep(c("IP", "input"), c(length(bam_IP), length(bam_input)))
+  rm(peakBins)
+
+  #Identify Backgrounds
+  se <- classifyBackground(se) %>% quiet
+
+  #Estimate sample size factors
+  se <- estimateColumnFactors(se) %>% quiet
+
+  if(!is.null(genome)){
+  #Calculate GC contents
+  se <- calculateGCcontents(se, fragment_length, exByGene, genome) %>% quiet
+
+  #Fit GC content biases
+  se <- fitBiasCurves(se) %>% quiet
+
+  #Estimate matrix correction factors
+  se <- estimateMatrixFactors(se) %>% quiet
+
+  ## Plot GC bias fits
+  if(plot_gc) plotGCbias(se) %>% quiet
+
+  }else{
+  #Assign matrix correction factors without GC offsets
+  se <- estimateMatrixFactors(se) %>% quiet
+  }
+
+  #DESeq2 peak calling
+  peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based) %>% quiet
+
+  return(peaks)
+}
