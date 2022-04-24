@@ -17,3 +17,10 @@ Changes in version 1.3.7 (2021-03-10)
 + The naming of peaks in the output file is now sorted by their genomic order.
 + A maximum for peak width is added now, which is by default 100*fragment_length. Such a higher bound can significantly improve the results of DRACH motif finding for m6A-Seq.
 
+
+Changes in version 1.7.0 (2022-04-20)
++ Improved accuracy by introducing new computational models of GC content bias correction and IP efficiency correction.
++ Improved peak calling stability by applying Poisson test under default setting.
++ Read count method is improved.
++ Multi-step functions and quantification mode are deprecated. 
++ Unnecessary function parameters are removed.

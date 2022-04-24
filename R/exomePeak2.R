@@ -1,174 +1,88 @@
-#' @title Peak Calling and Peak Statistics Quantification on MeRIP-seq Dataset.
+#' @title Peak Calling and Differential Analysis of MeRIP-seq.
 #'
-#' @description \code{exomePeak2} conducts peak calling and peak statistics calculation from \strong{BAM} files of a MeRIP-seq experiment.
-#' The function integrates the following steps of a standard MeRIP-seq data analysis pipeline.
+#' @description \code{exomePeak2} conducts peak calling and differential methylation analysis using BAM files of aligned MeRIP-seq reads.
 #'
-#' \enumerate{
-#' \item Check and index the BAM files with \code{\link{scanMeripBAM}}.
-#' \item Call modification peaks on exons with \code{\link{exomePeakCalling}}.
-#' \item Calculate offset factors of GC content biases with \code{\link{normalizeGC}}.
-#' \item Calculate (differential) modification statistics with the generalized linear model (GLM) using \code{\link{glmM}} or \code{\link{glmDM}}.
-#' \item Export the peaks/sites statistics with user defined format by \code{\link{exportResults}}.
-#' }
-#'
-#' See the help pages of the corresponding functions for the complete documentation.
-#'
-#' @details \code{\link{exomePeak2}} call RNA modification peaks and calculate peak statistics from \strong{BAM} files of a MeRIP-seq experiment.
+#' @details \code{\link{exomePeak2}} call (differential) RNA modification peaks and calculate peak statistics from \strong{BAM} files of a MeRIP-seq experiment.
 #'
 #' The transcript annotation (from either the \code{\link{TxDb}} object or the \strong{GFF} file) should be provided to perform analysis on exons.
 #'
-#' The \code{\link{BSgenome}} object is also required to perform the GC content bias adjustment.
-#' If the \code{bsgenome} and the \code{genome} arguments are not provided (\code{= NULL}), the downstream analysis will proceed without GC content bias corrections.
+#' The \code{\link{BSgenome}} object is also required to perform the GC content bias correction. If the \code{genome} argument is not provided (\code{= NULL}), the analysis will proceed without GC correction.
 #'
-#' If the \strong{BAM} files in treated samples are provided at the arguments \code{bam_treated_ip} and \code{bam_treated_input}, the statistics of differential modification analysis on peaks/sites will be reported.
+#' If the \strong{BAM} files in treated samples are provided at the arguments \code{bam_ip_treated} and \code{bam_input_treated}, the statistics of differential modification analysis on peaks/sites will be reported.
 #'
 #' Under the default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named \code{'exomePeak2_output'}.
-#' The results generated include a \strong{BED} file and a \strong{CSV} table that stores the locations and statistics of the (differential) modified peaks/sites.
-#' 
-#' When performing differential analysis using function exomePeak2(), the sequencing depth for the interactive GLM will be estimated from the background features,
-#' which by default are the disjoint regions of the detected peaks on exons.
-#' 
-#' @param bam_ip a \code{character} vector for the BAM file directories of the (control) IP samples.
-#' @param bam_input a \code{character} vector for the BAM file directories of the (control) input samples.
-#' @param bam_treated_ip a \code{character} vector for the BAM file directories of the treated IP samples.
-#' @param bam_treated_input a \code{character} vector for the BAM file directories of the treated input samples.
+#' The results generated include a \strong{BED} file, a \strong{RDS} file, and a \strong{CSV} table that stores the locations and statistics of the (differential) modified peaks/sites.
 #'
-#' If the bam files do not contain treatment group, user should only fill the arguments of \code{BAM_ip} and \code{BAM_input}.
+#' @param bam_ip a \code{character} vector for the BAM file directories of IP samples.
+#' @param bam_input a \code{character} vector for the BAM file directories of input samples.
+#' @param bam_ip_treated a \code{character} vector for the BAM file directories of treated IP samples.
+#' @param bam_input_treated a \code{character} vector for the BAM file directories of treated input samples.
 #'
-#' @param paired_end a \code{logical} of whether the data comes from the Paired-End Library, \code{TRUE} if the data is Paired-End sequencing; default \code{FALSE}.
-#' @param library_type a \code{character} specifying the protocal type of the RNA-seq library, can be one in \code{c("unstranded", "1st_strand", "2nd_strand")}; default \code{= "unstranded"}.
+#' The arguments of \code{BAM_ip} and \code{BAM_input} are only required for differential methylation analysis.
+#'
+#' @param strandness a \code{character} specifying the strand protocol type of the RNA-seq library, can be one of \code{c("unstrand", "1st_strand", "2nd_strand")}; default \code{= "unstrand"}.
 #'
 #' \describe{
-#' \item{\strong{unstranded}}{The randomly primed RNA-seq library type, i.e. both the strands generated during the first and the second strand sythesis are sequenced; example: Standard Illumina.}
+#' \item{\strong{unstrand}}{The randomly primed RNA-seq library type, i.e. both the strands generated during the first and the second strand sythesis are sequenced; example: Standard Illumina.}
 #' \item{\strong{1st_strand}}{The first strand-specific RNA-seq library, only the strand generated during the first strand sythesis is sequenced; examples: dUTP, NSR, NNSR.}
 #' \item{\strong{2nd_strand}}{The second strand-specific RNA-seq library, only the strand generated during the second strand sythesis is sequenced; examples: Ligation, Standard SOLiD.}
 #' }
 #'
 #' @param txdb a \code{\link{TxDb}} object for the transcript annotation.
 #'
-#' If the \code{TxDb} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#' @param genome a \code{character} or a \code{\link{BSgenome}} for the reference genome.
 #'
-#' @param bsgenome a \code{\link{BSgenome}} object for the genome sequence information.
+#' The character should be the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
 #'
-#' If the \code{BSgenome} object is not available, it could be a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}}. For example: \code{"hg19"}.
+#' @param gff optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
 #'
-#' @param genome a \code{character} string of the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#' @param fragment_length a positive integer number for the expected fragment length (in bp); default \code{= 100}.
 #'
-#' By default, the argument = NA, it should be provided when the \code{BSgenome} or/and the \code{TxDb} object are not available.
+#' @param bin_size a positive integer number for the width of the sliding window; default \code{= 25}.
 #'
-#' @param gff_dir optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
+#' @param step_size a positive integer number for the step size of the sliding window; default \code{= 25}.
 #'
-#' @param fragment_length a positive integer number for the expected fragment length in nucleotides; default \code{= 100}.
-#'
-#' @param binding_length a positive integer number for the expected binding length of the anti-modification antibody in IP samples; default \code{= 25}.
-#'
-#' @param step_length a positive integer number for the shift distances of the sliding window; default \code{= binding_length}.
-#'
-#' @param min_peak_width a \code{numeric} value for the minimum width of the merged peaks; default \code{= fragment_length/2}.
-#' 
-#' @param max_peak_width a \code{numeric} value for the maximum width of the merged peaks; default \code{= fragment_length*10} .
-#'
-#' @param glm_type a \code{character} speciefies the type of Generalized Linear Model (GLM) fitted for the purpose of statistical inference during peak calling, which can be one of the \code{c("DESeq2", "NB", "Poisson")}.
+#' @param test_method a \code{character} for the statistical testing method used in peak calling and differential analysis, can be one of c("Poisson", "DESeq2"); Default \code{= "Poisson"}
 #'
 #' \describe{
-#' \item{\strong{\code{DESeq2}}}{Fit the GLM defined in the function \code{\link{DESeq}}, which is the NB GLM with regulated estimation of the overdispersion parameters.}
+#' \item{\strong{\code{Poisson}}}{Wald test of Poisson GLM.}
 #'
-#' \item{\strong{\code{NB}}}{Fit the ordinary Negative Binomial (NB) GLM.}
-#'
-#' \item{\strong{\code{Poisson}}}{Fit the Poisson GLM.}
+#' \item{\strong{\code{DESeq2}}}{Wald test of negative bionomial GLM with regularized estimation of over-dispersion parameters (implemented by DESeq2),}
 #' }
 #'
-#' By default, the DESeq2 GLMs are fitted on the data set with > 1 biological replicates for both the IP and input samples, the Poisson GLM will be fitted otherwise.
+#' Note that when using the test method of DESeq2, a larger p-value cut-off (e.g. 0.001) is often required. The cutoff can be set via the argument \code{p_cutoff}.
 #'
-#' @param pc_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in peak calling; default \code{= 5}.
+#' @param p_cutoff a \code{numeric} value for the p value cutoff in peak calling; default \code{= 1e-10}.
 #'
-#' @param bg_count_cutoff a \code{numeric} value for the cutoff on average window's reads count in background identification; default \code{= 50}.
+#' @param parallel a \code{numeric} value specifying the number of cores for parallel computing; default \code{= 1}.
 #'
-#' @param p_cutoff a \code{numeric} value for the cutoff on p values in peak calling; default \code{= 1e-05}.
+#' @param plot_gc a \code{logical} for saving the plots of bins' GC content v.s. bins' fitted coverage curves, which can be used as a diagnosis for GC content bias; default \code{= TRUE}.
 #'
-#' @param p_adj_cutoff a \code{numeric} value for the cutoff on Benjamini Hochberg adjusted p values in peak calling; default \code{= NULL}.
+#' @param save_output a \code{logical} for saving the outcomes on disk; default \code{= TRUE}.
 #'
-#' @param log2FC_cutoff a \code{numeric} value for the cutoff on log2 IP over input fold changes in peak calling; default \code{= 0}.
-#'
-#' @param parallel a \code{numeric} value specifying the number of cores used for parallel computing; default \code{= 1}.
-#' 
-#' @param mod_annot a \code{\link{GRanges}} object for user provided single based RNA modification annotation.
-#'
-#' If user provides the single based RNA modification annotation, exomePeak2 will perform reads count and (differential) modification quantification on the provided annotation.
-#'
-#' The single base annotation will be flanked by length = floor(fragment_length - binding_length/2) to account for the fragment length of the sequencing library.
-#'
-#' @param manual_background  a \code{\link{GRanges}} object for the user provided unmodified background; default \code{= NULL}.
-#'
-#' @param correct_GC_bg a \code{logical} value of whether to estimate the GC content linear effect on background regions during modification level quantification; default \code{= TRUE}.
-#'
-#' If \code{= TRUE}, it could lead to a more accurate estimation of GC content bias for the RNA modifications that are highly biologically related to GC content.
-#'
-#' @param qtnorm a \code{logical} of whether to perform subset quantile normalization after the GC content linear effect correction; default \code{= FALSE}.
-#'
-#' If \code{qtnorm = TRUE}, subset quantile normalization will be applied within the IP and input samples seperately to account for the inherent differences between the marginal distributions of IP and input samples.
-#'
-#' @param background_method a \code{character} specifies the method of finding background regions for peak detection, i.e. to identify the windows without modification signal. It could be one of "Gaussian_mixture", "m6Aseq_prior", "manual", and "all";  default \code{= "all"}.
-#'
-#' In order to accurately account for the technical variations, it is often important to estimate the sequencing depth and GC content linear effects on windows without modification signals.
-#'
-#' The following methods are supported in \code{exomePeak2} to differentiate the no modification background windows from the modification containig windows.
+#' @param mode a \code{character} specifies the scope of peak calling on genome, can be one of \code{c("exon", "full_transcript", "whole_genome")}; Default \code{= "exon"}.
 #'
 #' \describe{
+#' \item{\strong{\code{exon}}}{generate sliding windows over exonic regions.}
 #'
-#'  \item{\strong{\code{all}}}{Use all windows as the background.
-#'  This choise assumes no differences in the effects of technical features between the background and the modification regions.}
+#' \item{\strong{\code{full_transcript}}}{generate sliding windows over the full transcripts (include both introns and exons).}
 #'
-#'  \item{\strong{\code{Gaussian_mixture}}}{The background is identified by Multivariate Gaussian Mixture Model (MGMM) with 2 mixing components on the vectors containing methylation level estimates and GC content, the background regions are predicted by the Bayes Classifier on the learned GMM.}
-#'
-#'  \item{\strong{\code{m6Aseq_prior}}}{The background is identified by the prior knowledge of m6A topology, the windows that are not overlapped with long exons (exon length >= 400bp) and 5'UTR are treated as the background windows.
-#'
-#'  This type of background should not be used if the MeRIP-seq data is not targetting on m6A methylation.
-#'
-#'  }
-#'
-#'  \item{\strong{\code{manual}}}{The background regions are defined by the user manually at the argument \code{manual_background}.}
-#'
-#'  }
-#'
-#'
-#' @param LFC_shrinkage a \code{character} for the method of emperical bayes shrinkage on log2FC, could be one of \code{c("apeglm", "ashr", "Gaussian", "none")}; Default \code{= "apeglm"}.
-#'
-#' see \code{\link{lfcShrink}} for more details; if "none" is selected, only the MLE will be returned.
-#'
-#' @param table_style a \code{character} for the style of the table being exported, could be one of \code{c("bed", "granges")}; Default \code{= "bed"}.
-#'
-#' @param export_results a \code{logical} of whether to save the results on disk; default \code{= TRUE}.
-#'
-#' @param export_format a \code{character} vector for the format(s) of the result being exported, could be the subset of \code{c("CSV","BED","RDS")}; Default \code{= c("CSV","BED","RDS")}.
-#'
-#' @param save_plot_GC a \code{logical} of whether to generate the plots for GC content bias assessment; default \code{= TRUE}.
-#'
-#' @param save_plot_analysis a \code{logical} of whether to generate the plots for genomic analysis on modification sites; default \code{= FALSE}.
-#'
-#' @param save_plot_name a \code{character} for the name of the plots being saved; Default \code{= "Plot"}.
-#'
-#' @param save_dir a \code{character} for the name of the directory being saved; Default \code{= "exomePeak2_output"}.
-#'
-#' @param peak_calling_mode a \code{character} specifies the scope of peak calling on genome, can be one of \code{c("exon", "full_transcript", "whole_genome")}; Default \code{= "exon"}.
-#'
-#' \describe{
-#' \item{\strong{\code{exon}}}{generate sliding windows on exon regions.}
-#'
-#' \item{\strong{\code{full_transcript}}}{generate sliding windows on the full transcripts (include both introns and exons).}
-#'
-#' \item{\strong{\code{whole_genome}}}{generate sliding windows on the whole genome (include introns, exons, and the intergenic regions).}
+#' \item{\strong{\code{whole_genome}}}{generate sliding windows over the whole genome (include introns, exons, and the intergenic regions).}
 #' }
 #'
 #' P.S. The full transcript mode and the whole genome mode demand big memory size (> 4GB) for large genomes.
 #'
+#' @param motif_based a \code{logical} for detecting (differential) modification over sites of motif; default \code{= FALSE}.
+#' If \code{ = TRUE}, sliding windows will be replaced into the single based sites of the modification motif.
+#'
+#' @param motif_sequence a \code{character} for the motif sequence used for the reference sites, it is only applied when \code{motif_based = TRUE}; default \code{= "DRACH"}.
+#'
 #' @return
-#' a \code{\link{SummarizedExomePeak}} object.
+#' a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}
 #'
 #' @examples
 #'
-#' #Specify File Directories
-#'
+#' ## Specify File Directories
 #' GENE_ANNO_GTF = system.file("extdata", "example.gtf", package="exomePeak2")
 #'
 #' f1 = system.file("extdata", "IP1.bam", package="exomePeak2")
@@ -181,306 +95,148 @@
 #' f3 = system.file("extdata", "Input3.bam", package="exomePeak2")
 #' INPUT_BAM = c(f1,f2,f3)
 #'
-#' # Peak Calling
-#'
-#' sep <- exomePeak2(bam_ip = IP_BAM,
+#' ## Peak Calling
+#' res <- exomePeak2(bam_ip = IP_BAM,
 #'                   bam_input = INPUT_BAM,
-#'                   gff_dir = GENE_ANNO_GTF,
-#'                   genome = "hg19",
-#'                   paired_end = FALSE)
-#' sep
+#'                   gff = GENE_ANNO_GTF,
+#'                   genome = "hg19")
+#' res        ## Peak ranges
+#' mcols(res) ## Peak statistics
 #'
-#' # Differential Modification Analysis on Modification Peaks (Comparison of Two Conditions)
+#' ## Differential Peak Detection (Comparison of Two Conditions)
 #'
 #' f1 = system.file("extdata", "treated_IP1.bam", package="exomePeak2")
 #' TREATED_IP_BAM = c(f1)
 #' f1 = system.file("extdata", "treated_Input1.bam", package="exomePeak2")
 #' TREATED_INPUT_BAM = c(f1)
 #'
-#' sep <- exomePeak2(bam_ip = IP_BAM,
+#' res <- exomePeak2(bam_ip = IP_BAM,
 #'                   bam_input = INPUT_BAM,
-#'                   bam_treated_input = TREATED_INPUT_BAM,
-#'                   bam_treated_ip = TREATED_IP_BAM,
-#'                   gff_dir = GENE_ANNO_GTF,
-#'                   genome = "hg19",
-#'                   paired_end = FALSE)
-#' sep
+#'                   bam_ip_treated = TREATED_IP_BAM,
+#'                   bam_input_treated = TREATED_INPUT_BAM,
+#'                   gff = GENE_ANNO_GTF,
+#'                   genome = "hg19")
+#' res        ## Peak ranges
+#' mcols(res) ## Peak statistics
 #'
-#' # Modification Level Quantification on Single Based Modification Annotation
-#'
-#' f2 = system.file("extdata", "mod_annot.rds", package="exomePeak2")
-#'
-#' MOD_ANNO_GRANGE <- readRDS(f2)
-#'
-#' sep <- exomePeak2(bam_ip = IP_BAM,
-#'                   bam_input = INPUT_BAM,
-#'                   gff_dir = GENE_ANNO_GTF,
-#'                   genome = "hg19",
-#'                   paired_end = FALSE,
-#'                   mod_annot = MOD_ANNO_GRANGE)
-#' sep
-#'
-#' # Differential Modification Analysis on Single Based Modification Annotation
-#'
-#' sep <- exomePeak2(bam_ip = IP_BAM,
-#'                   bam_input = INPUT_BAM,
-#'                   bam_treated_input = TREATED_INPUT_BAM,
-#'                   bam_treated_ip = TREATED_IP_BAM,
-#'                   gff_dir = GENE_ANNO_GTF,
-#'                   genome = "hg19",
-#'                   paired_end = FALSE,
-#'                   mod_annot = MOD_ANNO_GRANGE)
-#' sep
-#'
-#'
-#' @seealso \code{\link{exomePeakCalling}}, \code{\link{glmM}}, \code{\link{glmDM}}, \code{\link{normalizeGC}}, \code{\link{exportResults}}, \code{\link{plotLfcGC}}
-#' @importFrom GenomicAlignments summarizeOverlaps
-#' @importFrom Rsamtools asMates
-#' @importFrom utils capture.output
-#' @import GenomicRanges
-#' @import SummarizedExperiment
-#'
-#' @docType methods
 #'
 #' @name exomePeak2
-#'
 #' @rdname exomePeak2
+#'
+#' @importFrom S4Vectors DataFrame na.omit queryHits subjectHits metadata runValue
+#' @import GenomicFeatures
+#' @import GenomicRanges
+#' @importFrom BiocGenerics order
+#' @import DESeq2
+#' @import magrittr
+#' @import BSgenome
+#' @import BiocParallel
+#' @import ggplot2
+#' @import GenomicAlignments
+#' @import mclust
+#' @import speedglm
+#' @import splines
+#' @import SummarizedExperiment
+#' @importFrom Biostrings DNAStringSet
+#' @importFrom GenomeInfoDb seqlengths "seqlengths<-"
+#' @importFrom IRanges subsetByOverlaps
+#' @importFrom methods as is new
+#' @importFrom stats relevel quantile median poisson
+#' @importFrom utils capture.output read.table write.csv
+#' @import Rsamtools
+#' @importFrom rtracklayer export
 #'
 #' @export
 #'
 exomePeak2 <- function(bam_ip = NULL,
                        bam_input = NULL,
-                       bam_treated_ip = NULL,
-                       bam_treated_input = NULL,
+                       bam_ip_treated = NULL,
+                       bam_input_treated = NULL,
                        txdb = NULL,
-                       bsgenome = NULL,
-                       genome = NA,
-                       gff_dir = NULL,
-                       mod_annot = NULL,
-                       paired_end = FALSE,
-                       library_type = c("unstranded",
-                                        "1st_strand",
-                                        "2nd_strand"),
+                       genome = NULL,
+                       gff = NULL,
+                       strandness = c("unstrand","1st_strand","2nd_strand"),
                        fragment_length = 100,
-                       binding_length = 25,
-                       step_length = binding_length,
-                       min_peak_width = fragment_length/2,
-                       max_peak_width = fragment_length*100,
-                       pc_count_cutoff = 5,
-                       bg_count_cutoff = 50,
-                       p_cutoff = 1e-05,
-                       p_adj_cutoff = NULL,
-                       log2FC_cutoff = 0,
+                       bin_size = 25,
+                       step_size= 25,
+                       test_method = c("Poisson", "DESeq2"),
+                       p_cutoff = 1e-10,
                        parallel = 1,
-                       background_method = c("all",
-                                             "Gaussian_mixture",
-                                             "m6Aseq_prior",
-                                             "manual"),
-                       manual_background = NULL,
-                       correct_GC_bg = TRUE,
-                       qtnorm = FALSE,
-                       glm_type = c("DESeq2",
-                                    "Poisson",
-                                    "NB"),
-                       LFC_shrinkage = c("apeglm",
-                                         "ashr",
-                                         "Gaussian",
-                                         "none"),
-                       export_results = TRUE,
-                       export_format = c("CSV",
-                                         "BED",
-                                         "RDS"),
-                       table_style = c("bed",
-                                       "granges"),
-                       save_plot_GC = TRUE,
-                       save_plot_analysis = FALSE,
-                       save_plot_name = "",
-                       save_dir = "exomePeak2_output",
-                       peak_calling_mode = c("exon",
-                                             "full_tx",
-                                             "whole_genome")
-                      ) {
+                       plot_gc = TRUE,
+                       save_output = TRUE,
+                       mode = c("exon","full_transcript","whole_genome"),
+                       motif_based = FALSE,
+                       motif_sequence = "DRACH"
+                      ){
+  # Check input validity
+  mode <- match.arg(mode)
+  stopifnot(fragment_length > 0)
+  stopifnot(step_size > 0)
+  stopifnot(bin_size > 0)
+  stopifnot(is.character(genome)|is(genome, "BSgenome")|is.null(genome))
 
-LFC_shrinkage <- match.arg(LFC_shrinkage)
-
-stopifnot(all(export_format %in% c("CSV", "BED", "RDS")))
-
-table_style <- match.arg(table_style)
-
-background_method <- match.arg(background_method)
-
-glm_type <- match.arg(glm_type)
-
-peak_calling_mode <- match.arg(peak_calling_mode)
-
-if(!is.null(bam_treated_ip) & LFC_shrinkage == "Gaussian"){
-  stop("Gaussian prior is not applicable for differential modification analysis.")
-}
-
-stopifnot(fragment_length > 0)
-
-stopifnot(step_length > 0)
-
-stopifnot(min_peak_width > 0)
-
-stopifnot(max_peak_width > 0)
-
-stopifnot(log2FC_cutoff >= 0)
-
-stopifnot(pc_count_cutoff >= 0)
-
-if(!is.na(genome)) {
-   if(!is(bsgenome,"BSgenome")) bsgenome = genome
-   if(!is(txdb,"TxDb") & is.null(gff_dir)) txdb = genome
-}
-
-if(!is.null(bsgenome)) {
-  bsgenome <- getBSgenome(bsgenome)
-}
-
-if(!is.null(gff_dir) & is.null(txdb)) {
-  message("Make the TxDb object ... ", appendLF = FALSE)
-  txdb <- suppressMessages( makeTxDbFromGFF(gff_dir) )
-  message("OK")
-} else {
-  if (is.null(txdb)) {
-    stop("Require argument of txdb or gff_dir for transcript annotation.")
+  # Prepare transcript annotation
+  if (is.null(gff) & is.null(txdb) & is.null(genome)){
+    stop("Require one of the argument in txdb, gff, and genome for transcript annotation.")
   }
 
-  if (!is(txdb, "TxDb")) {
-
-    message("Make the TxDb object ... ", appendLF = FALSE)
-
-    txdb <- suppressMessages( makeTxDbFromUCSC(txdb) )
-
-    message("OK")
-
+  if (is.null(txdb) & is.null(gff) & is.character(genome)) {
+    txdb <- makeTxDbFromUCSC(genome)
   }
-}
 
-if( peak_calling_mode != "exon") {
-   txdb <- convertTxDb(txdb, type = peak_calling_mode)
-}
+  if (is.null(txdb) & !is.null(gff)) {
+    txdb <- makeTxDbFromGFF(gff) %>% quiet
+  }
 
-argg <- as.list(environment()) #Get arguments information
+  if (mode != "exon") {
+    txdb <- convertTxDb(txdb, type = mode) %>% quiet
+  }
 
-if(length(argg$library_type) > 1) argg$library_type = argg$library_type[1]
+  # Prepare reference genome
+  if (is.character(genome)){
+    genome <- getBSgenome(genome)
+  }
 
-if(length(argg$export_format) > 1) argg$export_format = argg$export_format[1]
+  # Run core function
+  if (is.null(bam_ip_treated)) {
+   res <- peakCalling(
+      bam_IP = bam_ip,
+      bam_input = bam_input,
+      txdb = txdb,
+      genome = genome,
+      bin_size = bin_size,
+      step_size = step_size,
+      fragment_length = fragment_length,
+      strandness = strandness,
+      test_method = test_method,
+      p_cutoff = p_cutoff,
+      plot_gc = plot_gc,
+      parallel = parallel,
+      motif_based = motif_based,
+      motif_sequence = "DRACH"
+    )
+   if(save_output) savePeak(res, file_name = "peaks")
+  } else {
+    res <-  diffAnalysis(
+        bam_IP = bam_ip,
+        bam_input = bam_input,
+        bam_IP_treated = bam_ip_treated,
+        bam_input_treated = bam_input_treated,
+        txdb = txdb,
+        genome = genome,
+        bin_size = bin_size,
+        step_size = step_size,
+        fragment_length = fragment_length,
+        strandness = strandness,
+        test_method = test_method,
+        p_cutoff = p_cutoff,
+        plot_gc = plot_gc,
+        parallel = parallel,
+        motif_based = motif_based,
+        motif_sequence = "DRACH"
+      )
+    if(save_output) savePeak(res, file_name = "diffPeaks")
+  }
 
-argg <- lapply(argg, capture.output)
-
-#Check the completeness of the genome annotation
-
-merip_bam_lst <- scanMeripBAM(
-bam_ip = bam_ip,
-bam_input = bam_input,
-bam_treated_ip = bam_treated_ip,
-bam_treated_input = bam_treated_input,
-paired_end = paired_end,
-library_type = library_type
-)
-
-sep <- exomePeakCalling(merip_bams = merip_bam_lst,
-                        txdb = txdb,
-                        bsgenome = bsgenome,
-                        gff_dir = gff_dir,
-                        fragment_length = fragment_length,
-                        binding_length = binding_length,
-                        step_length = binding_length,
-                        min_peak_width = min_peak_width,
-                        max_peak_width = max_peak_width,
-                        pc_count_cutoff = pc_count_cutoff,
-                        bg_count_cutoff = bg_count_cutoff,
-                        p_cutoff = p_cutoff,
-                        p_adj_cutoff = p_adj_cutoff,
-                        log2FC_cutoff = log2FC_cutoff,
-                        parallel = parallel,
-                        mod_annot = mod_annot,
-                        background_method = background_method,
-                        manual_background = manual_background,
-                        correct_GC_bg = correct_GC_bg,
-                        glm_type = glm_type,
-                        qtnorm = qtnorm
-)
-
-if(any(sep$design_Treatment)){
-sep <- estimateSeqDepth(sep, from='Background')
-}else{
-sep <- estimateSeqDepth(sep)  
-}
-
-if(!is.null(bsgenome)) {
-
-  message("Estimate offsets of GC content biases on modification peaks/sites ... ", appendLF = FALSE)
-
-  sep <- normalizeGC(sep,
-                     feature = ifelse(correct_GC_bg,"Background","All"),
-                     qtnorm = qtnorm)
-
-  message("OK")
-
-}
-
-if(any(sep$design_Treatment)){
-  message("Differential modification analysis with interactive GLM ... ", appendLF = FALSE)
-  sep <- suppressMessages( glmDM(sep, LFC_shrinkage = LFC_shrinkage, glm_type = glm_type) )
-  message("OK")
-} else {
-  sep <- glmM(sep, LFC_shrinkage = LFC_shrinkage, glm_type = glm_type)
-}
-
-if( export_results ) {
-
-  exportResults(sep,
-                format = export_format,
-                inhibit_filter = (!is.null( mod_annot ))|(any(grepl("Diff",colnames(exomePeak2Results( sep ))))),
-                table_style = table_style,
-                save_dir = save_dir)
-
-  writeLines( format_argg(argg) , file.path(save_dir, "RunInfo.txt") )
-
-}
-
-if( !is.null(bsgenome) & save_plot_GC ) {
-
-suppressMessages(
-plotLfcGC(sep = sep,
-          save_pdf_prefix = save_plot_name,
-          save_dir = save_dir)
-)
-
-}
-
-
-if (save_plot_analysis) {
-
-  # The function of Guitar plot is currently inhibited in exomePeak2, it will be recovered when the Guitar package has fixed some critical issues.
-  #
-  # if (!require(Guitar)) {
-  #   warning(
-  #     "the 'Guitar' package is not installed, skipping the distribution plot on travis coordinate."
-  #   )
-  # } else {
-  #   message("Generating the distribution plot on travis coordinate ...")
-  #   plotGuitar(
-  #     sep,
-  #     txdb = txdb,
-  #     save_pdf_prefix = save_plot_name,
-  #     save_dir = save_dir
-  #   )
-  # }
-
-  plotExonLength(sep,
-                 txdb = txdb,
-                 save_pdf_prefix = save_plot_name,
-                 save_dir = save_dir)
-
-  plotReadsGC(sep = sep,
-              save_pdf_prefix = save_plot_name,
-              save_dir = save_dir)
-}
-
-return(sep)
-
+  return(res)
 }
