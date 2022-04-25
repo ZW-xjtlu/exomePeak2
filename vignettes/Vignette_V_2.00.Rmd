@@ -1,19 +1,12 @@
 ---
 title: "The *exomePeak2* User's Guide"
 author: 
-- name: Zhen Wei
+- name: Zhen Wei, Jia Meng
   affiliation:
-  - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
-  - Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
-  email: Zhen.Wei01@xjtlu.edu.cn
-- name: Jia Meng
-  affiliation:
-  - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China
-  - Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom
-  email: Jia.Meng@xjtlu.edu.cn
+  - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China; Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom;
 date: "`r Sys.Date()`"
 output:
-  BiocStyle::html_document:
+  html_document:
     toc: true
 graphics: yes
 vignette: >
@@ -129,7 +122,7 @@ exomePeak2(bam_ip = IP_BAM,
            genome = "hg19")
 ```
 
-In the differential methylation mode, exomePeak2 will first perform Peak calling on the exonic regions by pulling the control and treated samples. Next, it will conduct the differential methylation analysis over the read counts of significant peaks using an interactive Poisson GLM design. 
+In the differential methylation mode, exomePeak2 will first perform peak calling on the exonic regions by pulling the control and treated samples. Next, it will conduct the differential methylation analysis over the read counts of significant peaks using an interactive Poisson GLM design. 
 
 The peak statistics calculated in the differential methylation setting are based on the interactive coefficient ${\beta}_{i,3}$ of the following regression equation:
 
