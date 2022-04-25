@@ -1,5 +1,5 @@
 ---
-title: "The *exomePeak2* User's Guide"
+title: "The *exomePeak2* Guide"
 author: 
 - name: Zhen Wei, Jia Meng
   affiliation:
