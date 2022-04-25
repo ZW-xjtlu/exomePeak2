@@ -8,10 +8,9 @@ Description: exomePeak2 provides peak detection and differential methylation for
 BugReports: https://github.com/ZW-xjtlu/exomePeak2/issues
 License: Artistic-2.0
 Imports: Rsamtools,GenomicAlignments,GenomicRanges,GenomicFeatures,DESeq2,ggplot2,mclust,BSgenome,Biostrings,GenomeInfoDb,BiocParallel,IRanges,S4Vectors,rtracklayer,methods,stats,utils,BiocGenerics,magrittr,speedglm,splines
-Depends: SummarizedExperiment
+Depends: R (>= 3.5.0), SummarizedExperiment
 biocViews: Sequencing, MethylSeq, RNASeq, Coverage, DifferentialMethylation, DifferentialPeakCalling, PeakDetection
 Encoding: UTF-8
-LazyData: false
 RoxygenNote: 7.1.2
 Suggests: 
     knitr,
