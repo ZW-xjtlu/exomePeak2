@@ -53,6 +53,7 @@ diffAnalysis <- function(bam_IP,
   }
 
   #Extract bins for count
+  message("Extract bin features ... ", appendLF = F)
   exByGene  <- exonsByiGenes(txdb) %>% quiet
   if(!motif_based){
     peakBins <- exonicBins(exByGene, bin_size, step_size) %>% quiet
@@ -62,10 +63,13 @@ diffAnalysis <- function(bam_IP,
   }
   mcols(peakBins) <- NULL
   if(is(peakBins, "GRanges")) peakBins <- split(peakBins, seq_along(peakBins)) %>% quiet
+  message("OK")
 
   #Count the bam files
+  message("Count reads on bin features ... ", appendLF = F)
   bam_dirs <- c(bam_IP, bam_IP_treated, bam_input, bam_input_treated)
   se <- featuresCounts(peakBins, bam_dirs, strandness, parallel) %>% quiet
+  message("OK")
 
   #Annotate SummarizedExperiment
   length_indx <- c(length(bam_IP), length(bam_IP_treated),
@@ -76,20 +80,30 @@ diffAnalysis <- function(bam_IP,
 
 
   #Identify Backgrounds
+  message("Identify background features ... ", appendLF = F)
   se <- classifyBackground(se) %>% quiet
+  message("OK")
 
   #Estimate sample size factors
+  message("Estimate sample sepecific size factors from the background ... ", appendLF = F)
   se <- estimateColumnFactors(se) %>% quiet
+  message("OK")
 
   if(!is.null(genome)){
   #Calculate GC contents
+  message("Calculate bin GC contents on exons ... ", appendLF = F)
   se <- calculateGCcontents(se, fragment_length, exByGene, genome) %>% quiet
+  message("OK")
 
   #Fit GC content biases
+  message("Fit GC curves with smoothing splines ... ", appendLF = F)
   se <- fitBiasCurves(se) %>% quiet
+  message("OK")
 
   #Estimate matrix correction factors
+  message("Calculate the offset matrix ... ", appendLF = F)
   se <- estimateMatrixFactors(se) %>% quiet
+  message("OK")
 
   ## Plot GC bias fits
   if(plot_gc) plotGCbias(se) %>% quiet
@@ -100,11 +114,15 @@ diffAnalysis <- function(bam_IP,
   }
 
   #Peak calling
+  message("Detect peaks with GLM ... ", appendLF = F)
   peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based) %>% quiet
+  message("OK")
 
   #Count the bam files
+  message("Count reads on peaks ... ", appendLF = F)
   se2 <- featuresCounts(peaks, bam_dirs, strandness, parallel) %>% quiet
   rm(bam_dirs, peaks)
+  message("OK")
 
   #Re-annotate SummarizedExperiment
   colData(se2) <- colData(se)
@@ -115,10 +133,14 @@ diffAnalysis <- function(bam_IP,
   se2 <- calculateGCcontents(se2, fragment_length, exByGene, genome) %>% quiet
 
   #Estimate matrix correction factors
+  message("Calculate offset matrix for peaks ... ", appendLF = F)
   se2 <- estimateMatrixFactors(se2) %>% quiet
+  message("OK")
 
   #Differential calling
+  message("Detect differentially modified peaks with interactive GLM ... ", appendLF = F)
   diffPeaks <- callDiff(se2, txdb, test_method, 1e-2, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based) %>% quiet
+  message("OK")
 
   return(diffPeaks)
 }

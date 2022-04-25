@@ -105,9 +105,9 @@ a \code{\link{GRangesList}} object, the statistics and other annotations are sav
 
 The transcript annotation (from either the \code{\link{TxDb}} object or the \strong{GFF} file) should be provided to perform analysis on exons.
 
-The \code{\link{BSgenome}} object is also required to perform the GC content bias correction. If the \code{genome} argument is not provided (\code{= NULL}), the analysis will proceed without GC correction.
+The genome name or \code{\link{BSgenome}} object is required to perform the GC content bias correction. If the \code{genome} argument is not provided (\code{= NULL}), the analysis will proceed without GC correction.
 
-If the \strong{BAM} files in treated samples are provided at the arguments \code{bam_ip_treated} and \code{bam_input_treated}, the statistics of differential modification analysis on peaks/sites will be reported.
+If the \strong{BAM} files in treated samples are provided at the arguments \code{bam_ip_treated} and \code{bam_input_treated}, the statistics of differential modification detection on peaks/sites will be reported.
 
 Under the default setting, \code{\link{exomePeak2}} will save the results of (differential) modification analysis under a folder named \code{'exomePeak2_output'}.
 The results generated include a \strong{BED} file, a \strong{RDS} file, and a \strong{CSV} table that stores the locations and statistics of the (differential) modified peaks/sites.

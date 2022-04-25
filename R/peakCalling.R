@@ -47,6 +47,8 @@ peakCalling <- function(bam_IP,
   }
 
   #Extract bins for count
+
+  message("Extract bin features ... ", appendLF = F)
   exByGene  <- exonsByiGenes(txdb) %>% quiet
   if(!motif_based){
     peakBins <- exonicBins(exByGene, bin_size, step_size) %>% quiet
@@ -56,31 +58,45 @@ peakCalling <- function(bam_IP,
   }
   mcols(peakBins) <- NULL
   if(is(peakBins, "GRanges")) peakBins <- split(peakBins, seq_along(peakBins)) %>% quiet
+  message("OK")
 
   #Count the bam files
   bam_dirs <- c(bam_IP, bam_input)
+
+  message("Count reads on bin features ... ", appendLF = F)
   se <- featuresCounts(peakBins, bam_dirs, strandness, parallel) %>% quiet
   rm(bam_dirs)
+  message("OK")
 
   #Annotate SummarizedExperiment
   se$IP_input <- rep(c("IP", "input"), c(length(bam_IP), length(bam_input)))
   rm(peakBins)
 
   #Identify Backgrounds
+  message("Identify background features ... ", appendLF = F)
   se <- classifyBackground(se) %>% quiet
+  message("OK")
 
   #Estimate sample size factors
+  message("Estimate sample sepecific size factors from the background ... ", appendLF = F)
   se <- estimateColumnFactors(se) %>% quiet
+  message("OK")
 
   if(!is.null(genome)){
   #Calculate GC contents
+  message("Calculate bin GC contents on exons ... ", appendLF = F)
   se <- calculateGCcontents(se, fragment_length, exByGene, genome) %>% quiet
+  message("OK")
 
   #Fit GC content biases
+  message("Fit GC curves with smoothing splines ... ", appendLF = F)
   se <- fitBiasCurves(se) %>% quiet
+  message("OK")
 
   #Estimate matrix correction factors
+  message("Calculate the offset matrix ... ", appendLF = F)
   se <- estimateMatrixFactors(se) %>% quiet
+  message("OK")
 
   ## Plot GC bias fits
   if(plot_gc) plotGCbias(se) %>% quiet
@@ -91,7 +107,9 @@ peakCalling <- function(bam_IP,
   }
 
   #DESeq2 peak calling
+  message("Detect peaks with GLM ... ", appendLF = F)
   peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based) %>% quiet
+  message("OK")
 
   return(peaks)
 }
