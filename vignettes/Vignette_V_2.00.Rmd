@@ -79,11 +79,13 @@ exomePeak2(bam_ip = IP_BAM,
 
 exomePeak2 will export significant peaks in **BED** file and **CSV** table format, the output will be automatically saved in a folder named `exomePeak2_output`.
 
-If only IP and input samples are provided, the peak statistics are calculated from the ${\beta}_{i,1}$ terms in the following Poisson GLM:
+If only IP and input samples are provided, the peak statistics are calculated from the ${\beta}_{i,1}$ terms in the following Poisson GLMs:
 
-$$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}1(\rho(j)=\text{IP}) + t_{i,j}$$
+$$K_{i,j} \sim Poisson(\lambda_{i,j})$$
 
-$Q_{i,j}$ is the expected value of read abundance for sliding window (bin) $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient; ${\beta}_{i,1}$ is the coefficient of IP/input log2 fold change; $1(\rho(j)=\text{IP})$ is the regression covariate, which is an indicator (binary) variable of the sample $j$ being IP sample. $t_{i,j}$ is the peak-specific offset accounting for the sequencing depth variation, IP efficiency variation, and the GC content bias. 
+$$log2(\lambda_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}1(\rho(j)=\text{IP}) + t_{i,j}$$
+
+$\lambda_{i,j}$ is the expected value of read abundance for sliding window (bin) $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient; ${\beta}_{i,1}$ is the coefficient of IP/input log2 fold change; $1(\rho(j)=\text{IP})$ is the regression covariate, which is an indicator (binary) variable of the sample $j$ being IP sample. $t_{i,j}$ is the peak-specific offset accounting for the sequencing depth variation, IP efficiency variation, and the GC content bias. 
 
 $$t_{i,j} = log2(s_j) + log2(f(GC_i))$$
 
@@ -129,9 +131,9 @@ exomePeak2(bam_ip = IP_BAM,
 
 In the differential modification mode, exomePeak2 will first perform Peak calling on the exonic regions by pulling the control and treated samples. Next, it will conduct the differential modification analysis over the read counts of significant peaks using an interactive Poisson GLM design. 
 
-The peak statistics calculated in the differential modification setting are based on the interactive coefficient ${\beta}_{i,3}$ in the following equation:
+The peak statistics calculated in the differential modification setting are based on the interactive coefficient ${\beta}_{i,3}$ in the following regression equation:
 
-$$log2(Q_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}1(\rho(j)=\text{IP}) + {\beta}_{i,2}1(\rho(j)=\text{Treatment}) + {\beta}_{i,3}1(\rho(j)=\text{IP&Treatment}) + t_{i,j}$$
+$$log2(\lambda_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}1(\rho(j)=\text{IP}) + {\beta}_{i,2}1(\rho(j)=\text{Treated}) + {\beta}_{i,3}1(\rho(j)=\text{IP&Treated}) + t_{i,j}$$
 
 In the output of differential methylation analysis, The ***diff.log2FC*** and ***pvalue*** are calculated from the coefficient estimates for the interactive term ${\beta}_{i,3}$. The differential log2FC here can be interpreted as log( IP over input FC in treated group / IP over input FC in the control group). The offset term $t_{i,j}$ used in the interactive GLM is also calculated using the same method as the peak calling.
 
