@@ -94,7 +94,7 @@ peakCalling <- function(bam_IP,
   message("OK")
 
   #Estimate matrix correction factors
-  message("Calculate the offset matrix ... ", appendLF = F)
+  message("Calculate offset matrix ... ", appendLF = F)
   se <- estimateMatrixFactors(se) %>% quiet
   message("OK")
 
