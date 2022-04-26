@@ -70,7 +70,7 @@ exomePeak2(bam_ip = IP_BAM,
            genome = "hg19")
 ```
 
-Besides the **GRangesList** object of peaks returned by the main function, exomePeak2 will export significant peaks in **BED** and **CSV** format; the files will be automatically saved in a folder named `exomePeak2_output`.
+Besides the *GRangesList* object of peaks returned by the main function, exomePeak2 will export significant peaks in **BED** and **CSV** format; the files will be automatically saved in a folder named `exomePeak2_output`.
 
 If only IP and input samples are provided, the peak statistics are calculated from the ${\beta}_{i,1}$ terms in the following Poisson GLMs:
 
