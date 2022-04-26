@@ -78,7 +78,7 @@ $$K_{i,j} \sim Poisson(\lambda_{i,j})$$
 
 $$log2(\lambda_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}1(\rho(j)=\text{IP}) + t_{i,j}$$
 
-$\lambda_{i,j}$ is the expected value of read abundance for sliding window (bin) $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient; ${\beta}_{i,1}$ is the coefficient of IP/input log2 fold change; $1(\rho(j)=\text{IP})$ is the regression covariate, which is an indicator (binary) variable of the sample $j$ being IP sample. $t_{i,j}$ is the peak-specific offset accounting for the sequencing depth variation, IP efficiency variation, and the GC content bias. 
+$\lambda_{i,j}$ is the expected value of read abundance for sliding window (bin) $i$ under sample $j$. ${\beta}_{i,0}$ is the intercept coefficient; ${\beta}_{i,1}$ is the coefficient of IP/input log2 fold change; $1(\rho(j)=\text{IP})$ is the regression covariate, which is an indicator (binary) variable of the sample $j$ being IP sample. $t_{i,j}$ is the bin-specific offset accounting for the sequencing depth variation, IP efficiency variation, and the GC content bias. 
 
 $$t_{i,j} = log2(s_j) + log2(f(GC_i))$$
 
