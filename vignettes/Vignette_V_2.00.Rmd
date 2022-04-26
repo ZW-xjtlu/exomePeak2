@@ -128,7 +128,7 @@ The peak statistics calculated in the differential methylation setting are based
 
 $$log2(\lambda_{i,j}) = {\beta}_{i,0} + {\beta}_{i,1}1(\rho(j)=\text{IP}) + {\beta}_{i,2}1(\rho(j)=\text{Treated}) + {\beta}_{i,3}1(\rho(j)=\text{IP&Treated}) + t_{i,j}$$
 
-In the output of differential methylation analysis, The ***diff.log2FC*** and ***pvalue*** are calculated from the coefficient estimates of the interactive term ${\beta}_{i,3}$. The differential log2FC here is interpreted as log( IP over input FC in treated group / IP over input FC in control group). The offset terms $t_{i,j}$ used in the interactive GLM are also calculated using the same method as the peak calling.
+In the output of differential methylation analysis, The ***diff.log2FC*** and ***pvalue*** are calculated from the coefficient estimates of the interactive term ${\beta}_{i,3}$. The differential log2FC here is interpreted as log( IP over input FC in treated group / IP over input FC in control group). The offset terms $t_{i,j}$ used in the interactive GLM are calculated using the same method as the peak calling.
 
 # Contact
 
