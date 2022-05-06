@@ -21,6 +21,8 @@ exomePeak2(
   parallel = 1,
   plot_gc = TRUE,
   save_output = TRUE,
+  save_dir = getwd(),
+  experiment_name = "exomePeak2_output",
   mode = c("exon", "full_transcript", "whole_genome"),
   motif_based = FALSE,
   motif_sequence = "DRACH"
@@ -77,6 +79,10 @@ Note that when using the test method of DESeq2, a larger p-value cut-off (e.g. 0
 
 \item{save_output}{a \code{logical} for saving the outcomes on disk; default \code{= TRUE}.}
 
+\item{save_dir}{a \code{character} for the output directory; default \code{= getwd}.}
+
+\item{experiment_name}{a \code{character} for the folder name generated in the output directory that contains all the results; default: \code{="exomePeak2_output"}}
+
 \item{mode}{a \code{character} specifies the scope of peak calling on genome, can be one of \code{c("exon", "full_transcript", "whole_genome")}; Default \code{= "exon"}.
 
 \describe{
@@ -95,7 +101,8 @@ If \code{ = TRUE}, sliding windows will be replaced into the single based sites 
 \item{motif_sequence}{a \code{character} for the motif sequence used for the reference sites, it is only applied when \code{motif_based = TRUE}; default \code{= "DRACH"}.}
 }
 \value{
-a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}
+a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.
+If \code{save_output = TRUE}, exomePeak2 will output results both as BED, CSV, and RDS files on disk.
 }
 \description{
 \code{exomePeak2} conducts peak calling and differential methylation analysis using BAM files of aligned MeRIP-seq reads.
