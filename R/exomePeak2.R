@@ -60,6 +60,10 @@
 #'
 #' @param save_output a \code{logical} for saving the outcomes on disk; default \code{= TRUE}.
 #'
+#' @param save_dir a \code{character} for the output directory; default \code{= getwd}.
+#'
+#' @param experiment_name a \code{character} for the folder name generated in the output directory that contains all the results; default: \code{="exomePeak2_output"}
+#'
 #' @param mode a \code{character} specifies the scope of peak calling on genome, can be one of \code{c("exon", "full_transcript", "whole_genome")}; Default \code{= "exon"}.
 #'
 #' \describe{
@@ -78,7 +82,8 @@
 #' @param motif_sequence a \code{character} for the motif sequence used for the reference sites, it is only applied when \code{motif_based = TRUE}; default \code{= "DRACH"}.
 #'
 #' @return
-#' a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}
+#' a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.
+#' If \code{save_output = TRUE}, exomePeak2 will output results both as BED, CSV, and RDS files on disk.
 #'
 #' @examples
 #'
@@ -164,6 +169,8 @@ exomePeak2 <- function(bam_ip = NULL,
                        parallel = 1,
                        plot_gc = TRUE,
                        save_output = TRUE,
+                       save_dir = getwd(),
+                       experiment_name = "exomePeak2_output",
                        mode = c("exon","full_transcript","whole_genome"),
                        motif_based = FALSE,
                        motif_sequence = "DRACH"
@@ -174,6 +181,7 @@ exomePeak2 <- function(bam_ip = NULL,
   stopifnot(step_size > 0)
   stopifnot(bin_size > 0)
   stopifnot(is.character(genome)|is(genome, "BSgenome")|is.null(genome))
+  stopifnot(file.exists(save_dir))
 
   # Prepare transcript annotation
   if (is.null(gff) & is.null(txdb) & is.null(genome)){
@@ -215,7 +223,9 @@ exomePeak2 <- function(bam_ip = NULL,
       motif_based = motif_based,
       motif_sequence = "DRACH"
     )
-   if(save_output) savePeak(res, file_name = "peaks")
+   if(save_output) savePeak(res,
+                            file.path(save_dir, experiment_name),
+                            "peaks")
   } else {
     res <-  diffAnalysis(
         bam_IP = bam_ip,
@@ -235,7 +245,9 @@ exomePeak2 <- function(bam_ip = NULL,
         motif_based = motif_based,
         motif_sequence = "DRACH"
       )
-    if(save_output) savePeak(res, file_name = "diffPeaks")
+    if(save_output) savePeak(res,
+                             file.path(save_dir, experiment_name),
+                             "diffPeaks")
   }
 
   return(res)

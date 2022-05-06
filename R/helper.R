@@ -469,7 +469,6 @@ rpm <- function(se, col_indx, fol){
   return(RPM)
 }
 
-
 ## A function to save peak statistics
 savePeak <- function(peak, save_dir = "exomePeak2_output", file_name = c("peaks","diffPeaks")){
   if (length(peak) == 0){
