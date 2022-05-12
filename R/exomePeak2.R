@@ -32,9 +32,9 @@
 #'
 #' @param genome a \code{character} or a \code{\link{BSgenome}} for the reference genome.
 #'
-#' The character should be the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}. For example: \code{"hg19"}.
+#' The character should be the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}; example: \code{"hg19"}.
 #'
-#' @param gff optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available, default \code{= NULL}.
+#' @param gff optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available； default \code{= NULL}.
 #'
 #' @param fragment_length a positive integer number for the expected fragment length (in bp); default \code{= 100}.
 #'
