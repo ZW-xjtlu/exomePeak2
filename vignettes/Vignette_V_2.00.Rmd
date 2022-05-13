@@ -82,7 +82,7 @@ $\lambda_{i,j}$ is the expected value of read abundance for sliding window (bin)
 
 $$t_{i,j} = log2(s_j) + log2(f(GC_i))$$
 
-By default, $t_{i,j}$ is further decomposed into the sample-specific size factor $s_j$ and the GC content bias offset $f(GC_i)$.  $\hat s_j$ is estimated using the median read count on the background bins, which are classified by the GMM (K = 2) from the bin's POI values: (IP count + 1)/(input count + 1). $\hat f(GC_i)$ is estimated using cubic splines expanded Poisson GLM on bin's read count with bin's fragment GC content $f(GC_i)$ as covariate. Knots for the cubic splines used are set at `c(0, 0.4, 0.5, 0.6, 1)`. For identifiability, the fitted values $\hat f(GC_i)$ are centered at 1 by dividing its sample mean.
+By default, $t_{i,j}$ is further decomposed into the sample-specific size factor $s_j$ and the GC content bias offset $f(GC_i)$.  $\hat s_j$ is estimated using the median read count on the background bins, which are classified by the GMM (K = 2) from the bin's POI values: (IP count + 1)/(input count + 1). $\hat f(GC_i)$ is estimated using cubic splines expanded Poisson GLM on bin's read count with bin's fragment GC content $GC_i$ as covariate. Knots for the cubic splines used are set at `c(0, 0.4, 0.5, 0.6, 1)`. For identifiability, the fitted values $\hat f(GC_i)$ are centered at 1 by dividing its sample mean.
 
 For peak calling, Poisson GLMs using the above design are fitted to identify the significantly modified sliding windows; the default detection criteria is the Wald test p-values < 1e-10 under the alternative hypothesis of ${\beta}_{i,1} > 0$. 
 
