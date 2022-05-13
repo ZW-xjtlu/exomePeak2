@@ -96,7 +96,7 @@ Annotations on the columns of the output table:
 - ***blockCount***: the block (exon) number within the peak.
 - ***blockSizes***: the widths of the blocks.
 - ***blockStarts***: the start positions of the blocks.
-- ***geneID***: the gene ID of the peak.
+- ***geneID***: the gene ID of the peak; multiple gene IDs will be listed when peak is campatible with > 1 genes.
 - ***RPM.input***: the peak RPM (Reads per million mapped reads) calculated from the pooled input samples.
 - ***RPM.IP***: the peak RPM calculated from the pooled IP samples.
 - ***log2FC***: the estimate of IP over input log2 fold change (coefficient estimates of ${\beta}_{i,1}$).
