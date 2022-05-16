@@ -476,6 +476,7 @@ savePeak <- function(peak, save_dir = "exomePeak2_output", file_name = c("peaks"
   }else{
   if (!dir.exists(save_dir)) dir.create(save_dir)
   mcols(peak)$score <- -log10(mcols(peak)$pvalue)
+  mcols(peak)$score[is.na(mcols(peak)$score)] <- 0
   export(peak, file.path(save_dir, paste0(file_name, ".bed")))
   Tbl <- read.table(file.path(save_dir, paste0(file_name, ".bed")), header = FALSE, sep = "\t")
   Tbl <- Tbl[,-1*c(5,7,8,9)]
