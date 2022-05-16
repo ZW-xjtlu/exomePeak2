@@ -44,7 +44,7 @@ For the peak calling of the *MeRIP-Seq* experiment, exomePeak2 requires alignmen
 
 The following example demonstrates the peak calling from **BAM** and **GFF** files. In addition to **GFF** files, transcript annotation can also be provided by the bioconductor **TxDb** object. **TxDb** will be automatically downloaded if the corresponding UCSC genome name is filled in the `genome` argument.
 
-Note that the genome sequences are necessary for the correction of GC content biases. If both the `genome`argument is missing ( `= NULL` ), exomPeak2 will perform peak calling without correcting the PCR amplification bias.
+Note that the genome sequences are necessary for the correction of GC content biases. If the `genome` argument is missing ( `= NULL` ), exomPeak2 will perform peak calling without correcting the PCR amplification bias.
 
 ```{r, eval = TRUE}
 library(exomePeak2)
