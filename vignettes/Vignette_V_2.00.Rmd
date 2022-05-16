@@ -102,7 +102,7 @@ Annotations on the columns of the output table:
 - ***log2FC***: the estimate of IP over input log2 fold change (coefficient estimates of ${\beta}_{i,1}$).
 - ***pvalue***: the p-value of the peak, which is calculated by the Wald test over the coefficient of ${\beta}_{i,1}$.
 - ***fdr***: the adjusted Wald test p-value using Benjamini Hochberg approach.
-- ***score***: the -log2 p value of the peak.
+- ***score***: the -log10 p value of the peak.
 
 # Differential Methylation Analysis 
 
