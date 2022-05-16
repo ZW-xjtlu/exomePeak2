@@ -24,7 +24,7 @@ knitr::opts_chunk$set(dev="png",fig.show="hold",
 
 # Introduction
 
-**exomePeak2** provides technical independent peak detection and differential methylation analysis for Methylated RNA immunoprecipitation sequencing data (**MeRIP-Seq**). *MeRIP-Seq* is the primary sequencing technology for epi-transcriptomic assessment. The peak calling processes in *MeRIP-Seq* is sensitive to GC content biases, which are generally present in NGS-based assays. Besides, the antibody pull-down efficiencies do often vary across different IP replicates, introducing another layer of unwanted technical variation. *exomePeak2* addresses these challenges by introducing a robust set of computation tools tailored for MeRIP-Seq. With *exomePeak2*, users can perform peak calling and differential analysis through a straightforward single-step function.
+**exomePeak2** provides technical independent peak detection and differential methylation analysis for Methylated RNA immunoprecipitation sequencing data (**MeRIP-Seq**). *MeRIP-Seq* is the primary sequencing technology for epi-transcriptomic assessment. The peak calling processes in *MeRIP-Seq* is sensitive to GC content biases, which are generally present in NGS-based assays. Besides, the antibody pull-down efficiency do often vary across different IP replicates, introducing another layer of unwanted technical variation. *exomePeak2* addresses these challenges by introducing a robust set of computation tools tailored for MeRIP-Seq. With *exomePeak2*, users can perform peak calling and differential analysis through a straightforward single-step function.
 
 # Installation
 
