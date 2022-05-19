@@ -45,7 +45,7 @@ The arguments of \code{BAM_ip} and \code{BAM_input} are only required for differ
 
 The character should be the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}; example: \code{"hg19"}.}
 
-\item{gff}{optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available； default \code{= NULL}.}
+\item{gff}{optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available; default \code{= NULL}.}
 
 \item{strandness}{a \code{character} specifying the strand protocol type of the RNA-seq library, can be one of \code{c("unstrand", "1st_strand", "2nd_strand")}; default \code{= "unstrand"}.
 
