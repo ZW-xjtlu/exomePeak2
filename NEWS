@@ -23,7 +23,7 @@ Changes in version 1.7.0 (2022-04-20)
 + Multi-step functions and quantification mode are deprecated. 
 + Unnecessary function parameters are removed.
 
-Changes in version 1.9.1 (2022-05-16)
+Changes in version 1.8.1 (2022-05-16)
 + Add parameters to initiate mode of motif based analysis. 
 + Add parameters to configure saving directories.
 + Fix saving issue when -log pvalues have NA/NaN (no change in default method).

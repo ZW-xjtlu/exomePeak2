@@ -25,7 +25,6 @@ classifyBackground <- function(se, gmm_cut = 5){
 
 ## A function to estimate sequencing depth size factor from background
 estimateColumnFactors <- function(se){
-  #require(magrittr)
   stopifnot(!is.null(rowData(se)$bg))
   se$sf <- apply(assay(se)[rowData(se)$bg,], 2, function(x) median(x[x>0]))
   return(se)

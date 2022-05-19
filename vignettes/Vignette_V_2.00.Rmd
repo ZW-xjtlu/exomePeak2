@@ -1,19 +1,19 @@
 ---
 title: "The *exomePeak2* Guide"
-author: 
+author:
 - name: Zhen Wei, Jia Meng
-  affiliation:
-  - Department of Biological Sciences, Xi’an Jiaotong-Liverpool University, Suzhou, Jiangsu, 215123, China; Institute of Integrative Biology, University of Liverpool, L7 8TX, Liverpool, United Kingdom;
+  affiliation: Department of Biological Sciences, Xi’an Jiaotong-Liverpool University,
+    Suzhou, Jiangsu, 215123, China; Institute of Integrative Biology, University of
+    Liverpool, L7 8TX, Liverpool, United Kingdom;
 date: "`r Sys.Date()`"
 output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
+    toc: yes
 graphics: yes
-vignette: >
-  %\VignetteIndexEntry{The exomePeak2 user's guide}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignettePackage{exomePeak2}
-  %\VignetteEncoding{UTF-8}
+vignette: |
+  %\VignetteIndexEntry{The exomePeak2 user's guide} %\VignetteEngine{knitr::rmarkdown} %\VignettePackage{exomePeak2} %\VignetteEncoding{UTF-8}
 ---
 
 ```{r para, echo = FALSE, results='hide'}

@@ -34,7 +34,7 @@
 #'
 #' The character should be the UCSC genome name which is acceptable by \code{\link{getBSgenome}} or/and \code{\link{makeTxDbFromUCSC}}; example: \code{"hg19"}.
 #'
-#' @param gff optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available； default \code{= NULL}.
+#' @param gff optional, a \code{character} which specifies the directory toward a gene annotation GFF/GTF file, it is applied when the \code{TxDb} object is not available; default \code{= NULL}.
 #'
 #' @param fragment_length a positive integer number for the expected fragment length (in bp); default \code{= 100}.
 #'
@@ -133,7 +133,7 @@
 #' @import GenomicRanges
 #' @importFrom BiocGenerics order
 #' @import DESeq2
-#' @import magrittr
+#' @importFrom magrittr "%>%"
 #' @import BSgenome
 #' @import BiocParallel
 #' @import ggplot2
