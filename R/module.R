@@ -1,4 +1,4 @@
-## A function to identify unmodified background using gaussian mixture model
+## A function to identify unmodified background using Gaussian mixture model
 classifyBackground <- function(se, gmm_cut = 5){
   #require(mclust)
   IP_count <- assay(se[,se$IP_input == "IP"])

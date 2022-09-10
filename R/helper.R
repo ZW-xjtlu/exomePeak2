@@ -434,9 +434,9 @@ convertTxDb <- function(txdb,type = c("full_transcript", "whole_genome")){
 makePeakAnnot <- function(peak, se, res, exbg, identity = FALSE){
   fol <- findOverlaps(peak, se, type = ifelse(identity, "equal", "any"))
 
-  annotCols <- data.frame(pvalue = tapply(res$pvalue[subjectHits(fol)], queryHits(fol), mean),
-                          fdr = tapply(res$padj[subjectHits(fol)], queryHits(fol), mean),
-                          log2FC = tapply(res$log2FoldChange[subjectHits(fol)], queryHits(fol), mean))
+  annotCols <- data.frame(pvalue = tapply(res$pvalue[subjectHits(fol)], queryHits(fol), mean, na.rm = TRUE),
+                          fdr = tapply(res$padj[subjectHits(fol)], queryHits(fol), mean, na.rm = TRUE),
+                          log2FC = tapply(res$log2FoldChange[subjectHits(fol)], queryHits(fol), mean, na.rm = TRUE))
 
   if(is.null(se$Perturbation)){
     annotCols$RPM.IP <- rpm(se, se$IP_input == "IP", fol)
