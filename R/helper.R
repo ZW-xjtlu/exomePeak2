@@ -470,7 +470,7 @@ rpm <- function(se, col_indx, fol){
   count <- rowSums(cbind(assay(se)[, col_indx]))
   RPM <- count/sum(count)*1e6
   RPM <- tapply(RPM[subjectHits(fol)], queryHits(fol), sum)
-  RPM <- round(RPM, 2)
+  RPM <- round(RPM, 5)
   return(RPM)
 }
 
