@@ -122,6 +122,10 @@ exonicBins <- function(exByGene,
   #Removal of introns is time consuming ~ 1min.
   bins_on_genome <-
     removeIntrons(bins_on_genome, exByGene)
+  
+  indx <- which(sum(width(bins_on_genome)) > binWidth)
+  
+  if(length(indx) > 0) bins_on_genome <- bins_on_genome[-1*indx]
 
   return(bins_on_genome)
 }
@@ -148,7 +152,8 @@ removeIntrons <- function(grl,
                         type = "within")
 
     #Remove all the hits that are inter-genes.
-    indx_keep <- names(introns_granges)[queryHits(fol)] == gsub("\\.[0-9]*$","",names(exByGene))[grl$transcriptsHits[subjectHits(fol)]]
+    #indx_keep <- names(introns_granges)[queryHits(fol)] == gsub("\\.[0-9]*$","",names(exByGene))[grl$transcriptsHits[subjectHits(fol)]]
+    indx_keep <- names(introns_granges)[queryHits(fol)] == names(exByGene)[grl$transcriptsHits[subjectHits(fol)]]
     fol <- fol[indx_keep,]
 
     #Split, and re-define the start and ends of those hitted bins.
