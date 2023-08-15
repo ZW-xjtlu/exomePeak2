@@ -25,7 +25,8 @@ exomePeak2(
   experiment_name = "exomePeak2_output",
   mode = c("exon", "full_transcript", "whole_genome"),
   motif_based = FALSE,
-  motif_sequence = "DRACH"
+  motif_sequence = "DRACH",
+  absolute_diff = FALSE
 )
 }
 \arguments{
@@ -99,6 +100,9 @@ P.S. The full transcript mode and the whole genome mode demand big memory size (
 If \code{ = TRUE}, sliding windows will be replaced into the single based sites of the modification motif.}
 
 \item{motif_sequence}{a \code{character} for the motif sequence used for the reference sites, it is only applied when \code{motif_based = TRUE}; default \code{= "DRACH"}.}
+
+\item{absolute_diff}{a \code{logical} for performing absolute differential modification without normalization over input control samples.
+If \code{ = TRUE}, the regression design for differential modification test will be changed into comparing the direct changes of IP samples between treatment and control conditions; default \code{= FALSE}.}
 }
 \value{
 a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.

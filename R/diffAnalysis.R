@@ -18,7 +18,8 @@ diffAnalysis <- function(bam_IP,
                          plot_gc = FALSE,
                          parallel = 1,
                          motif_based = FALSE,
-                         motif_sequence = "DRACH"){
+                         motif_sequence = "DRACH",
+                         absolute_diff = FALSE){
   #require(GenomicRanges)
   #require(GenomicFeatures)
   #require(SummarizedExperiment)
@@ -138,8 +139,12 @@ diffAnalysis <- function(bam_IP,
   message("OK")
 
   #Differential calling
-  message("Detect differentially modified peaks with interactive GLM ... ", appendLF = F)
-  diffPeaks <- callDiff(se2, txdb, test_method, 1e-2, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based) %>% quiet
+  if(!absolute_diff){
+    message("Detect differentially modified peaks with interactive GLM ... ", appendLF = F)  
+  }else{
+    message("Detect absolute differentially modified peaks with GLM ... ", appendLF = F)  
+  }
+  diffPeaks <- callDiff(se2, txdb, test_method, 1e-2, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based, absolute_diff) %>% quiet
   message("OK")
 
   return(diffPeaks)

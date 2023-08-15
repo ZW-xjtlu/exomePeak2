@@ -196,11 +196,17 @@ callDiff <- function(se,
                      bin_size,
                      alt_hypothesis,
                      lfc_threshold,
-                     motif_based){
+                     motif_based,
+                     absolute_diff){
   #Set reference levels
   se$IP_input <- relevel(factor(se$IP_input),"input")
   se$Perturbation <- relevel(factor(se$Perturbation),"C")
-  dds <- DESeqDataSet(se, ~ IP_input * Perturbation)
+  
+  if(!absolute_diff){
+    dds <- DESeqDataSet(se, ~ IP_input * Perturbation)
+  }else{
+    dds <- DESeqDataSet(se, ~ Perturbation)
+  }
 
   normalizationFactors(dds) <- assays(se)[["sfm"]]
 
