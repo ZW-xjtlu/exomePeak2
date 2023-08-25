@@ -204,11 +204,11 @@ callDiff <- function(se,
   
   if(!absolute_diff){
     dds <- DESeqDataSet(se, ~ IP_input * Perturbation)
+    normalizationFactors(dds) <- assays(se)[["sfm"]]
   }else{
-    dds <- DESeqDataSet(se, ~ Perturbation)
+    dds <- DESeqDataSet(se[,se$IP_input!="input"], ~ Perturbation)
+    normalizationFactors(dds) <- assays(se[,se$IP_input!="input"])[["sfm"]]
   }
-
-  normalizationFactors(dds) <- assays(se)[["sfm"]]
 
   #Fit differential models
   if(test_method == "DESeq2"){
