@@ -226,7 +226,7 @@ exomePeak2 <- function(bam_ip = NULL,
       parallel = parallel,
       motif_based = motif_based,
       motif_sequence = "DRACH",
-      save_dir = file.path(save_dir, experiment_name)
+      fig_dir = file.path(save_dir, experiment_name)
     )
    if(save_output) savePeak(res,
                             file.path(save_dir, experiment_name),
@@ -250,7 +250,7 @@ exomePeak2 <- function(bam_ip = NULL,
         motif_based = motif_based,
         motif_sequence = "DRACH",
         absolute_diff = absolute_diff,
-        save_dir = file.path(save_dir, experiment_name)
+        fig_dir = file.path(save_dir, experiment_name)
       )
     if(save_output) savePeak(res,
                              file.path(save_dir, experiment_name),

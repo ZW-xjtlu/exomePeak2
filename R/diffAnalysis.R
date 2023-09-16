@@ -20,7 +20,7 @@ diffAnalysis <- function(bam_IP,
                          motif_based = FALSE,
                          motif_sequence = "DRACH",
                          absolute_diff = FALSE,
-                         save_dir = "exomePeak2_output"){
+                         fig_dir = "exomePeak2_output"){
   #require(GenomicRanges)
   #require(GenomicFeatures)
   #require(SummarizedExperiment)
@@ -108,7 +108,7 @@ diffAnalysis <- function(bam_IP,
   message("OK")
 
   ## Plot GC bias fits
-  if(plot_gc) plotGCbias(se, save_dir) %>% quiet
+  if(plot_gc) plotGCbias(se, fig_dir) %>% quiet
 
   }else{
   #Assign matrix correction factors without GC offsets
