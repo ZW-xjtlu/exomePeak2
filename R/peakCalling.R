@@ -16,7 +16,8 @@ peakCalling <- function(bam_IP,
                         plot_gc = FALSE,
                         parallel = 1,
                         motif_based = FALSE,
-                        motif_sequence = "DRACH"){
+                        motif_sequence = "DRACH",
+                        save_dir = "exomePeak2_output"){
   #require(GenomicRanges)
   #require(SummarizedExperiment)
   #require(DESeq2)
@@ -99,7 +100,7 @@ peakCalling <- function(bam_IP,
   message("OK")
 
   ## Plot GC bias fits
-  if(plot_gc) plotGCbias(se) %>% quiet
+  if(plot_gc) plotGCbias(se, save_dir) %>% quiet
 
   }else{
   #Assign matrix correction factors without GC offsets

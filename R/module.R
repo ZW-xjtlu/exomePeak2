@@ -234,5 +234,3 @@ callDiff <- function(se,
   mcols(peak) <- makePeakAnnot(peak, se, res, exbg)
   return(peak)
 }
-
-

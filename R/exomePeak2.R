@@ -146,7 +146,7 @@
 #' @import splines
 #' @import SummarizedExperiment
 #' @importFrom Biostrings DNAStringSet
-#' @importFrom GenomeInfoDb seqlengths "seqlengths<-"
+#' @importFrom GenomeInfoDb seqlengths seqlevelsStyle "seqlengths<-" 
 #' @importFrom IRanges subsetByOverlaps
 #' @importFrom methods as is new
 #' @importFrom stats relevel quantile median poisson
@@ -225,7 +225,8 @@ exomePeak2 <- function(bam_ip = NULL,
       plot_gc = plot_gc,
       parallel = parallel,
       motif_based = motif_based,
-      motif_sequence = "DRACH"
+      motif_sequence = "DRACH",
+      save_dir = file.path(save_dir, experiment_name)
     )
    if(save_output) savePeak(res,
                             file.path(save_dir, experiment_name),
@@ -248,7 +249,8 @@ exomePeak2 <- function(bam_ip = NULL,
         parallel = parallel,
         motif_based = motif_based,
         motif_sequence = "DRACH",
-        absolute_diff = absolute_diff
+        absolute_diff = absolute_diff,
+        save_dir = file.path(save_dir, experiment_name)
       )
     if(save_output) savePeak(res,
                              file.path(save_dir, experiment_name),
