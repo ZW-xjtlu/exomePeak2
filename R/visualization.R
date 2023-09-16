@@ -3,10 +3,10 @@
 ## return save PDF files of GC bias curves
 ##
 plotGCbias <- function(se,
-                       save_dir = "exomePeak2_output",
+                       fig_dir = NULL,
                        savePrefix = "gc_fit"){
   #require(ggplot2)
-  if (!dir.exists(save_dir)) dir.create(save_dir)
+  if (!dir.exists(fig_dir)) dir.create(fig_dir)
   plot_df <- data.frame(glmFit = as.numeric(metadata(se)[["fitm"]]),
                         sample = rep(paste0("sample_", seq_len(ncol(se))), each = 200),
                         IP_input = rep(se$IP_input, each = 200),
@@ -25,6 +25,6 @@ plotGCbias <- function(se,
       theme_bw() + labs(x = "GC content", y="Normalized Coverage Fit")
   }
 
-  ggsave(file.path(save_dir,paste0(savePrefix,".pdf")), width = 5, height = 3)
+  ggsave(file.path(fig_dir,paste0(savePrefix,".pdf")), width = 5, height = 3)
 }
 
