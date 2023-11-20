@@ -20,7 +20,8 @@ diffAnalysis <- function(bam_IP,
                          motif_based = FALSE,
                          motif_sequence = "DRACH",
                          absolute_diff = FALSE,
-                         fig_dir = "exomePeak2_output"){
+                         fig_dir = "exomePeak2_output"),
+                         mode = c("exon","full_transcript","whole_genome")){
   #require(GenomicRanges)
   #require(GenomicFeatures)
   #require(SummarizedExperiment)
@@ -114,7 +115,12 @@ diffAnalysis <- function(bam_IP,
   #Assign matrix correction factors without GC offsets
   se <- estimateMatrixFactors(se) %>% quiet
   }
-
+  
+  #Filter low count rows if not exon mode
+  if(mode %in% c("full_transcript","whole_genome")){
+    se <- se[rowMeans(assay(se)) >= 5,]
+  }
+  
   #Peak calling
   message("Detect peaks with GLM ... ", appendLF = F)
   peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based) %>% quiet

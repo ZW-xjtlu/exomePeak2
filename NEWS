@@ -31,3 +31,5 @@ Changes in version 1.8.1 (2022-05-16)
 Changes in version 1.9.2 (2023-08-15)
 + Add parameter 'absolute_diff' to support differential peak detection without considering input control samples.
 
+Changes in version 1.9.3 (2023-11-20)
++ Fix memory overflow issue in full transcript mode and whole genome mode
