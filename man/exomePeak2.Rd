@@ -18,6 +18,7 @@ exomePeak2(
   step_size = 25,
   test_method = c("Poisson", "DESeq2"),
   p_cutoff = 1e-10,
+  diff_p_cutoff = 0.01,
   parallel = 1,
   plot_gc = TRUE,
   save_output = TRUE,
@@ -73,6 +74,8 @@ The character should be the UCSC genome name which is acceptable by \code{\link{
 Note that when using the test method of DESeq2, a larger p-value cut-off (e.g. 0.001) is often required. The cutoff can be set via the argument \code{p_cutoff}.}
 
 \item{p_cutoff}{a \code{numeric} value for the p value cutoff in peak calling; default \code{= 1e-10}.}
+
+\item{diff_p_cutoff}{a \code{numeric} value for the p value cutoff in differential analysis; default \code{= 0.01}.}
 
 \item{parallel}{a \code{numeric} value specifying the number of cores for parallel computing; default \code{= 1}.}
 
