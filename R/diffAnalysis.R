@@ -14,13 +14,14 @@ diffAnalysis <- function(bam_IP,
                          test_method = c("Poisson", "DESeq2"),
                          p_cutoff = 1e-10,
                          lfc_threshold = 0,
+                         diff_p_cutoff = 0.01,
                          alt_hypothesis = c("greaterAbs", "lessAbs", "greater", "less"),
                          plot_gc = FALSE,
                          parallel = 1,
                          motif_based = FALSE,
                          motif_sequence = "DRACH",
                          absolute_diff = FALSE,
-                         fig_dir = "exomePeak2_output"),
+                         fig_dir = "exomePeak2_output",
                          mode = c("exon","full_transcript","whole_genome")){
   #require(GenomicRanges)
   #require(GenomicFeatures)
@@ -151,7 +152,7 @@ diffAnalysis <- function(bam_IP,
   }else{
     message("Detect absolute differentially modified peaks with GLM ... ", appendLF = F)  
   }
-  diffPeaks <- callDiff(se2, txdb, test_method, 1e-2, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based, absolute_diff) %>% quiet
+  diffPeaks <- callDiff(se2, txdb, test_method, diff_p_cutoff, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based, absolute_diff) %>% quiet
   message("OK")
 
   return(diffPeaks)
