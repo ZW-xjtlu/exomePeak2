@@ -89,7 +89,7 @@
 #' @param confounding_factor A \code{factor} vector or a \code{data.frame} with factors as columns. 
 #' The length of the factor vector or the number of rows (nrow) in the data.frame should match the total number of samples in IP and input. 
 #' If supplied, Generalized Linear Models (GLMs) utilized for peak calling and differential methylation analysis will incorporate the specified factor(s) as covariates. 
-#' This inclusion adjusts the computation of p-values and log fold change estimates by accounting for these confounding factors (e.g. experimental batches and library types).
+#' This inclusion adjusts the computation of p-values and log fold change estimates by accounting for the confounding factors (e.g. experimental batches and library types).
 #'
 #' @return
 #' a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.
