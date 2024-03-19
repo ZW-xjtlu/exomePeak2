@@ -42,7 +42,7 @@
 #'
 #' @param step_size a positive integer number for the step size of the sliding window; default \code{= 25}.
 #'
-#' @param test_method a \code{character} for the statistical testing method used in peak calling and differential analysis, can be one of c("Poisson", "DESeq2"); Default \code{= "Poisson"}
+#' @param test_method a \code{character} for the statistical testing method used in peak calling and differential analysis, can be one of c("Poisson", "DESeq2"); default \code{= "Poisson"}
 #'
 #' \describe{
 #' \item{\strong{\code{Poisson}}}{Wald test of Poisson GLM.}
@@ -66,7 +66,7 @@
 #'
 #' @param experiment_name a \code{character} for the folder name generated in the output directory that contains all the results; default: \code{="exomePeak2_output"}
 #'
-#' @param mode a \code{character} specifies the scope of peak calling on genome, can be one of \code{c("exon", "full_transcript", "whole_genome")}; Default \code{= "exon"}.
+#' @param mode a \code{character} specifies the scope of peak calling on genome, can be one of \code{c("exon", "full_transcript", "whole_genome")}; default \code{= "exon"}.
 #'
 #' \describe{
 #' \item{\strong{\code{exon}}}{generate sliding windows over exonic regions.}
@@ -89,7 +89,7 @@
 #' @param confounding_factor A \code{factor} vector or a \code{data.frame} with factors as columns. 
 #' The length of the factor vector or the number of rows (nrow) in the data.frame should match the total number of samples in IP and input. 
 #' If supplied, Generalized Linear Models (GLMs) utilized for peak calling and differential methylation analysis will incorporate the specified factor(s) as covariates. 
-#' This inclusion adjusts the computation of p-values and log fold change estimates by accounting for the confounding factors (e.g. experimental batches and library types).
+#' This inclusion adjusts the computation of p-values and log fold change estimates by accounting for the confounding factors (e.g. experimental batches and library types); default \code{= NULL}.
 #'
 #' @return
 #' a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.
