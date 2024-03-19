@@ -15,7 +15,6 @@ Changes in version 1.3.7 (2021-03-10)
 + Parameter `parallel` is changed in the exomePeak2() and exomePeakCalling() functions; the parameter now enables user to configure specific number of cores used in the parallel computation (default = 1). 
 + The naming of peaks in the output file is now sorted by their genomic order.
 
-
 Changes in version 1.7.0 (2022-04-20)
 + Improved peak calling accuracy by introducing new computational models of GC content bias correction and IP efficiency correction.
 + Improved peak calling stability by applying Poisson test under default setting.
@@ -32,4 +31,7 @@ Changes in version 1.9.2 (2023-08-15)
 + Add parameter 'absolute_diff' to support differential peak detection without considering input control samples.
 
 Changes in version 1.9.3 (2023-11-20)
-+ Fix memory overflow issue in full transcript mode and whole genome mode
++ Fix memory overflow issue in full transcript mode and whole genome mode.
+
+Changes in version 1.9.4 (2024-3-19)
++ Added novel function of adjusting confounding factors for peak calling and differential analysis.

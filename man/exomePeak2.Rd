@@ -27,7 +27,8 @@ exomePeak2(
   mode = c("exon", "full_transcript", "whole_genome"),
   motif_based = FALSE,
   motif_sequence = "DRACH",
-  absolute_diff = FALSE
+  absolute_diff = FALSE,
+  confounding_factor = NULL
 )
 }
 \arguments{
@@ -106,6 +107,11 @@ If \code{ = TRUE}, sliding windows will be replaced into the single based sites 
 
 \item{absolute_diff}{a \code{logical} for performing absolute differential modification without normalization over input control samples.
 If \code{ = TRUE}, the regression design for differential modification test will be changed into comparing the direct changes of IP samples between treatment and control conditions; default \code{= FALSE}.}
+
+\item{confounding_factor}{A \code{factor} vector or a \code{data.frame} with factors as columns. 
+The length of the factor vector or the number of rows (nrow) in the data.frame should match the total number of samples in IP and input. 
+If supplied, Generalized Linear Models (GLMs) utilized for peak calling and differential methylation analysis will incorporate the specified factor(s) as covariates. 
+This inclusion adjusts the computation of p-values and log fold change estimates by accounting for these confounding factors (e.g. experimental batches and library types).}
 }
 \value{
 a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.

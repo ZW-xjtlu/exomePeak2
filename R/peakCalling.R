@@ -18,7 +18,8 @@ peakCalling <- function(bam_IP,
                         motif_based = FALSE,
                         motif_sequence = "DRACH",
                         fig_dir = "exomePeak2_output",
-                        mode = c("exon","full_transcript","whole_genome")){
+                        mode = c("exon","full_transcript","whole_genome"),
+                        confounding_factor = NULL){
   #require(GenomicRanges)
   #require(SummarizedExperiment)
   #require(DESeq2)
@@ -115,7 +116,7 @@ peakCalling <- function(bam_IP,
   
   #DESeq2 peak calling
   message("Detect peaks with GLM ... ", appendLF = F)
-  peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based) %>% quiet
+  peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based, confounding_factor) %>% quiet
   message("OK")
 
   return(peaks)

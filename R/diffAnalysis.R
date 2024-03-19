@@ -22,7 +22,8 @@ diffAnalysis <- function(bam_IP,
                          motif_sequence = "DRACH",
                          absolute_diff = FALSE,
                          fig_dir = "exomePeak2_output",
-                         mode = c("exon","full_transcript","whole_genome")){
+                         mode = c("exon","full_transcript","whole_genome"),
+                         confounding_factor = NULL){
   #require(GenomicRanges)
   #require(GenomicFeatures)
   #require(SummarizedExperiment)
@@ -124,7 +125,7 @@ diffAnalysis <- function(bam_IP,
   
   #Peak calling
   message("Detect peaks with GLM ... ", appendLF = F)
-  peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based) %>% quiet
+  peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based, confounding_factor) %>% quiet
   message("OK")
 
   #Count the bam files
@@ -152,7 +153,7 @@ diffAnalysis <- function(bam_IP,
   }else{
     message("Detect absolute differentially modified peaks with GLM ... ", appendLF = F)  
   }
-  diffPeaks <- callDiff(se2, txdb, test_method, diff_p_cutoff, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based, absolute_diff) %>% quiet
+  diffPeaks <- callDiff(se2, txdb, test_method, diff_p_cutoff, exByGene, bin_size, alt_hypothesis, lfc_threshold, motif_based, absolute_diff, confounding_factor) %>% quiet
   message("OK")
 
   return(diffPeaks)

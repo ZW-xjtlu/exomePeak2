@@ -85,6 +85,11 @@
 #' 
 #' @param absolute_diff a \code{logical} for performing absolute differential modification without normalization over input control samples.
 #' If \code{ = TRUE}, the regression design for differential modification test will be changed into comparing the direct changes of IP samples between treatment and control conditions; default \code{= FALSE}. 
+#' 
+#' @param confounding_factor A \code{factor} vector or a \code{data.frame} with factors as columns. 
+#' The length of the factor vector or the number of rows (nrow) in the data.frame should match the total number of samples in IP and input. 
+#' If supplied, Generalized Linear Models (GLMs) utilized for peak calling and differential methylation analysis will incorporate the specified factor(s) as covariates. 
+#' This inclusion adjusts the computation of p-values and log fold change estimates by accounting for these confounding factors (e.g. experimental batches and library types).
 #'
 #' @return
 #' a \code{\link{GRangesList}} object, the statistics and other annotations are saved in its metadata columns, which can be accessed through \code{mcol()}.
@@ -180,7 +185,8 @@ exomePeak2 <- function(bam_ip = NULL,
                        mode = c("exon","full_transcript","whole_genome"),
                        motif_based = FALSE,
                        motif_sequence = "DRACH",
-                       absolute_diff = FALSE
+                       absolute_diff = FALSE,
+                       confounding_factor = NULL
                       ){
   # Check input validity
   mode <- match.arg(mode)
@@ -189,7 +195,10 @@ exomePeak2 <- function(bam_ip = NULL,
   stopifnot(bin_size > 0)
   stopifnot(is.character(genome)|is(genome, "BSgenome")|is.null(genome))
   stopifnot(file.exists(save_dir))
-
+  if(!is.null(confounding_factor)){
+    if(is.character(confounding_factor)) confounding_factor <- as.factor(confounding_factor)
+    stopifnot(is.factor(confounding_factor) | is.data.frame(confounding_factor))
+  }
   # Prepare transcript annotation
   if (is.null(gff) & is.null(txdb) & is.null(genome)){
     stop("Require one of the argument in txdb, gff, and genome for transcript annotation.")
@@ -230,7 +239,8 @@ exomePeak2 <- function(bam_ip = NULL,
       motif_based = motif_based,
       motif_sequence = "DRACH",
       fig_dir = file.path(save_dir, experiment_name),
-      mode = mode
+      mode = mode,
+      confounding_factor = confounding_factor
     )
    if(save_output) savePeak(res,
                             file.path(save_dir, experiment_name),
@@ -256,7 +266,8 @@ exomePeak2 <- function(bam_ip = NULL,
         motif_sequence = "DRACH",
         absolute_diff = absolute_diff,
         fig_dir = file.path(save_dir, experiment_name),
-        mode = mode
+        mode = mode,
+        confounding_factor = confounding_factor
       )
     if(save_output) savePeak(res,
                              file.path(save_dir, experiment_name),

@@ -152,10 +152,31 @@ callPeaks <- function(se,
                       p_cutoff,
                       exByGene,
                       bin_size,
-                      motif_based) {
+                      motif_based,
+                      confounding_factor) {
+  #Handling additional covariates
+  if (!is.null(confounding_factor)) {
+    if (is.factor(confounding_factor)) {
+      confounding_factor <-
+        data.frame(X = confounding_factor) #convert factor into single column data.frame
+    }
+    Dim_factor <- nrow(confounding_factor)
+    if (Dim_factor != ncol(se)) {
+      stop(
+        "The provided `confounding_factor` variable has incompatible dimension with the total number of MeRIP-Seq samples (IP+input. Please double check.)"
+      )
+    }
+    #set reference level with the design of confounding variables
+    colData(se) <- cbind(DataFrame(confounding_factor), colData(se))
+    se$IP_input <- relevel(factor(se$IP_input), "input")
+    confounding_vars <- colnames(confounding_factor)
+    formula_str <- paste("~", paste(confounding_vars, collapse = " + "), "+ IP_input")
+    dds <- DESeqDataSet(se, as.formula(formula_str))
+  }else{
     #set reference level
     se$IP_input <- relevel(factor(se$IP_input), "input")
-    dds <- DESeqDataSet(se, ~ IP_input)
+    dds <- DESeqDataSet(se, ~ IP_input) 
+  }
 
     #specify size factors
     if (is.null(assays(se)[["sfm"]])) {
@@ -197,19 +218,47 @@ callDiff <- function(se,
                      alt_hypothesis,
                      lfc_threshold,
                      motif_based,
-                     absolute_diff){
-  #Set reference levels
-  se$IP_input <- relevel(factor(se$IP_input),"input")
-  se$Perturbation <- relevel(factor(se$Perturbation),"C")
-  
-  if(!absolute_diff){
-    dds <- DESeqDataSet(se, ~ IP_input * Perturbation)
-    normalizationFactors(dds) <- assays(se)[["sfm"]]
+                     absolute_diff,
+                     confounding_factor){
+  #Handling additional covariates
+  if (!is.null(confounding_factor)) {
+    if (is.factor(confounding_factor)) {
+      confounding_factor <-
+        data.frame(X = confounding_factor) #convert factor into single column data.frame
+    }
+    Dim_factor <- nrow(confounding_factor)
+    if (Dim_factor != ncol(se)) {
+      stop(
+        "The provided `confounding_factor` variable has incompatible dimension with the total number of MeRIP-Seq samples (IP+input. Please double check.)"
+      )
+    }
+    #set reference level with the design of confounding variables
+    colData(se) <- cbind(DataFrame(confounding_factor), colData(se))
+    se$IP_input <- relevel(factor(se$IP_input),"input")
+    se$Perturbation <- relevel(factor(se$Perturbation),"C")
+    confounding_vars <- colnames(confounding_factor)
+    if(!absolute_diff){
+      formula_str <- paste("~", paste(confounding_vars, collapse = " + "), "+ IP_input * Perturbation")
+      dds <- DESeqDataSet(se, as.formula(formula_str))
+      normalizationFactors(dds) <- assays(se)[["sfm"]]
+    }else{
+      formula_str <- paste("~", paste(confounding_vars, collapse = " + "), "+ Perturbation")
+      dds <- DESeqDataSet(se[,se$IP_input!="input"], as.formula(formula_str))
+      normalizationFactors(dds) <- assays(se[,se$IP_input!="input"])[["sfm"]]
+    }
   }else{
-    dds <- DESeqDataSet(se[,se$IP_input!="input"], ~ Perturbation)
-    normalizationFactors(dds) <- assays(se[,se$IP_input!="input"])[["sfm"]]
+    #Set reference levels
+    se$IP_input <- relevel(factor(se$IP_input),"input")
+    se$Perturbation <- relevel(factor(se$Perturbation),"C")
+    if(!absolute_diff){
+      dds <- DESeqDataSet(se, ~ IP_input * Perturbation)
+      normalizationFactors(dds) <- assays(se)[["sfm"]]
+    }else{
+      dds <- DESeqDataSet(se[,se$IP_input!="input"], ~ Perturbation)
+      normalizationFactors(dds) <- assays(se[,se$IP_input!="input"])[["sfm"]]
+    }
   }
-
+  
   #Fit differential models
   if(test_method == "DESeq2"){
     dds <- estimateDispersions(dds)
