@@ -160,6 +160,7 @@
 #' @importFrom utils capture.output read.table write.csv
 #' @import Rsamtools
 #' @importFrom rtracklayer export
+#' @importFrom txdbmaker makeTxDbFromGFF
 #'
 #' @export
 #'

@@ -51,7 +51,7 @@ peakCalling <- function(bam_IP,
 
   #Extract bins for count
 
-  message("Extract bin features ... ", appendLF = F)
+  message("Extract bin features ... ", appendLF = FALSE)
   exByGene  <- exonsByiGenes(txdb) %>% quiet
   if(!motif_based){
     peakBins <- exonicBins(exByGene, bin_size, step_size) %>% quiet
@@ -66,7 +66,7 @@ peakCalling <- function(bam_IP,
   #Count the bam files
   bam_dirs <- c(bam_IP, bam_input)
 
-  message("Count reads on bin features ... ", appendLF = F)
+  message("Count reads on bin features ... ", appendLF = FALSE)
   se <- featuresCounts(peakBins, bam_dirs, strandness, parallel) %>% quiet
   rm(bam_dirs)
   message("OK")
@@ -76,28 +76,28 @@ peakCalling <- function(bam_IP,
   rm(peakBins)
 
   #Identify Backgrounds
-  message("Identify background features ... ", appendLF = F)
+  message("Identify background features ... ", appendLF = FALSE)
   se <- classifyBackground(se) %>% quiet
   message("OK")
 
   #Estimate sample size factors
-  message("Estimate sample sepecific size factors from the background ... ", appendLF = F)
+  message("Estimate sample sepecific size factors from the background ... ", appendLF = FALSE)
   se <- estimateColumnFactors(se) %>% quiet
   message("OK")
 
   if(!is.null(genome)){
   #Calculate GC contents
-  message("Calculate bin GC contents on exons ... ", appendLF = F)
+  message("Calculate bin GC contents on exons ... ", appendLF = FALSE)
   se <- calculateGCcontents(se, fragment_length, exByGene, genome) %>% quiet
   message("OK")
 
   #Fit GC content biases
-  message("Fit GC curves with smoothing splines ... ", appendLF = F)
+  message("Fit GC curves with smoothing splines ... ", appendLF = FALSE)
   se <- fitBiasCurves(se) %>% quiet
   message("OK")
 
   #Estimate matrix correction factors
-  message("Calculate offset matrix ... ", appendLF = F)
+  message("Calculate offset matrix ... ", appendLF = FALSE)
   se <- estimateMatrixFactors(se) %>% quiet
   message("OK")
 
@@ -115,7 +115,7 @@ peakCalling <- function(bam_IP,
   }
   
   #DESeq2 peak calling
-  message("Detect peaks with GLM ... ", appendLF = F)
+  message("Detect peaks with GLM ... ", appendLF = FALSE)
   peaks <- callPeaks(se, txdb, test_method, p_cutoff, exByGene, bin_size, motif_based, confounding_factor) %>% quiet
   message("OK")
 
