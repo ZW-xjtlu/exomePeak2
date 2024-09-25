@@ -374,7 +374,7 @@ quiet <- function(x) {
 #' @param type the type of output, should be one of c("full_tx","whole_genome").
 #' @return a TxDb object.
 #'
-#' @import GenomicFeatures
+#' @importFrom GenomicFeatures transcripts
 #' @import GenomicRanges
 #' @importFrom IRanges IRanges
 #' @importFrom rtracklayer asGFF

@@ -14,7 +14,7 @@ BiocManager::install(c("Rsamtools", "GenomicAlignments", "GenomicRanges",
                        "GenomicFeatures", "DESeq2", "ggplot2", "mclust", "BSgenome", 
                        "Biostrings", "GenomeInfoDb", "BiocParallel", "IRanges", 
                        "S4Vectors", "rtracklayer", "methods", "stats", 
-                       "utils", "BiocGenerics", "magrittr", "speedglm", "splines", "txdbmaker"))
+                       "utils", "BiocGenerics", "magrittr", "speedglm", "splines"))
 
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")

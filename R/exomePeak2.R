@@ -139,7 +139,7 @@
 #' @rdname exomePeak2
 #'
 #' @importFrom S4Vectors DataFrame na.omit queryHits subjectHits metadata runValue
-#' @import GenomicFeatures
+#' @importFrom GenomicFeatures exonsBy
 #' @import GenomicRanges
 #' @importFrom BiocGenerics order
 #' @import DESeq2
@@ -160,7 +160,7 @@
 #' @importFrom utils capture.output read.table write.csv
 #' @import Rsamtools
 #' @importFrom rtracklayer export
-#' @importFrom txdbmaker makeTxDbFromGFF
+#' @importFrom txdbmaker makeTxDbFromGFF makeTxDbFromGRanges
 #'
 #' @export
 #'
