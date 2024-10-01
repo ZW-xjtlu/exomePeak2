@@ -139,7 +139,7 @@
 #' @rdname exomePeak2
 #'
 #' @importFrom S4Vectors DataFrame na.omit queryHits subjectHits metadata runValue
-#' @importFrom GenomicFeatures exonsBy
+#' @importFrom GenomicFeatures exonsBy mapFromTranscripts mapToTranscripts
 #' @import GenomicRanges
 #' @importFrom BiocGenerics order
 #' @import DESeq2
