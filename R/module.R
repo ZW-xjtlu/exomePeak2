@@ -101,8 +101,11 @@ featuresCounts <- function(features,
 
   ## Setup parallel number
   register(SerialParam())
-  suppressWarnings( register(MulticoreParam(workers = parallel)) )
-  register(SnowParam(workers = parallel))
+  if (.Platform$OS.type == "windows") {
+      register(SnowParam(workers = parallel))  # Windows alternative
+  } else {
+      suppressWarnings( register(MulticoreParam(workers = parallel)) )  # Unix/macOS
+  }
 
   ## Setup bam file list
   bam_lst = BamFileList(file = bam_dirs,
